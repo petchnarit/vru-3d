@@ -6,11 +6,7 @@
 // 1. Campus Buildings Inventory (100% Calibrated to Drone Orthophoto & VRU Masterplan)
 const HOSPITAL_BUILDINGS = [
   {
-    id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1',
-    sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย',
-    category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ',
-    archType: 'auditorium80', pos: { x: 159.8, y: 0, z: 16.3 }, rotY: 0, anchorHeight: 18,
-    dimensions: { w: 42.0, h: 12.0, d: 28.0 }, roofColor: 0xf8fafc, accentColor: 0x047857,
+    id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1', sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย', category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ', archType: 'auditorium80', pos: { x: 153.86, y: 0, z: 14.82 }, rotY: 0, anchorHeight: 15, dimensions: { w: 30.12, h: 11.0, d: 32.89 }, roofColor: 0xf8fafc, accentColor: 0x047857,
     floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการและลานจอดรถ' }]
   },
   {
@@ -494,225 +490,214 @@ function buildGround() {
   groundGroup.add(outerMesh);
 }
 
-// 3D Building Geometries
-function buildBuildings() {
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.55, metalness: 0.05 });
-  const concreteMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.75, metalness: 0.04 });
-  const windowMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.15,
-    metalness: 0.75,
-    emissive: new THREE.Color(0xffbf69),
-    emissiveIntensity: 0.0
-  });
-  emissiveMaterials.push(windowMat);
+// === Building 1 (หอประชุม 80 ปี วไลยอลงกรณ์) - Built Clean from Ground Truth 1:1 ===
+function createAuditorium80Mesh() {
+  const group = new THREE.Group();
 
+  // Materials
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.65,
+    metalness: 0.05
+  });
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    roughness: 0.75,
+    metalness: 0.02
+  });
+  const roofFlatMat = new THREE.MeshStandardMaterial({
+    color: 0xebedf0,
+    roughness: 0.40,
+    metalness: 0.15
+  });
+  const darkTrimMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.5,
+    metalness: 0.25
+  });
+  const glassMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.1,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.8
+  });
+  const trussMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.25,
+    metalness: 0.35
+  });
+
+  const hallW = 30.12;
+  const hallD = 32.89;
+  const hallH = 10.5;
+  const podiumH = 0.8;
+
+  // --- 1. Base Concrete Podium ---
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(hallW, podiumH, hallD), concreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  podium.receiveShadow = true;
+  group.add(podium);
+
+  // --- 2. Main Hall Solid Body ---
+  const mainHall = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.96, hallH, hallD * 0.96), wallMat);
+  mainHall.position.set(0, podiumH + hallH / 2, 0);
+  mainHall.castShadow = true;
+  mainHall.receiveShadow = true;
+  group.add(mainHall);
+
+  // Ribbon windows around upper perimeter
+  const ribbonWin = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.97, 1.2, hallD * 0.97), darkTrimMat);
+  ribbonWin.position.set(0, podiumH + hallH - 1.2, 0);
+  group.add(ribbonWin);
+
+  // --- 3. COMPLETELY FLAT SOLID ROOF (NO GABLES - ไร้จั่ว แบนราบเต็มแผ่น) ---
+  // Lower continuous flat roof slab
+  const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.6, hallD + 0.6), roofFlatMat);
+  roofSlab.position.set(0, podiumH + hallH + 0.3, 0);
+  roofSlab.castShadow = true;
+  roofSlab.receiveShadow = true;
+  group.add(roofSlab);
+
+  // Raised central flat mechanical/parapet tier (perfectly flat)
+  const roofTier = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.65, 1.2, hallD * 0.65), roofFlatMat);
+  roofTier.position.set(0, podiumH + hallH + 0.6 + 0.6, 0);
+  roofTier.castShadow = true;
+  roofTier.receiveShadow = true;
+  group.add(roofTier);
+
+  // Parapet edge trims
+  const trimNorth = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.4, 0.25), darkTrimMat);
+  trimNorth.position.set(0, podiumH + hallH + 0.6 + 0.2, -hallD / 2 - 0.15);
+  group.add(trimNorth);
+  const trimSouth = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.4, 0.25), darkTrimMat);
+  trimSouth.position.set(0, podiumH + hallH + 0.6 + 0.2, hallD / 2 + 0.15);
+  group.add(trimSouth);
+  const trimWest = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.4, hallD + 0.6), darkTrimMat);
+  trimWest.position.set(-hallW / 2 - 0.15, podiumH + hallH + 0.6 + 0.2, 0);
+  group.add(trimWest);
+
+  // --- 4. Perimeter White Space Frame / Sunshade Lattice (West & North eaves) ---
+  const trussY = podiumH + hallH + 0.1;
+  const westTruss = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.3, hallD), trussMat);
+  westTruss.position.set(-hallW / 2 - 1.75, trussY, 0);
+  westTruss.castShadow = true;
+  group.add(westTruss);
+
+  // --- 5. Front Entrance Foyer (East Facade towards the Road) ---
+  // In local coords: Main Hall Center is at (0, 0)
+  // Foyer center is at X = 174.92 - 153.86 = +21.06, Z = 14.07 - 14.82 = -0.75
+  // Foyer size: 12.0m wide x 16.63m deep x 7.5m high
+  const foyerLocalX = 21.06;
+  const foyerLocalZ = -0.75;
+  const foyerW = 12.0;
+  const foyerD = 16.63;
+  const foyerH = 7.5;
+
+  const foyerBody = new THREE.Mesh(new THREE.BoxGeometry(foyerW, foyerH, foyerD), wallMat);
+  foyerBody.position.set(foyerLocalX, podiumH + foyerH / 2, foyerLocalZ);
+  foyerBody.castShadow = true;
+  foyerBody.receiveShadow = true;
+  group.add(foyerBody);
+
+  // Foyer Glass Front (Facing East)
+  const glassFront = new THREE.Mesh(new THREE.PlaneGeometry(foyerD * 0.85, foyerH * 0.75), glassMat);
+  glassFront.rotation.y = Math.PI / 2;
+  glassFront.position.set(foyerLocalX + foyerW / 2 + 0.05, podiumH + foyerH / 2, foyerLocalZ);
+  group.add(glassFront);
+
+  // Foyer Flat Canopy Roof
+  const foyerRoof = new THREE.Mesh(new THREE.BoxGeometry(foyerW + 1.5, 0.5, foyerD + 1.2), roofFlatMat);
+  foyerRoof.position.set(foyerLocalX + 0.5, podiumH + foyerH + 0.25, foyerLocalZ);
+  foyerRoof.castShadow = true;
+  group.add(foyerRoof);
+
+  // --- 6. COMPLETE ASCENDING ENTRANCE RAMP ("ทางขึ้น" เติมเต็มครบ 100% เชื่อมสู่ระดับดิน) ---
+  // Local coords:
+  // Starts at south of foyer: Local X = 178.62 - 153.86 = +24.76, Local Z = 22.39 - 14.82 = +7.57
+  // Ends at ground touch: Local X = +24.76, Local Z = 47.14 - 14.82 = +32.32
+  // Total ramp length = 32.32 - 7.57 = 24.75m!
+  // Ramp width = 3.51m
+  // Ramp top height = 3.8m, Ramp bottom height = 0.0m
+  const rampX = 24.76;
+  const rampZ_Start = 7.57;
+  const rampZ_End = 32.32;
+  const rampLength = rampZ_End - rampZ_Start; // 24.75m
+  const rampMidZ = (rampZ_Start + rampZ_End) / 2; // ~19.95
+  const rampW = 3.51;
+  const rampTopY = 3.8;
+
+  const slopeAngle = Math.atan2(rampTopY, rampLength); // smooth continuous slope ~8.7 deg
+  const rampDeckLen = Math.sqrt(rampLength * rampLength + rampTopY * rampTopY);
+
+  // Solid concrete inclined ramp slab
+  const rampDeck = new THREE.Mesh(new THREE.BoxGeometry(rampW, 0.5, rampDeckLen), concreteMat);
+  rampDeck.position.set(rampX, rampTopY / 2, rampMidZ);
+  rampDeck.rotation.x = slopeAngle;
+  rampDeck.castShadow = true;
+  rampDeck.receiveShadow = true;
+  group.add(rampDeck);
+
+  // Continuous side parapet walls along both sides of the ramp
+  for (let s of [-1, 1]) {
+    const wallX = rampX + s * (rampW / 2 - 0.15);
+    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, rampDeckLen), wallMat);
+    parapet.position.set(wallX, rampTopY / 2 + 0.55, rampMidZ);
+    parapet.rotation.x = slopeAngle;
+    parapet.castShadow = true;
+    group.add(parapet);
+  }
+
+  // Concrete support piers under elevated section
+  for (let f of [0.2, 0.45, 0.7]) {
+    const pz = rampZ_Start + f * rampLength;
+    const currentH = (1 - f) * rampTopY;
+    if (currentH > 0.8) {
+      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.6, currentH, 0.6), concreteMat);
+      pier.position.set(rampX, currentH / 2, pz);
+      pier.castShadow = true;
+      group.add(pier);
+    }
+  }
+
+  // Ground landing plaza where ramp touches ground
+  const landing = new THREE.Mesh(new THREE.BoxGeometry(rampW + 1.5, 0.25, 4.0), concreteMat);
+  landing.position.set(rampX, 0.125, rampZ_End + 2.0);
+  landing.receiveShadow = true;
+  group.add(landing);
+
+  // --- 7. North Connecting Bridge ---
+  // Local coords: X = 176.68 - 153.86 = +22.82, Z = -1.26 - 14.82 = -16.08
+  // Size: 2.95m wide x 14.04m long
+  const northBridge = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.5, 14.04), concreteMat);
+  northBridge.position.set(22.82, 3.8, -16.08);
+  northBridge.castShadow = true;
+  group.add(northBridge);
+
+  return group;
+}
+
+// 3D Building Geometries (All others wiped - building anew one by one)
+function buildBuildings() {
   HOSPITAL_BUILDINGS.forEach(bld => {
     const bGroup = new THREE.Group();
     bGroup.position.set(bld.pos.x, 0, bld.pos.z);
     bGroup.rotation.y = bld.rotY || 0;
     bGroup.userData = bld;
 
-    const { w, h, d } = bld.dimensions;
-    const type = bld.archType;
-
-    if (type === 'auditorium80') {
-      // === 1. หอประชุม 80 ปี วไลยอลงกรณ์ ===
-      // Clean modern flat architectural model (no gables, exact proportions)
-      const podium = new THREE.Mesh(new THREE.BoxGeometry(w, 1.2, d), concreteMat);
-      podium.position.y = 0.6;
-      podium.receiveShadow = true;
-      bGroup.add(podium);
-
-      const mainHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, h * 0.75, d * 0.88), wallMat);
-      mainHall.position.y = 1.2 + (h * 0.75) / 2;
-      mainHall.castShadow = true;
-      bGroup.add(mainHall);
-
-      // Ribbon window band
-      const winBand = new THREE.Mesh(new THREE.BoxGeometry(w * 0.91, 1.2, d * 0.89), windowMat);
-      winBand.position.y = 1.2 + h * 0.75 - 1.0;
-      bGroup.add(winBand);
-
-      // Clean flat roof slab (no gables)
-      const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(w * 0.94, 0.8, d * 0.92), new THREE.MeshStandardMaterial({ color: 0xebedf0, roughness: 0.4 }));
-      roofSlab.position.y = 1.2 + h * 0.75 + 0.4;
-      roofSlab.castShadow = true;
-      bGroup.add(roofSlab);
-
-      // Upper central flat parapet tier
-      const roofTier = new THREE.Mesh(new THREE.BoxGeometry(w * 0.6, 1.4, d * 0.6), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
-      roofTier.position.y = 1.2 + h * 0.75 + 0.8 + 0.7;
-      roofTier.castShadow = true;
-      bGroup.add(roofTier);
-
-      // Front East Foyer
-      const foyer = new THREE.Mesh(new THREE.BoxGeometry(w * 0.22, h * 0.65, d * 0.65), wallMat);
-      foyer.position.set(w * 0.42, 1.2 + (h * 0.65) / 2, 0);
-      foyer.castShadow = true;
-      bGroup.add(foyer);
-
-      // Southeast entrance ramp connecting smoothly to ground
-      const rampLen = 18.0;
-      const rampW = 5.5;
-      const ramp = new THREE.Mesh(new THREE.BoxGeometry(rampW, 1.6, rampLen), concreteMat);
-      ramp.position.set(w * 0.45, 0.8, d * 0.45 + rampLen / 2);
-      ramp.rotation.x = 0.09;
-      ramp.castShadow = true;
-      ramp.receiveShadow = true;
-      bGroup.add(ramp);
-
-      // Front Reflecting Pool
-      const pool = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, 8.0), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.5 }));
-      pool.rotation.x = -Math.PI / 2;
-      pool.position.set(0, 0.08, d * 0.5 + 4.5);
-      bGroup.add(pool);
-
-    } else if (type === 'spb100') {
-      // === 2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB) ===
-      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
-      body.position.y = h / 2;
-      body.castShadow = true;
-      bGroup.add(body);
-
-      for (let f = 1; f < 6; f++) {
-        const win = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 1.1, d * 0.88), windowMat);
-        win.position.y = f * (h / 6);
-        bGroup.add(win);
-      }
-
-      const vault = new THREE.Mesh(
-        new THREE.CylinderGeometry(w * 0.35, w * 0.35, d * 0.92, 16, 1, false, -Math.PI / 2, Math.PI),
-        new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.4, roughness: 0.35 })
-      );
-      vault.position.set(0, h + 0.2, 0);
-      vault.rotation.z = Math.PI / 2;
-      vault.castShadow = true;
-      bGroup.add(vault);
-
-    } else if (type === 'pool') {
-      // === 5. สระว่ายน้ำ 50 เมตร ===
-      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), concreteMat);
-      deck.position.y = 0.25;
-      deck.receiveShadow = true;
-      bGroup.add(deck);
-
-      const waterMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(w * 0.65, d * 0.8),
-        new THREE.MeshStandardMaterial({ map: sharedTextures.poolWater, roughness: 0.1, metalness: 0.2 })
-      );
-      waterMesh.rotation.x = -Math.PI / 2;
-      waterMesh.position.y = 0.52;
-      bGroup.add(waterMesh);
-
-      const pav = new THREE.Mesh(new THREE.BoxGeometry(w * 0.28, h, d * 0.85), wallMat);
-      pav.position.set(-w * 0.32, h / 2, 0);
-      pav.castShadow = true;
-      bGroup.add(pav);
-
-    } else if (type === 'thaiPavilion') {
-      // === 36. เรือนเจ้าฟ้า (เรือนไทยกลางสระน้ำ) ===
-      const teakMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.65 });
-      const thaiRoofMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.45 });
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.7, roughness: 0.25 });
-
-      for (let sx of [-w * 0.35, 0, w * 0.35]) {
-        for (let sz of [-d * 0.35, 0, d * 0.35]) {
-          const st = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.4, 6), teakMat);
-          st.position.set(sx, 1.2, sz);
-          st.castShadow = true;
-          bGroup.add(st);
-        }
-      }
-
-      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d), teakMat);
-      deck.position.y = 2.4;
-      bGroup.add(deck);
-
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, 2.6, d * 0.75), teakMat);
-      cabin.position.y = 2.4 + 1.3;
-      cabin.castShadow = true;
-      bGroup.add(cabin);
-
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(w * 0.85, 1.8, d * 0.85), thaiRoofMat);
-      roof.position.y = 2.4 + 2.6 + 0.9;
-      roof.castShadow = true;
-      bGroup.add(roof);
-
-      const finial = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1.2, 6), goldMat);
-      finial.position.y = 2.4 + 2.6 + 1.8 + 0.6;
-      bGroup.add(finial);
-
-    } else if (type === 'stadium') {
-      // === 57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ ===
-      const trackMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.55 });
-      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w, 0.3, d * 0.52), trackMat);
-      trackCenter.position.y = 0.2;
-      bGroup.add(trackCenter);
-
-      for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.5, w * 0.5, 0.3, 32), trackMat);
-        cap.position.set(0, 0.2, side * (d * 0.26));
-        bGroup.add(cap);
-      }
-
-      const pitchMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
-      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.62, 0.36, d * 0.52), pitchMat);
-      pitch.position.y = 0.25;
-      pitch.receiveShadow = true;
-      bGroup.add(pitch);
-
-      const stand = new THREE.Mesh(new THREE.BoxGeometry(3.5, 4.5, d * 0.45), concreteMat);
-      stand.position.set(-w * 0.5 - 2.0, 2.25, 0);
-      stand.castShadow = true;
-      bGroup.add(stand);
-
-      const sRoof = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.3, d * 0.48), new THREE.MeshStandardMaterial({ color: 0x047857 }));
-      sRoof.position.set(-w * 0.5 - 2.0, 6.0, 0);
-      sRoof.rotation.z = -0.15;
-      sRoof.castShadow = true;
-      bGroup.add(sRoof);
-
-    } else if (type === 'monument') {
-      // === 8. พระอนุสาวรีย์ฯ ===
-      const base = new THREE.Mesh(new THREE.BoxGeometry(w, 0.8, d), new THREE.MeshStandardMaterial({ color: 0xfef3c7 }));
-      base.position.y = 0.4;
-      bGroup.add(base);
-
-      const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.5, 2.5, 16), wallMat);
-      ped.position.set(0, 1.6, 0);
-      ped.castShadow = true;
-      bGroup.add(ped);
-
-      const statue = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 2.0, 10), new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8 }));
-      statue.position.set(0, 3.8, 0);
-      bGroup.add(statue);
-
+    if (bld.id === 'bld-1') {
+      // ONLY Building 1 is built as 3D model!
+      const mesh = createAuditorium80Mesh();
+      bGroup.add(mesh);
     } else {
-      // Standard Architectural Massing Building
-      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
-      body.position.y = h / 2;
-      body.castShadow = true;
-      body.receiveShadow = true;
-      bGroup.add(body);
-
-      const winCount = Math.max(1, Math.floor(h / 3.5));
-      for (let f = 1; f <= winCount; f++) {
-        const win = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 1.0, d + 0.1), windowMat);
-        win.position.y = f * (h / (winCount + 1));
-        bGroup.add(win);
-      }
-
-      const rMat = new THREE.MeshStandardMaterial({ color: bld.roofColor || 0x334155, roughness: 0.55 });
-      const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.3, 0.35, d + 0.3), rMat);
-      slab.position.y = h + 0.18;
-      slab.castShadow = true;
-      bGroup.add(slab);
-
-      const parapet = new THREE.Mesh(new THREE.BoxGeometry(w * 0.82, 0.55, d * 0.82), rMat);
-      parapet.position.y = h + 0.6;
-      parapet.castShadow = true;
-      bGroup.add(parapet);
+      // Invisible flat hitbox on ground for raycasting/clicking (no 3D mesh rendered yet)
+      const hitGeo = new THREE.PlaneGeometry(bld.dimensions.w, bld.dimensions.d);
+      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.rotation.x = -Math.PI / 2;
+      hitMesh.position.y = 0.05;
+      hitMesh.userData = bld;
+      bGroup.add(hitMesh);
     }
 
     buildingsGroup.add(bGroup);
@@ -771,7 +756,7 @@ function updateLabelPositions() {
   const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
-    const anchorY = (data.anchorHeight || (data.dimensions.h + 2.0));
+    const anchorY = (data.id === 'bld-1' ? 15.0 : 1.2);
     toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
     if (toAnchor.dot(camDir) <= 0.2) {
