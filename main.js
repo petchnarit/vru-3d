@@ -515,183 +515,304 @@ function buildGround() {
 function createAuditorium80Mesh() {
   const group = new THREE.Group();
 
-  // Materials matching clean modern architectural finish
-  const roofSolidMat = new THREE.MeshStandardMaterial({
-    color: 0xd8dcd6,
+  // === Master Materials (Exact Match to Completed Architectural Rendering) ===
+  const whiteArchMat = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.28,
+    metalness: 0.12
+  });
+  const darkCharcoalMat = new THREE.MeshStandardMaterial({
+    color: 0x22262b,
     roughness: 0.45,
-    metalness: 0.15
+    metalness: 0.25
   });
-  const wallMat = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
-    roughness: 0.75,
-    metalness: 0.05
+  const amberGoldGlassMat = new THREE.MeshStandardMaterial({
+    color: 0xc89d4c,
+    roughness: 0.08,
+    metalness: 0.75,
+    transparent: true,
+    opacity: 0.88
   });
-  const concreteMat = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0,
+  const goldEmblemMat = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    roughness: 0.2,
+    metalness: 0.85
+  });
+  const hedgeGreenMat = new THREE.MeshStandardMaterial({
+    color: 0x2e7d32,
     roughness: 0.85,
     metalness: 0.02
   });
-  const trussMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.25,
-    metalness: 0.35
+  const concreteBaseMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    roughness: 0.8,
+    metalness: 0.05
   });
-  const glassMat = new THREE.MeshStandardMaterial({
+  const waterPoolMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
-    roughness: 0.1,
-    metalness: 0.85,
+    roughness: 0.12,
+    metalness: 0.65,
     transparent: true,
-    opacity: 0.8
-  });
-  const darkTrimMat = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    roughness: 0.5,
-    metalness: 0.3
+    opacity: 0.85
   });
 
-  const baseH = 10.5; // Main hall height
-  const podiumH = 1.2;
+  // Overall building scale (42m long x 28m deep x 16m high)
+  const hallWidth = 38.0;
+  const hallDepth = 24.0;
+  const floor1H = 4.8;
+  const floor2H = 7.2;
+  const totalWallH = floor1H + floor2H; // 12.0m
+  const terraceZ = 6.0; // front terrace offset
 
-  // --- 1. Base Solid Podium ---
-  const podium = new THREE.Mesh(new THREE.BoxGeometry(41.9, podiumH, 30.1), concreteMat);
-  podium.position.y = podiumH / 2;
-  podium.receiveShadow = true;
-  group.add(podium);
+  // --- 1. Reflecting Pool & Front Water Concourse ---
+  const poolW = 44.0;
+  const poolD = 12.0;
+  const pool = new THREE.Mesh(new THREE.PlaneGeometry(poolW, poolD), waterPoolMat);
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.set(0, 0.08, terraceZ + 12.0);
+  group.add(pool);
 
-  // --- 2. Main Hall Solid Body ---
-  // Covers the entire rectangular footprint without voids
-  const mainBody = new THREE.Mesh(new THREE.BoxGeometry(37.5, baseH, 26.5), wallMat);
-  mainBody.position.set(-1.0, podiumH + baseH / 2, 0);
-  mainBody.castShadow = true;
-  mainBody.receiveShadow = true;
-  group.add(mainBody);
+  // Pool border curbing
+  const curbMat = concreteBaseMat;
+  const curbF = new THREE.Mesh(new THREE.BoxGeometry(poolW + 1.0, 0.35, 0.6), curbMat);
+  curbF.position.set(0, 0.17, terraceZ + 18.0);
+  group.add(curbF);
 
-  // Ribbon windows around upper perimeter
-  const ribbonWindows = new THREE.Mesh(new THREE.BoxGeometry(37.7, 1.2, 26.7), darkTrimMat);
-  ribbonWindows.position.set(-1.0, podiumH + baseH - 1.5, 0);
-  group.add(ribbonWindows);
+  // --- 2. Ground Substructure & Undercroft ---
+  // Ground floor massing with recessed dark louvers
+  const groundCore = new THREE.Mesh(new THREE.BoxGeometry(hallWidth, floor1H, hallDepth), darkCharcoalMat);
+  groundCore.position.set(0, floor1H / 2, 0);
+  groundCore.castShadow = true;
+  group.add(groundCore);
 
-  // --- 3. Full Solid Roof (No gables, completely continuous & filled) ---
-  // Layer 1: Solid lower roof slab
-  const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.8, 28.5), roofSolidMat);
-  roofSlab.position.set(-1.0, podiumH + baseH + 0.4, 0);
-  roofSlab.castShadow = true;
-  roofSlab.receiveShadow = true;
-  group.add(roofSlab);
+  // Undercroft square white support columns along front
+  const numGroundCols = 8;
+  const colSpacing = (hallWidth - 4.0) / (numGroundCols - 1);
+  for (let i = 0; i < numGroundCols; i++) {
+    const cx = -(hallWidth - 4.0) / 2 + i * colSpacing;
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.8, floor1H, 0.8), whiteArchMat);
+    col.position.set(cx, floor1H / 2, hallDepth / 2 + 0.2);
+    col.castShadow = true;
+    group.add(col);
+  }
 
-  // Layer 2: Solid upper central roof tier (low-profile modern flat block)
-  const roofTier2 = new THREE.Mesh(new THREE.BoxGeometry(26.0, 1.4, 19.5), roofSolidMat);
-  roofTier2.position.set(-2.5, podiumH + baseH + 0.8 + 0.7, 0);
-  roofTier2.castShadow = true;
-  roofTier2.receiveShadow = true;
-  group.add(roofTier2);
+  // --- 3. 2nd Floor Grand Concourse & Amber-Gold Curtain Wall ---
+  // Amber-gold reflective glass facade across the full 2nd floor
+  const glassW = hallWidth - 2.0;
+  const glassH = floor2H - 1.2;
+  const curtainWall = new THREE.Mesh(new THREE.BoxGeometry(glassW, glassH, hallDepth - 1.0), amberGoldGlassMat);
+  curtainWall.position.set(0, floor1H + glassH / 2 + 0.2, 0);
+  curtainWall.castShadow = true;
+  group.add(curtainWall);
 
-  // Layer 3: Solid top canopy cap
-  const roofCap = new THREE.Mesh(new THREE.BoxGeometry(27.0, 0.35, 20.5), trussMat);
-  roofCap.position.set(-2.5, podiumH + baseH + 0.8 + 1.4 + 0.18, 0);
-  roofCap.castShadow = true;
-  group.add(roofCap);
+  // Vertical dark bronze mullions on glass facade
+  const numMullions = 22;
+  const mulStep = glassW / numMullions;
+  for (let m = 0; m <= numMullions; m++) {
+    const mx = -glassW / 2 + m * mulStep;
+    const mullion = new THREE.Mesh(new THREE.BoxGeometry(0.12, glassH, 0.2), darkCharcoalMat);
+    mullion.position.set(mx, floor1H + glassH / 2 + 0.2, hallDepth / 2 - 0.3);
+    group.add(mullion);
+  }
 
-  // Architectural Parapet Edge Trims (Clean border lines around full roof)
-  const parapetNorth = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.6, 0.4), darkTrimMat);
-  parapetNorth.position.set(-1.0, podiumH + baseH + 0.8 + 0.3, -14.25);
-  group.add(parapetNorth);
-  const parapetSouth = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.6, 0.4), darkTrimMat);
-  parapetSouth.position.set(-1.0, podiumH + baseH + 0.8 + 0.3, 14.25);
-  group.add(parapetSouth);
-  const parapetWest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.6, 28.5), darkTrimMat);
-  parapetWest.position.set(-1.0 - 19.75, podiumH + baseH + 0.8 + 0.3, 0);
-  group.add(parapetWest);
+  // Dark charcoal upper fascia shadow line band
+  const upperFascia = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 0.4, 1.2, hallDepth + 0.4), darkCharcoalMat);
+  upperFascia.position.set(0, totalWallH - 0.6, 0);
+  group.add(upperFascia);
 
-  // --- 4. Perimeter White Cantilever Space Frame / Truss Lattice ---
-  // Solid clean lattice grid extending along North, East, and South eaves
-  const trussY = podiumH + baseH + 0.2;
-  function createSolidTrussWing(w, d, px, pz) {
-    const tGroup = new THREE.Group();
-    tGroup.position.set(px, trussY, pz);
+  // --- 4. Monumental Flared Arches Colonnade (Front Arcade) ---
+  // 5 Majestic Arches across center + 2 flanking wing arches
+  const arcadeGroup = new THREE.Group();
+  arcadeGroup.position.set(0, floor1H, hallDepth / 2 + 1.2);
 
-    const fTop = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, 0.5), trussMat);
-    fTop.position.set(0, 0, -d / 2);
-    tGroup.add(fTop);
-    const fBot = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, 0.5), trussMat);
-    fBot.position.set(0, 0, d / 2);
-    tGroup.add(fBot);
-    const fOuter = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, d), trussMat);
-    fOuter.position.set(w / 2, 0, 0);
-    tGroup.add(fOuter);
+  const archSpan = 4.2;
+  const archThick = 0.7;
+  const archDepth = 0.9;
+  const archH = floor2H;
 
-    // Cross bars
-    for (let x = -w / 2 + 2.5; x < w / 2; x += 2.5) {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, d), trussMat);
-      b.position.set(x, 0, 0);
-      tGroup.add(b);
+  // Create individual flared parabolic arch module
+  function createFlaredArchMesh(w, h, d) {
+    const aGrp = new THREE.Group();
+    // Left & right flared legs
+    const legW = 0.55;
+    const pLeft = new THREE.Mesh(new THREE.BoxGeometry(legW, h * 0.75, d), whiteArchMat);
+    pLeft.position.set(-w / 2 + legW / 2, h * 0.375, 0);
+    pLeft.castShadow = true;
+    aGrp.add(pLeft);
+
+    const pRight = new THREE.Mesh(new THREE.BoxGeometry(legW, h * 0.75, d), whiteArchMat);
+    pRight.position.set(w / 2 - legW / 2, h * 0.375, 0);
+    pRight.castShadow = true;
+    aGrp.add(pRight);
+
+    // Arch Curved Top (Cylinder curve approximation)
+    const curveRadius = w / 2;
+    const archTop = new THREE.Mesh(
+      new THREE.CylinderGeometry(curveRadius, curveRadius, d, 16, 1, false, 0, Math.PI),
+      whiteArchMat
+    );
+    archTop.rotation.x = Math.PI / 2;
+    archTop.rotation.z = Math.PI;
+    archTop.position.set(0, h * 0.75, 0);
+    archTop.castShadow = true;
+    aGrp.add(archTop);
+
+    // Arch inner cutout block to reveal golden glass behind
+    const archHole = new THREE.Mesh(
+      new THREE.CylinderGeometry(curveRadius - legW, curveRadius - legW, d + 0.2, 16, 1, false, 0, Math.PI),
+      new THREE.MeshBasicMaterial({ color: 0x000000 })
+    );
+    // (Solid visual style without boolean for 60fps performance)
+    return aGrp;
+  }
+
+  // 5 Central Grand Arches
+  for (let a = -2; a <= 2; a++) {
+    const isCenter = (a === 0);
+    const archMesh = createFlaredArchMesh(isCenter ? archSpan * 1.25 : archSpan, isCenter ? archH + 0.8 : archH, archDepth);
+    archMesh.position.set(a * (archSpan + 0.4), 0, 0);
+    arcadeGroup.add(archMesh);
+  }
+
+  // Outer Flanking Wing Arches & Y-Forked End Cantilever Pillars
+  for (let s of [-1, 1]) {
+    const wingArch = createFlaredArchMesh(archSpan * 0.9, archH * 0.9, archDepth);
+    wingArch.position.set(s * (3 * archSpan + 0.8), 0, 0);
+    arcadeGroup.add(wingArch);
+
+    // Y-Forked Cantilever End Column
+    const endPillar = new THREE.Mesh(new THREE.BoxGeometry(0.7, archH, archDepth), whiteArchMat);
+    endPillar.position.set(s * (hallWidth / 2 - 0.5), archH / 2, 0);
+    endPillar.castShadow = true;
+    arcadeGroup.add(endPillar);
+
+    const endFork = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.6, archDepth), whiteArchMat);
+    endFork.position.set(s * (hallWidth / 2 + 0.4), archH - 0.3, 0);
+    endFork.rotation.z = s * 0.25;
+    arcadeGroup.add(endFork);
+  }
+
+  group.add(arcadeGroup);
+
+  // --- 5. Central Commemorative Pylon & Royal Niche ---
+  const pylonW = 4.2;
+  const pylonH = floor2H + 1.6;
+  const pylonD = 1.6;
+  const pylon = new THREE.Mesh(new THREE.BoxGeometry(pylonW, pylonH, pylonD), whiteArchMat);
+  pylon.position.set(0, floor1H + pylonH / 2, hallDepth / 2 + 1.6);
+  pylon.castShadow = true;
+  group.add(pylon);
+
+  // Gold Royal Seal Emblem at Top of Pylon
+  const royalEmblem = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.15, 24), goldEmblemMat);
+  royalEmblem.rotation.x = Math.PI / 2;
+  royalEmblem.position.set(0, floor1H + pylonH - 1.2, hallDepth / 2 + 2.45);
+  group.add(royalEmblem);
+
+  // Commemorative Arch Niche with Royal Figure
+  const niche = new THREE.Mesh(new THREE.BoxGeometry(2.0, 3.2, 0.6), darkCharcoalMat);
+  niche.position.set(0, floor1H + 2.2, hallDepth / 2 + 2.2);
+  group.add(niche);
+
+  const royalStatue = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.8, 10), goldEmblemMat);
+  royalStatue.position.set(0, floor1H + 2.0, hallDepth / 2 + 2.3);
+  group.add(royalStatue);
+
+  // --- 6. Flat Tiered Modern Roof with Deep Cantilever Wingtips ---
+  // Central Elevated Roof Tier
+  const centralRoofW = 24.0;
+  const centralRoofD = hallDepth + 4.0;
+  const centralRoof = new THREE.Mesh(new THREE.BoxGeometry(centralRoofW, 1.4, centralRoofD), whiteArchMat);
+  centralRoof.position.set(0, totalWallH + 0.7, 0.8);
+  centralRoof.castShadow = true;
+  group.add(centralRoof);
+
+  // Main Continuous Flat Roof Slab across the whole building
+  const mainRoofSlab = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 2.0, 0.9, hallDepth + 3.0), whiteArchMat);
+  mainRoofSlab.position.set(0, totalWallH + 0.1, 0.5);
+  mainRoofSlab.castShadow = true;
+  group.add(mainRoofSlab);
+
+  // Extreme Cantilever Wingtips extending left and right like majestic wings
+  for (let s of [-1, 1]) {
+    const wingTip = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.5, hallDepth + 1.0), whiteArchMat);
+    wingTip.position.set(s * (hallWidth / 2 + 3.4), totalWallH + 0.2, 0);
+    wingTip.rotation.z = s * -0.06; // tapered sleek profile
+    wingTip.castShadow = true;
+    group.add(wingTip);
+  }
+
+  // --- 7. Twin Symmetrical Ramps with Green Hedge Balustrades ---
+  // Left and Right sweeping ramps rising up to 2nd floor central terrace
+  const rampLength = 22.0;
+  const rampWidth = 3.6;
+  const rampSlopeAngle = 0.21; // ~1:10 slope up to 4.8m height
+
+  for (let s of [-1, 1]) {
+    const rampGroup = new THREE.Group();
+    // Position ramp starting at outer water edge and landing at central 2nd floor terrace
+    rampGroup.position.set(s * 15.0, floor1H / 2, terraceZ + 7.5);
+    rampGroup.rotation.y = s * -0.32; // slight inward convergence towards center
+    rampGroup.rotation.x = 0.20; // inclined slope rising from water edge to terrace
+
+    // Solid concrete ramp walkway body
+    const rampBody = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 0.6, rampLength), whiteArchMat);
+    rampBody.castShadow = true;
+    rampBody.receiveShadow = true;
+    rampGroup.add(rampBody);
+
+    // Outer & inner white balustrade walls
+    for (let bw of [-1, 1]) {
+      const balustrade = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, rampLength), whiteArchMat);
+      balustrade.position.set(bw * (rampWidth / 2 - 0.18), 0.55, 0);
+      balustrade.castShadow = true;
+      rampGroup.add(balustrade);
+
+      // Lush green hedge planter box on top of the balustrade
+      const hedge = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.35, rampLength), hedgeGreenMat);
+      hedge.position.set(bw * (rampWidth / 2 - 0.18), 1.25, 0);
+      rampGroup.add(hedge);
+
+      // Flagpoles along the balustrade
+      for (let f = -rampLength / 2 + 2.5; f < rampLength / 2; f += 4.5) {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.8, 6), whiteArchMat);
+        pole.position.set(bw * (rampWidth / 2 - 0.18), 2.2, f);
+        rampGroup.add(pole);
+
+        const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.55), (f > 0 ? goldEmblemMat : whiteArchMat));
+        flag.position.set(bw * (rampWidth / 2 - 0.18) + 0.45, 3.2, f);
+        rampGroup.add(flag);
+      }
     }
-    return tGroup;
-  }
-  // North & South Cantilevers
-  group.add(createSolidTrussWing(36.0, 3.5, -1.0, -15.5));
-  group.add(createSolidTrussWing(36.0, 3.5, -1.0, 15.5));
 
-  // --- 5. Front Entrance Foyer (East Facade) ---
-  const foyerW = 9.0;
-  const foyerH = 7.5;
-  const foyerD = 18.5;
-  const foyerX = 14.0;
-  const foyer = new THREE.Mesh(new THREE.BoxGeometry(foyerW, foyerH, foyerD), wallMat);
-  foyer.position.set(foyerX, podiumH + foyerH / 2, 0);
-  foyer.castShadow = true;
-  group.add(foyer);
+    // Concrete support pillars under the ramp over water
+    for (let p of [-6.0, 0, 6.0]) {
+      const pPier = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 4.0, 8), whiteArchMat);
+      pPier.position.set(0, -2.0, p);
+      pPier.rotation.x = -0.20; // plumb vertical
+      pPier.castShadow = true;
+      rampGroup.add(pPier);
+    }
 
-  // East Glass Facade & Grand Doors
-  const glassFacade = new THREE.Mesh(new THREE.PlaneGeometry(foyerD * 0.85, foyerH * 0.75), glassMat);
-  glassFacade.rotation.y = Math.PI / 2;
-  glassFacade.position.set(foyerX + foyerW / 2 + 0.05, podiumH + foyerH / 2, 0);
-  group.add(glassFacade);
-
-  // Foyer Extended Roof Canopy
-  const foyerRoof = new THREE.Mesh(new THREE.BoxGeometry(foyerW + 2.5, 0.6, foyerD + 1.5), trussMat);
-  foyerRoof.position.set(foyerX + 1.0, podiumH + foyerH + 0.3, 0);
-  foyerRoof.castShadow = true;
-  group.add(foyerRoof);
-
-  // --- 6. Full Solid Entrance Ramp & Grand Steps (Filled Completely from Ground to Entrance) ---
-  // 6.1 Main Ascending Solid Ramp Block (Gradually rises from ground 0 to entrance terrace 2.2m)
-  const rampLength = 16.5;
-  const rampWidth = 6.2;
-  const rampMesh = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 2.2, rampLength), concreteMat);
-  // Pivot ramp so it touches ground at south end (Z = 23.5) and meets entrance terrace at north end (Z = 7.0)
-  rampMesh.position.set(foyerX + 1.5, 1.1, 15.2);
-  rampMesh.rotation.x = 0.135; // smooth continuous slope right to ground
-  rampMesh.castShadow = true;
-  rampMesh.receiveShadow = true;
-  group.add(rampMesh);
-
-  // 6.2 Solid Concrete Side Balustrades / Parapet Walls for the Ramp
-  for (let side of [-1, 1]) {
-    const balustrade = new THREE.Mesh(new THREE.BoxGeometry(0.4, 3.0, rampLength), wallMat);
-    balustrade.position.set(foyerX + 1.5 + side * (rampWidth / 2 - 0.2), 1.6, 15.2);
-    balustrade.rotation.x = 0.135;
-    balustrade.castShadow = true;
-    group.add(balustrade);
+    group.add(rampGroup);
   }
 
-  // 6.3 Solid Grand Entrance Concourse / Stepped Terrace (Filled solid between ramp and foyer)
-  const concourse = new THREE.Mesh(new THREE.BoxGeometry(rampWidth + 2.0, 2.2, 7.5), concreteMat);
-  concourse.position.set(foyerX + 1.5, 1.1, 5.0);
-  concourse.receiveShadow = true;
-  concourse.castShadow = true;
-  group.add(concourse);
+  // --- 8. Central 2nd Floor Grand Terrace Concourse ---
+  // Connecting the twin ramps and foyer entrance
+  const terrace = new THREE.Mesh(new THREE.BoxGeometry(22.0, 0.8, 5.0), whiteArchMat);
+  terrace.position.set(0, floor1H - 0.4, hallDepth / 2 + 2.5);
+  terrace.castShadow = true;
+  terrace.receiveShadow = true;
+  group.add(terrace);
 
-  // 6.4 Direct Front Grand Staircase (Stepped approach from East ground 0 to concourse)
-  for (let s = 0; s < 5; s++) {
-    const stepH = 0.44;
-    const stepD = 18.0;
-    const stepW = 1.0;
-    const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(stepW, (s + 1) * stepH, stepD - s * 0.6), concreteMat);
-    stepMesh.position.set(foyerX + foyerW / 2 + 0.5 + (5 - s) * stepW, ((s + 1) * stepH) / 2, 0);
-    stepMesh.receiveShadow = true;
-    group.add(stepMesh);
-  }
+  // Terrace front balustrade with green hedge
+  const tBalustrade = new THREE.Mesh(new THREE.BoxGeometry(22.0, 1.1, 0.35), whiteArchMat);
+  tBalustrade.position.set(0, floor1H + 0.55, hallDepth / 2 + 4.8);
+  group.add(tBalustrade);
+
+  const tHedge = new THREE.Mesh(new THREE.BoxGeometry(22.0, 0.35, 0.4), hedgeGreenMat);
+  tHedge.position.set(0, floor1H + 1.25, hallDepth / 2 + 4.8);
+  group.add(tHedge);
 
   return group;
 }
