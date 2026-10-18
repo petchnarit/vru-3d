@@ -64,7 +64,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารหอประชุมและแลนด์มาร์ค',
     status: 'เปิดทำการปกติ',
     archType: 'landmark80',
-    pos: { x: 118.0, y: 0, z: 24.0 },
+    pos: { x: 160.0, y: 0, z: 14.7 },
     rotY: 0,
     anchorHeight: 20,
     dimensions: { w: 44, h: 15, d: 36 },
@@ -93,7 +93,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อนุสาวรีย์และสิ่งศักดิ์สิทธิ์',
     status: 'เปิดสักการะตลอดวัน',
     archType: 'monument',
-    pos: { x: 142.0, y: 0, z: 0.0 },
+    pos: { x: 184.0, y: 0, z: 14.0 },
     rotY: 0,
     anchorHeight: 10,
     dimensions: { w: 14, h: 7.5, d: 10 },
@@ -120,7 +120,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริหารและสำนักงานกลาง',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'spb100',
-    pos: { x: 76.0, y: 0, z: 20.0 },
+    pos: { x: 123.0, y: 0, z: 16.5 },
     rotY: 0,
     anchorHeight: 24,
     dimensions: { w: 26, h: 19, d: 20 },
@@ -152,7 +152,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'hotel',
-    pos: { x: 118.0, y: 0, z: -38.0 },
+    pos: { x: 181.7, y: 0, z: -22.2 },
     rotY: 0,
     anchorHeight: 21,
     dimensions: { w: 24, h: 16.5, d: 18 },
@@ -189,7 +189,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและสวัสดิการ',
     status: 'เปิดบริการ 07:00 - 20:00 น.',
     archType: 'mall',
-    pos: { x: 152.0, y: 0, z: -38.0 },
+    pos: { x: 174.2, y: 0, z: -42.9 },
     rotY: 0,
     anchorHeight: 10,
     dimensions: { w: 22, h: 6.0, d: 16 },
@@ -217,7 +217,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 19:30 น.',
     archType: 'pool',
-    pos: { x: 86.0, y: 0, z: -38.0 },
+    pos: { x: 157.5, y: 0, z: -21.9 },
     rotY: 0,
     anchorHeight: 11,
     dimensions: { w: 26, h: 6.5, d: 24 },
@@ -251,7 +251,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารปฏิบัติการและบริการวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'cluster3',
-    pos: { x: 54.0, y: 0, z: -46.0 },
+    pos: { x: 140.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 12,
     dimensions: { w: 18, h: 7.5, d: 15 },
@@ -285,7 +285,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารหอประชุมและกิจกรรม',
     status: 'เปิดทำการตามตารางกิจกรรม',
     archType: 'auditorium',
-    pos: { x: 44.0, y: 0, z: -18.0 },
+    pos: { x: 34.0, y: 0, z: -4.8 },
     rotY: 0,
     anchorHeight: 15,
     dimensions: { w: 24, h: 10.5, d: 18 },
@@ -313,7 +313,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและสวัสดิการ',
     status: 'เปิดบริการ 06:30 - 18:00 น.',
     archType: 'canteen',
-    pos: { x: 26.0, y: 0, z: -18.0 },
+    pos: { x: 80.0, y: 0, z: 6.8 },
     rotY: 0,
     anchorHeight: 11,
     dimensions: { w: 22, h: 7.0, d: 16 },
@@ -341,7 +341,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 20:00 น.',
     archType: 'gym',
-    pos: { x: 8.0, y: 0, z: -18.0 },
+    pos: { x: 96.8, y: 0, z: 6.8 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 22, h: 9.5, d: 18 },
@@ -374,7 +374,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารเรียนรวมและศูนย์ภาษา',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: 52.0, y: 0, z: 22.0 },
+    pos: { x: 68.0, y: 0, z: 16.0 },
     rotY: 0,
     anchorHeight: 19,
     dimensions: { w: 24, h: 15.0, d: 16 },
@@ -404,7 +404,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 18:00 น.',
     archType: 'academicSolar',
-    pos: { x: 34.0, y: 0, z: 22.0 },
+    pos: { x: 54.0, y: 0, z: 16.0 },
     rotY: 0,
     anchorHeight: 20,
     dimensions: { w: 26, h: 16.0, d: 18 },
@@ -434,7 +434,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicGable',
-    pos: { x: 16.0, y: 0, z: 22.0 },
+    pos: { x: 38.0, y: 0, z: 16.0 },
     rotY: 0,
     anchorHeight: 15,
     dimensions: { w: 20, h: 11.5, d: 16 },
@@ -463,7 +463,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'academicSolar',
-    pos: { x: -4.0, y: 0, z: 22.0 },
+    pos: { x: 22.0, y: 0, z: 16.0 },
     rotY: 0,
     anchorHeight: 16,
     dimensions: { w: 20, h: 12.0, d: 16 },
@@ -492,7 +492,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'eduMaroon',
-    pos: { x: 36.0, y: 0, z: 38.0 },
+    pos: { x: 46.2, y: 0, z: 24.0 },
     rotY: 0,
     anchorHeight: 17,
     dimensions: { w: 22, h: 13.5, d: 14 },
@@ -522,7 +522,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'eduMaroon',
-    pos: { x: 52.0, y: 0, z: 38.0 },
+    pos: { x: 46.2, y: 0, z: 34.0 },
     rotY: 0,
     anchorHeight: 18,
     dimensions: { w: 26, h: 14.0, d: 16 },
@@ -552,7 +552,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริหารและบริการการศึกษา',
     status: 'เปิดทำการ 08:30 - 17:30 น.',
     archType: 'academicGable',
-    pos: { x: 68.0, y: 0, z: 38.0 },
+    pos: { x: 68.0, y: 0, z: 30.0 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 18, h: 10.5, d: 14 },
@@ -580,7 +580,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: 38.0, y: 0, z: -36.0 },
+    pos: { x: 45.5, y: 0, z: -21.0 },
     rotY: 0,
     anchorHeight: 18,
     dimensions: { w: 22, h: 13.0, d: 16 },
@@ -637,7 +637,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'cluster5',
-    pos: { x: 22.0, y: 0, z: -36.0 },
+    pos: { x: 22.0, y: 0, z: -21.0 },
     rotY: 0,
     anchorHeight: 15,
     dimensions: { w: 24, h: 13.5, d: 16 },
@@ -666,7 +666,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'fmsLong',
-    pos: { x: 14.0, y: 0, z: 38.0 },
+    pos: { x: 14.0, y: 0, z: 30.0 },
     rotY: 0,
     anchorHeight: 19,
     dimensions: { w: 32, h: 14.5, d: 18 },
@@ -696,7 +696,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: 4.0, y: 0, z: -36.0 },
+    pos: { x: 4.0, y: 0, z: -21.0 },
     rotY: 0,
     anchorHeight: 20,
     dimensions: { w: 24, h: 16.5, d: 18 },
@@ -732,7 +732,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'โรงเรียนสาธิต',
     status: 'เปิดทำการ 07:30 - 16:30 น.',
     archType: 'uCourtyard',
-    pos: { x: -24.0, y: 0, z: -36.0 },
+    pos: { x: -93.4, y: 0, z: 4.0 },
     rotY: 0,
     anchorHeight: 17,
     dimensions: { w: 28, h: 12.5, d: 20 },
@@ -768,7 +768,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริหารและบริการการศึกษา',
     status: 'เปิดบริการ 08:00 - 20:00 น.',
     archType: 'academicSolar',
-    pos: { x: 18.0, y: 0, z: 2.0 },
+    pos: { x: -9.6, y: 0, z: 36.5 },
     rotY: 0,
     anchorHeight: 18,
     dimensions: { w: 22, h: 16.0, d: 18 },
@@ -804,7 +804,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'uCourtyard',
-    pos: { x: -6.0, y: 0, z: 24.0 },
+    pos: { x: -6.0, y: 0, z: 18.0 },
     rotY: 0,
     anchorHeight: 18,
     dimensions: { w: 22, h: 13.0, d: 16 },
@@ -834,7 +834,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: -8.0, y: 0, z: 38.0 },
+    pos: { x: -8.0, y: 0, z: 30.0 },
     rotY: 0,
     anchorHeight: 22,
     dimensions: { w: 26, h: 15.0, d: 18 },
@@ -872,7 +872,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'โรงเรียนสาธิต',
     status: 'เปิดทำการ 07:30 - 16:30 น.',
     archType: 'uCourtyard',
-    pos: { x: -28.0, y: 0, z: 38.0 },
+    pos: { x: -28.0, y: 0, z: 30.0 },
     rotY: 0,
     anchorHeight: 16,
     dimensions: { w: 28, h: 11.5, d: 20 },
@@ -901,7 +901,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารอนุรักษ์ศิลปวัฒนธรรม',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'thaiPavilion',
-    pos: { x: -14.0, y: 0, z: -2.0 },
+    pos: { x: -0.7, y: 0, z: -0.7 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 16, h: 6.5, d: 14 },
@@ -956,7 +956,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'workshop',
-    pos: { x: -44.0, y: 0, z: 28.0 },
+    pos: { x: -85.8, y: 0, z: 14.0 },
     rotY: 0,
     anchorHeight: 12,
     dimensions: { w: 22, h: 7.5, d: 18 },
@@ -984,7 +984,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicGable',
-    pos: { x: -44.0, y: 0, z: 42.0 },
+    pos: { x: -85.8, y: 0, z: 26.0 },
     rotY: 0,
     anchorHeight: 17,
     dimensions: { w: 24, h: 14.0, d: 16 },
@@ -1014,7 +1014,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'twinDorm',
-    pos: { x: -82.0, y: 0, z: -32.0 },
+    pos: { x: -82.0, y: 0, z: -25.0 },
     rotY: 0,
     anchorHeight: 15,
     dimensions: { w: 20, h: 14.5, d: 22 },
@@ -1043,7 +1043,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 21:00 น.',
     archType: 'gymCourts',
-    pos: { x: -115.0, y: 0, z: -36.0 },
+    pos: { x: -115.0, y: 0, z: -25.0 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 26, h: 10.5, d: 22 },
@@ -1076,10 +1076,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'dormCluster6',
-    pos: { x: -92.0, y: 0, z: -4.0 },
+    pos: { x: -105.0, y: 0, z: 0.0 },
     rotY: 0,
     anchorHeight: 19,
-    dimensions: { w: 28, h: 15.0, d: 26 },
+    dimensions: { w: 10, h: 15.0, d: 48 },
     roofColor: 0xd97706,
     accentColor: 0xf59e0b,
     floors: [
@@ -1106,7 +1106,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'dormRow4',
-    pos: { x: -92.0, y: 0, z: 32.0 },
+    pos: { x: -119.3, y: 0, z: 28.0 },
     rotY: 0,
     anchorHeight: 18,
     dimensions: { w: 24, h: 14.5, d: 22 },
@@ -1136,7 +1136,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'ศูนย์วิจัยและอนุรักษ์ธรรมชาติ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'rspg',
-    pos: { x: -130.0, y: 0, z: 34.0 },
+    pos: { x: -140.0, y: 0, z: 32.0 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 20, h: 7.5, d: 16 },
@@ -1164,7 +1164,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก',
     status: 'เปิดบริการทุกวัน',
     archType: 'resort',
-    pos: { x: -155.0, y: 0, z: 36.0 },
+    pos: { x: -155.0, y: 0, z: 32.0 },
     rotY: 0,
     anchorHeight: 11,
     dimensions: { w: 24, h: 6.5, d: 18 },
@@ -1191,10 +1191,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 06:00 - 21:00 น.',
     archType: 'stadium',
-    pos: { x: -138.0, y: 0, z: 2.0 },
+    pos: { x: -144.24, y: 0, z: 12.27 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 56, h: 12.0, d: 82 },
+    dimensions: { w: 20.8, h: 11.5, d: 45.8 },
     roofColor: 0xdc2626,
     accentColor: 0x16a34a,
     floors: [
@@ -1219,7 +1219,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'พื้นที่พักอาศัยบุคลากร',
     archType: 'staffVillage',
-    pos: { x: -190.0, y: 0, z: 2.0 },
+    pos: { x: -180.0, y: 0, z: 14.0 },
     rotY: 0,
     anchorHeight: 14,
     dimensions: { w: 22, h: 8.5, d: 75 },
@@ -1247,7 +1247,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'สาธารณูปโภคและสิ่งแวดล้อม',
     status: 'เปิดทำการปกติ',
     archType: 'workshop',
-    pos: { x: 66.0, y: 0, z: -46.0 },
+    pos: { x: 140.0, y: 0, z: -52.0 },
     rotY: 0,
     anchorHeight: 10,
     dimensions: { w: 16, h: 6.5, d: 14 },
@@ -1277,7 +1277,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการการศึกษา',
     status: 'เปิดทำการปกติ',
     archType: 'academicGable',
-    pos: { x: 72.0, y: 0, z: -22.0 },
+    pos: { x: 125.0, y: 0, z: -25.0 },
     rotY: 0,
     anchorHeight: 12,
     dimensions: { w: 20, h: 8.5, d: 16 },
@@ -1308,7 +1308,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'เทคโนโลยีสารสนเทศและบริการวิชาการ',
     status: 'เปิดบริการ 08:30 - 20:30 น.',
     archType: 'academicSolar',
-    pos: { x: 18.0, y: 0, z: -6.0 },
+    pos: { x: -9.6, y: 0, z: 22.0 },
     rotY: 0,
     anchorHeight: 20,
     dimensions: { w: 22, h: 16.0, d: 18 },
@@ -1341,7 +1341,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'องค์กรและเครือข่ายสัมพันธ์',
     status: 'เปิดทำการปกติ',
     archType: 'academicGable',
-    pos: { x: 70.0, y: 0, z: -52.0 },
+    pos: { x: 70.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 12,
     dimensions: { w: 20, h: 8.5, d: 16 },
@@ -1369,7 +1369,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและที่พักรับรอง',
     status: 'เปิดทำการ 24 ชม.',
     archType: 'hotel',
-    pos: { x: 42.0, y: 0, z: -52.0 },
+    pos: { x: 42.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 14,
     dimensions: { w: 22, h: 10.5, d: 16 },
@@ -1398,7 +1398,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารที่พักอาศัยบุคลากร',
     status: 'เปิดทำการ 24 ชม.',
     archType: 'cluster3',
-    pos: { x: 16.0, y: 0, z: -52.0 },
+    pos: { x: 16.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 11,
     dimensions: { w: 24, h: 7.5, d: 15 },
@@ -1426,7 +1426,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารเรียนสาธิต',
     status: 'เปิดทำการ 07:30 - 16:30 น.',
     archType: 'uCourtyard',
-    pos: { x: -8.0, y: 0, z: -50.0 },
+    pos: { x: -8.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 12,
     dimensions: { w: 22, h: 8.5, d: 16 },
@@ -1454,7 +1454,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'วิจัยและนวัตกรรมการเกษตร',
     status: 'เปิดทำการปกติ',
     archType: 'workshop',
-    pos: { x: -68.0, y: 0, z: -50.0 },
+    pos: { x: -68.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 11,
     dimensions: { w: 20, h: 8.0, d: 16 },
@@ -1482,7 +1482,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'วิจัยและนวัตกรรมการเกษตร',
     status: 'เปิดทำการ 24 ชม.',
     archType: 'serviceStrip',
-    pos: { x: -92.0, y: 0, z: -50.0 },
+    pos: { x: -92.0, y: 0, z: -45.0 },
     rotY: 0,
     anchorHeight: 9,
     dimensions: { w: 24, h: 6.0, d: 18 },
@@ -1577,10 +1577,10 @@ const state = {
 // Camera overview calibrated to Google Maps Ground Truth (North is UP: -Z, East is RIGHT: +X)
 const VIEW_PRESETS = {
   overview: { pos: { x: 160, y: 185, z: 130 }, target: { x: -20, y: 0, z: 0 } },
-  front: { pos: { x: 195, y: 55, z: 45 }, target: { x: 118, y: 6, z: 20 } },
-  academic: { pos: { x: 45, y: 75, z: 50 }, target: { x: 25, y: 5, z: -5 } },
-  thaiLake: { pos: { x: -14, y: 55, z: 45 }, target: { x: -14, y: 4, z: -2 } },
-  stadium: { pos: { x: -138, y: 65, z: 80 }, target: { x: -138, y: 4, z: 2 } }
+  front: { pos: { x: 235, y: 70, z: 25 }, target: { x: 160, y: 8, z: 15 } },
+  academic: { pos: { x: 65, y: 75, z: 55 }, target: { x: 45, y: 5, z: 5 } },
+  thaiLake: { pos: { x: 25, y: 55, z: 35 }, target: { x: 2, y: 4, z: -1 } },
+  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -142, y: 4, z: 13 } }
 };
 
 let scene, camera, renderer, controls;
@@ -2103,13 +2103,9 @@ function buildPure3DMasterplanTerrain() {
   }
   groundGroup.add(overpass);
 
-  // 3. Main University Entrance & Exit Roads at Phahonyothin Rd facing East (+X)
-  addRoadStrip(groundGroup, 172, -6, 18, 6.5); // ทางเข้า (Inbound)
-  addRoadStrip(groundGroup, 172, 6, 18, 6.5);  // ทางออก (Outbound)
-
-  // Grand VRU Signboard Wall at Front Gate (facing East towards Phahonyothin)
+  // 3. Main University Entrance Gate Signboard & Overpass
   const gateSignGroup = new THREE.Group();
-  gateSignGroup.position.set(170, 0, -1);
+  gateSignGroup.position.set(184, 0, 14);
   const signBase = new THREE.Mesh(
     new THREE.BoxGeometry(1.4, 1.2, 11.5),
     new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 })
@@ -2134,89 +2130,15 @@ function buildPure3DMasterplanTerrain() {
   gateSignGroup.add(signFace);
   groundGroup.add(gateSignGroup);
 
-  // 4. Longitudinal Campus Roads (East-West Avenues running along X, recalibrated to 350-380m)
-  addRoadStrip(groundGroup, -10, -58, 380, 6.0); // ถนนสายเหนือ (North Perimeter Road)
-  addRoadStrip(groundGroup, 30, -28, 240, 5.5);  // ถนนสายในฝั่งเหนือ (Inner North Road)
-  addRoadStrip(groundGroup, -15, 0, 360, 6.5);   // ถนนแกนกลางมหาวิทยาลัย (Central Main Avenue)
-  addRoadStrip(groundGroup, -10, 26, 360, 6.5);  // ถนนสายหลักฝั่งใต้ (South Main Avenue)
-  addRoadStrip(groundGroup, -10, 56, 360, 5.5);  // ถนนเลียบขอบใต้ (Outer South Road)
-
-  // 5. Cross Campus Roads (North-South Avenues running along Z, recalibrated)
-  addRoadStrip(groundGroup, 138, 0, 6.0, 90); // ถนนหน้าสระน้ำหอประชุม 80 ปี
-  addRoadStrip(groundGroup, 95, 0, 6.0, 85);  // ถนนคั่นหอประชุม 80 ปี กับ อาคาร 100 ปี SPB
-  addRoadStrip(groundGroup, 55, 0, 6.0, 85);  // ถนนหน้าโซนวิชาการและหอประชุมวไลยอลงกรณ์
-  addRoadStrip(groundGroup, 18, 0, 5.0, 85);  // ถนนซอยกลางโซนวิชาการ
-  addRoadStrip(groundGroup, -35, 0, 5.5, 85); // ถนนหน้าสระน้ำเรือนไทยเจ้าฟ้า
-  addRoadStrip(groundGroup, -72, 0, 5.5, 90); // ถนนหน้ากลุ่มหอพักนักศึกษา 43-48
-  addRoadStrip(groundGroup, -135, 0, 6.0, 95);// ถนนหน้าสนามกีฬากลาง (#57)
-  addRoadStrip(groundGroup, -180, 0, 5.5, 95);// ถนนหลังสนามกีฬากลาง & หน้าสระเก็บน้ำ
-
-  // 3D Roundabout in front of Building #2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ SPB)
-  const rndGroup = new THREE.Group();
-  rndGroup.position.set(86, 0.14, 0);
-  const rndRim = new THREE.Mesh(
-    new THREE.CylinderGeometry(5.2, 5.5, 0.35, 32),
-    new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
-  );
-  rndRim.position.y = 0.15;
-  rndGroup.add(rndRim);
-  const rndLawn = new THREE.Mesh(
-    new THREE.CylinderGeometry(4.5, 4.5, 0.42, 32),
-    new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.8 })
-  );
-  rndLawn.position.y = 0.2;
-  rndGroup.add(rndLawn);
-  const spire = new THREE.Mesh(
-    new THREE.ConeGeometry(1.1, 4.5, 8),
-    new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.6, roughness: 0.25 })
-  );
-  spire.position.y = 2.4;
-  rndGroup.add(spire);
-  groundGroup.add(rndGroup);
-
-  // 6. All Lakes, Ponds & Diagonal Canal (Recalibrated coordinates)
-  // 6.1 สระน้ำหน้าหอประชุม 80 ปี วไลยอลงกรณ์ (#1)
-  addWaterBasin(groundGroup, 118, 24, 48, 38);
-
-  // 6.2 สระน้ำกลางโซนวิชาการ (ติดสำนักวิทยบริการ #31 และ รร.สาธิตมัธยม #30)
-  addWaterBasin(groundGroup, 40, -6, 15, 14);
+  // 6. Natural Lakes & Basins (calibrated 1:1 to vru-drone-map.jpg)
+  // 6.1 สระน้ำสะท้อนเงาหน้าหอประชุม 80 ปี วไลยอลงกรณ์ (#1)
+  addWaterBasin(groundGroup, 132.0, 39.0, 32.0, 12.0);
 
   // 6.3 สระน้ำใหญ่กลางมหาวิทยาลัย & เกาะเรือนไทยเจ้าฟ้า (#36)
-  addWaterBasin(groundGroup, 0, 0, 60, 36, 0, true);
-
-  // 6.4 กลุ่มสระน้ำฝั่งทิศใต้ (3 สระใหญ่ริมถนนสายใต้)
-  addWaterBasin(groundGroup, 68, 48, 32, 22);
-  addWaterBasin(groundGroup, -10, 48, 22, 18);
-  addWaterBasin(groundGroup, -40, 48, 20, 16);
-
-  // 6.5 กลุ่มสระน้ำโซนเหนือ
-  addWaterBasin(groundGroup, 8, -56, 24, 16);
-  addWaterBasin(groundGroup, -65, -56, 22, 16);
-
-  // 6.6 คลองซอยตัดเฉียง (Diagonal Canal แบ่งโซนวิชาการกับโซนหอพัก/สนามกีฬา จาก NW สู่ SE)
-  // Center at X = -42, Z = 0, Length ~ 160, rotY ~ -0.72 rad
-  addWaterBasin(groundGroup, -42, 0, 160, 8.5, -0.72);
-
-  // สะพานคอนกรีตข้ามคลองซอยตัดเฉียง 3 จุด (ที่จุดตัดถนน Z = -58, Z = 0, Z = +26)
-  [[-93, -58], [-42, 0], [-19, 26]].forEach(([bx, bz]) => {
-    const br = new THREE.Mesh(
-      new THREE.BoxGeometry(13, 0.55, 7.5),
-      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
-    );
-    br.position.set(bx, 0.28, bz);
-    br.castShadow = true;
-    groundGroup.add(br);
-  });
-
-  // 6.7 สระน้ำคู่ขนาบกลุ่มหอพักนักศึกษา 43-48
-  addWaterBasin(groundGroup, -118, -22, 24, 16);
-  addWaterBasin(groundGroup, -118, 36, 24, 16);
+  addWaterBasin(groundGroup, 2.0, -1.0, 30.5, 44.0, 0, true);
 
   // 6.8 สระเก็บน้ำขนาดใหญ่หลังสนามกีฬากลาง (#57)
-  addWaterBasin(groundGroup, -168, 2, 18, 65);
-
-  // 6.9 สระน้ำด้านทิศเหนือเหนือสนามกีฬากลาง
-  addWaterBasin(groundGroup, -158, -45, 48, 26);
+  addWaterBasin(groundGroup, -171.0, 16.4, 20.0, 55.0);
 
   // 7. แปลงสาธิตเกษตรอินทรีย์ (Agricultural Plots with neat green crop rows)
   const plotGroup = new THREE.Group();
@@ -2292,19 +2214,17 @@ function buildCoveredWalkways() {
 
 function createHippedRoof(w, d, ridgeH, roofMat) {
   const g = new THREE.Group();
-  const base = new THREE.Mesh(new THREE.BoxGeometry(w + 1.2, 0.35, d + 1.2), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-  base.position.y = 0.17;
-  g.add(base);
+  // Clean rectangular roof slab matching building walls
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), roofMat);
+  slab.position.y = 0.18;
+  slab.castShadow = true;
+  g.add(slab);
 
-  const pyr = new THREE.Mesh(
-    new THREE.ConeGeometry(Math.hypot(w, d) * 0.52, ridgeH, 4),
-    roofMat
-  );
-  pyr.rotation.y = Math.PI / 4;
-  pyr.scale.set(w / Math.max(w, d), 1, d / Math.max(w, d));
-  pyr.position.y = 0.35 + ridgeH / 2;
-  pyr.castShadow = true;
-  g.add(pyr);
+  // Stepped upper tier aligned with building axes (no 45-degree diamond distortion)
+  const ridge = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, ridgeH, d * 0.75), roofMat);
+  ridge.position.y = 0.35 + ridgeH / 2;
+  ridge.castShadow = true;
+  g.add(ridge);
   return g;
 }
 
@@ -2389,48 +2309,48 @@ function buildHospitalBuildings() {
       const f2 = new THREE.Group();
       const f3 = new THREE.Group();
 
-      // Podium over water + front ceremonial bridge ramp
+      // Podium matching footprint
       const podium = new THREE.Mesh(
-        new THREE.BoxGeometry(w + 4, 1.8, d + 4),
+        new THREE.BoxGeometry(w, 1.2, d),
         new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.45 })
       );
-      podium.position.y = 0.9;
+      podium.position.y = 0.6;
       podium.receiveShadow = true;
       f1.add(podium);
 
       const bridgeRamp = new THREE.Mesh(
-        new THREE.BoxGeometry(10, 1.4, 12),
+        new THREE.BoxGeometry(8, 1.0, 8),
         new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.5 })
       );
-      bridgeRamp.position.set(0, 0.7, -d / 2 - 5);
+      bridgeRamp.position.set(0, 0.5, -d / 2 - 4);
       f1.add(bridgeRamp);
 
-      const baseHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.78, 4.8, d * 0.78), wallMat);
-      baseHall.position.y = 1.8 + 2.4;
+      const baseHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, 4.8, d * 0.88), wallMat);
+      baseHall.position.y = 1.2 + 2.4;
       baseHall.castShadow = true;
       f1.add(baseHall);
 
       // Middle Grand Foyer + Open White Space-Frame Wings (โครงถักสีขาวตามภาพถ่ายจริง)
-      const midHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.82, 5.2, d * 0.82), wallMat);
-      midHall.position.y = 6.6 + 2.6;
+      const midHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 5.2, d * 0.92), wallMat);
+      midHall.position.y = 6.0 + 2.6;
       midHall.castShadow = true;
       f2.add(midHall);
 
-      const glassMid = new THREE.Mesh(new THREE.BoxGeometry(w * 0.84, 3.8, d * 0.84), windowMat);
-      glassMid.position.y = 6.6 + 2.6;
+      const glassMid = new THREE.Mesh(new THREE.BoxGeometry(w * 0.94, 3.8, d * 0.94), windowMat);
+      glassMid.position.y = 6.0 + 2.6;
       f2.add(glassMid);
 
       const frameMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, wireframe: false });
-      const wingCanopy = new THREE.Mesh(new THREE.BoxGeometry(w + 6, 0.55, d + 2), frameMat);
+      const wingCanopy = new THREE.Mesh(new THREE.BoxGeometry(w, 0.55, d), frameMat);
       wingCanopy.position.y = 11.2;
       wingCanopy.castShadow = true;
       f2.add(wingCanopy);
 
       // Perimeter white columns supporting space-frame wings
-      for (let cx of [-w / 2 - 2, -w / 3, w / 3, w / 2 + 2]) {
-        for (let cz of [-d / 2, 0, d / 2]) {
+      for (let cx of [-w / 2 + 1, -w / 3, w / 3, w / 2 - 1]) {
+        for (let cz of [-d / 2 + 1, 0, d / 2 - 1]) {
           const col = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 9.5, 10), frameMat);
-          col.position.set(cx, 6.5, cz);
+          col.position.set(cx, 6.0, cz);
           col.castShadow = true;
           f2.add(col);
         }
@@ -2694,19 +2614,17 @@ function buildHospitalBuildings() {
       bldGroup.userData.floorMeshes = [f1, f2];
 
     } else if (type === 'dormCluster6') {
-      // 43-48. กลุ่มหอพักนักศึกษา 6 อาคาร (จัดวางระหว่างสระน้ำคู่ตามผัง Artboard-6)
+      // 43-48. กลุ่มหอพักนักศึกษา 4 อาคารหลักตามแนวภาพถ่ายโดรนจริง (aligned along N-S axis East of stadium)
       const f1 = new THREE.Group();
       const f2 = new THREE.Group();
       const dormWall = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.55 });
       const dormRoof = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 });
 
       const offsets = [
-        { x: -10, z: -6, bw: 8, bd: 9 },
-        { x: 0, z: -6, bw: 8, bd: 9 },
-        { x: 10, z: -6, bw: 8, bd: 9 },
-        { x: -10, z: 6, bw: 8, bd: 9 },
-        { x: 0, z: 6, bw: 8, bd: 9 },
-        { x: 10, z: 6, bw: 8, bd: 9 }
+        { x: 0, z: -16, bw: 7.5, bd: 11 },
+        { x: 0, z: -5, bw: 7.5, bd: 11 },
+        { x: 0, z: 6, bw: 7.5, bd: 11 },
+        { x: 0, z: 17, bw: 7.5, bd: 11 }
       ];
       offsets.forEach(o => {
         const lower = new THREE.Mesh(new THREE.BoxGeometry(o.bw, 6.5, o.bd), dormWall);
@@ -2714,7 +2632,7 @@ function buildHospitalBuildings() {
         lower.castShadow = true;
         f1.add(lower);
 
-        const win1 = new THREE.Mesh(new THREE.BoxGeometry(o.bw * 0.85, 4.2, o.bd + 0.14), windowMat);
+        const win1 = new THREE.Mesh(new THREE.BoxGeometry(o.bw + 0.14, 4.2, o.bd * 0.85), windowMat);
         win1.position.set(o.x, 3.4, o.z);
         f1.add(win1);
 
@@ -2723,7 +2641,7 @@ function buildHospitalBuildings() {
         upper.castShadow = true;
         f2.add(upper);
 
-        const win2 = new THREE.Mesh(new THREE.BoxGeometry(o.bw * 0.85, 4.2, o.bd + 0.14), windowMat);
+        const win2 = new THREE.Mesh(new THREE.BoxGeometry(o.bw + 0.14, 4.2, o.bd * 0.85), windowMat);
         win2.position.set(o.x, 9.9, o.z);
         f2.add(win2);
 
@@ -2794,60 +2712,51 @@ function buildHospitalBuildings() {
       const f1 = new THREE.Group();
       const f2 = new THREE.Group();
 
-      // Stadium Outer Apron
-      const baseApron = new THREE.Mesh(
-        new THREE.BoxGeometry(w + 6, 0.25, d + 6),
-        new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.8 })
-      );
-      baseApron.position.y = 0.12;
-      baseApron.receiveShadow = true;
-      f1.add(baseApron);
-
       // Bright Scarlet Red Running Track Oval (ลู่วิ่งยางสังเคราะห์สีแดงมาตรฐาน)
       const trackMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.55 });
-      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w * 0.72, 0.45, d * 0.54), trackMat);
+      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d * 0.52), trackMat);
       trackCenter.position.y = 0.35;
       f1.add(trackCenter);
 
       for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.36, w * 0.36, 0.45, 32), trackMat);
-        cap.position.set(0, 0.35, side * (d * 0.27));
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.5, w * 0.5, 0.35, 32), trackMat);
+        cap.position.set(0, 0.35, side * (d * 0.26));
         f1.add(cap);
       }
 
       // Lush Green Football Pitch Inside the Track
       const pitchMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
-      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.42, 0.52, d * 0.54), pitchMat);
+      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.65, 0.42, d * 0.52), pitchMat);
       pitch.position.y = 0.42;
       pitch.receiveShadow = true;
       f1.add(pitch);
 
       // White Center Line & Center Circle
       const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.4, d * 0.52), lineMat);
+      const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.3, d * 0.52), lineMat);
       midLine.rotation.x = -Math.PI / 2;
-      midLine.position.y = 0.70;
+      midLine.position.y = 0.46;
       f1.add(midLine);
 
-      const centerRing = new THREE.Mesh(new THREE.RingGeometry(4.2, 4.6, 32), lineMat);
+      const centerRing = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.5, 32), lineMat);
       centerRing.rotation.x = -Math.PI / 2;
-      centerRing.position.y = 0.70;
+      centerRing.position.y = 0.46;
       f1.add(centerRing);
 
       // Covered Main Grandstand on the West side (-X facing East towards football pitch)
       const stand = new THREE.Mesh(
-        new THREE.BoxGeometry(5.5, 6.0, d * 0.52),
+        new THREE.BoxGeometry(4.0, 5.0, d * 0.45),
         new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
       );
-      stand.position.set(-w * 0.46, 3.0, 0);
+      stand.position.set(-w * 0.5 - 2.2, 2.5, 0);
       stand.castShadow = true;
       f2.add(stand);
 
       const standRoof = new THREE.Mesh(
-        new THREE.BoxGeometry(8.0, 0.45, d * 0.56),
+        new THREE.BoxGeometry(6.0, 0.35, d * 0.48),
         new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.4 })
       );
-      standRoof.position.set(-w * 0.44, 8.8, 0);
+      standRoof.position.set(-w * 0.5 - 2.2, 7.2, 0);
       standRoof.rotation.z = -0.15;
       standRoof.castShadow = true;
       f2.add(standRoof);
