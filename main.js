@@ -1194,7 +1194,7 @@ const HOSPITAL_BUILDINGS = [
     pos: { x: -138.0, y: 0, z: 2.0 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 44, h: 11.5, d: 58 },
+    dimensions: { w: 56, h: 12.0, d: 82 },
     roofColor: 0xdc2626,
     accentColor: 0x16a34a,
     floors: [
@@ -1576,7 +1576,7 @@ const state = {
 
 // Camera overview calibrated to Google Maps Ground Truth (North is UP: -Z, East is RIGHT: +X)
 const VIEW_PRESETS = {
-  overview: { pos: { x: 0, y: 220, z: 180 }, target: { x: 0, y: 0, z: -10 } },
+  overview: { pos: { x: 160, y: 185, z: 130 }, target: { x: -20, y: 0, z: 0 } },
   front: { pos: { x: 195, y: 55, z: 45 }, target: { x: 118, y: 6, z: 20 } },
   academic: { pos: { x: 45, y: 75, z: 50 }, target: { x: 25, y: 5, z: -5 } },
   thaiLake: { pos: { x: -14, y: 55, z: 45 }, target: { x: -14, y: 4, z: -2 } },
@@ -1845,6 +1845,11 @@ function initScene() {
   controls.maxDistance = 750;
   controls.zoomSpeed = 1.35;
   controls.screenSpacePanning = true;
+
+  window.scene = scene;
+  window.camera = camera;
+  window.renderer = renderer;
+  window.controls = controls;
 
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
@@ -2791,42 +2796,42 @@ function buildHospitalBuildings() {
 
       // Stadium Outer Apron
       const baseApron = new THREE.Mesh(
-        new THREE.BoxGeometry(w + 4, 0.2, d + 4),
-        new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.8 })
+        new THREE.BoxGeometry(w + 6, 0.25, d + 6),
+        new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.8 })
       );
-      baseApron.position.y = 0.1;
+      baseApron.position.y = 0.12;
       baseApron.receiveShadow = true;
       f1.add(baseApron);
 
-      // Terracotta-Red Running Track Oval (ลู่วิ่งยางสังเคราะห์สีแดงอิฐ)
-      const trackMat = new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.65 });
-      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w * 0.56, 0.26, d * 0.86), trackMat);
-      trackCenter.position.y = 0.15;
+      // Bright Scarlet Red Running Track Oval (ลู่วิ่งยางสังเคราะห์สีแดงมาตรฐาน)
+      const trackMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.55 });
+      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w * 0.72, 0.45, d * 0.54), trackMat);
+      trackCenter.position.y = 0.35;
       f1.add(trackCenter);
 
       for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.43, w * 0.43, 0.26, 32), trackMat);
-        cap.position.set(0, 0.15, side * (d * 0.28));
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.36, w * 0.36, 0.45, 32), trackMat);
+        cap.position.set(0, 0.35, side * (d * 0.27));
         f1.add(cap);
       }
 
       // Lush Green Football Pitch Inside the Track
-      const pitchMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.75 });
-      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.54, 0.32, d * 0.52), pitchMat);
-      pitch.position.y = 0.18;
+      const pitchMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
+      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.42, 0.52, d * 0.54), pitchMat);
+      pitch.position.y = 0.42;
       pitch.receiveShadow = true;
       f1.add(pitch);
 
       // White Center Line & Center Circle
       const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.35, d * 0.5), lineMat);
+      const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.4, d * 0.52), lineMat);
       midLine.rotation.x = -Math.PI / 2;
-      midLine.position.y = 0.35;
+      midLine.position.y = 0.70;
       f1.add(midLine);
 
-      const centerRing = new THREE.Mesh(new THREE.RingGeometry(3.6, 3.9, 28), lineMat);
+      const centerRing = new THREE.Mesh(new THREE.RingGeometry(4.2, 4.6, 32), lineMat);
       centerRing.rotation.x = -Math.PI / 2;
-      centerRing.position.y = 0.35;
+      centerRing.position.y = 0.70;
       f1.add(centerRing);
 
       // Covered Main Grandstand on the West side (-X facing East towards football pitch)
