@@ -9,16 +9,16 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1',
     sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย',
     category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ',
-    archType: 'auditorium80', pos: { x: 159.8, y: 0, z: 14.6 }, rotY: 0, anchorHeight: 17,
-    dimensions: { w: 42.0, h: 14.0, d: 32.0 }, roofColor: 0xf8fafc, accentColor: 0x047857,
+    archType: 'auditorium80', pos: { x: 155.0, y: 0, z: 14.6 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 50.0, h: 12.0, d: 34.0 }, roofColor: 0xf8fafc, accentColor: 0x047857,
     floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการ' }]
   },
   {
     id: 'bld-2', num: '2', name: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)', shortName: '2',
     sub: 'สำนักงานอธิการบดี, ห้องประชุมสภามหาวิทยาลัย, สำนักส่งเสริมวิชาการและงานทะเบียน',
     category: 'อาคารบริหารและสำนักงานกลาง', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'spb100', pos: { x: 124.2, y: 0, z: 15.7 }, rotY: 0, anchorHeight: 21,
-    dimensions: { w: 22.0, h: 18.0, d: 14.0 }, roofColor: 0x94a3b8, accentColor: 0x047857,
+    archType: 'spb100', pos: { x: 122.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 19,
+    dimensions: { w: 24.0, h: 16.0, d: 14.0 }, roofColor: 0x94a3b8, accentColor: 0x047857,
     floors: [{ num: 6, desc: 'สำนักงานอธิการบดี' }, { num: 5, desc: 'กองนโยบายและแผน' }, { num: 4, desc: 'ศูนย์เทคโนโลยีดิจิทัล' }, { num: 3, desc: 'กองกลาง' }, { num: 2, desc: 'กองคลัง' }, { num: 1, desc: 'One Stop Service' }]
   },
   {
@@ -33,8 +33,8 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-4', num: '4', name: '4. VRU Green Community Mall', shortName: '4',
     sub: 'ศูนย์รวมร้านค้า ร้านอาหาร สหกรณ์ และพื้นที่บริการชุมชนริมถนนพหลโยธิน',
     category: 'อาคารบริการและสวัสดิการ', status: 'เปิดบริการ 07:00 - 20:00 น.',
-    archType: 'mall', pos: { x: 180.7, y: 0, z: -42.2 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 36.0, h: 6.0, d: 18.0 }, roofColor: 0x475569, accentColor: 0x10b981,
+    archType: 'mall', pos: { x: 180.7, y: 0, z: -42.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 36.0, h: 6.0, d: 26.0 }, roofColor: 0x475569, accentColor: 0x10b981,
     floors: [{ num: 2, desc: 'Co-Working Space' }, { num: 1, desc: 'ศูนย์อาหารและร้านค้า' }]
   },
   {
@@ -46,22 +46,6 @@ const HOSPITAL_BUILDINGS = [
     floors: [{ num: 1, desc: 'สระว่ายน้ำและศูนย์ฟิตเนส' }]
   },
   {
-    id: 'bld-6', num: '6', name: '6. อาคารจัดการขยะชุมชน', shortName: '6',
-    sub: 'ศูนย์คัดแยกและแปรรูปขยะรีไซเคิลเพื่อความยั่งยืน Smart Green Campus',
-    category: 'อาคารบริการสาธารณูปโภค', status: 'เปิดทำการปกติ',
-    archType: 'box', pos: { x: 140.0, y: 0, z: -50.0 }, rotY: 0, anchorHeight: 8,
-    dimensions: { w: 14.0, h: 5.0, d: 10.0 }, roofColor: 0x475569, accentColor: 0x10b981,
-    floors: [{ num: 1, desc: 'ศูนย์จัดการขยะ' }]
-  },
-  {
-    id: 'bld-7', num: '7', name: '7. อาคารธุรกิจบริการ', shortName: '7',
-    sub: 'อาคารปฏิบัติการด้านธุรกิจบริการและการจัดการทรัพย์สิน',
-    category: 'อาคารฝึกปฏิบัติการ', status: 'เปิดทำการปกติ',
-    archType: 'box', pos: { x: 136.4, y: 0, z: -21.2 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 19.0, h: 6.0, d: 8.0 }, roofColor: 0x94a3b8, accentColor: 0x059669,
-    floors: [{ num: 2, desc: 'ห้องปฏิบัติการ' }, { num: 1, desc: 'สำนักงานบริการ' }]
-  },
-  {
     id: 'bld-8', num: '8', name: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ', shortName: '8',
     sub: 'พระอนุสาวรีย์สมเด็จพระราชปิตุจฉา เจ้าฟ้าวไลยอลงกรณ์ กรมหลวงเพชรบุรีราชสิรินธร',
     category: 'อนุสาวรีย์และสิ่งศักดิ์สิทธิ์', status: 'เปิดสักการะตลอดวัน',
@@ -70,172 +54,124 @@ const HOSPITAL_BUILDINGS = [
     floors: [{ num: 1, desc: 'ลานพระอนุสาวรีย์' }]
   },
   {
-    id: 'bld-9', num: '9', name: '9. อาคารเรียนรวมทิศใต้ 1', shortName: '9',
-    sub: 'อาคารเรียนรวมและห้องบรรยายขนาดใหญ่ฝั่งทิศใต้',
-    category: 'อาคารเรียนและห้องบรรยาย', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'box', pos: { x: 118.0, y: 0, z: 51.5 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 24.0, h: 12.0, d: 9.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
-    floors: [{ num: 4, desc: 'ห้องบรรยาย 4' }, { num: 3, desc: 'ห้องบรรยาย 3' }, { num: 2, desc: 'ห้องบรรยาย 2' }, { num: 1, desc: 'โถงชั้นล่าง' }]
-  },
-  {
-    id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ 2 (ทรงโค้ง)', shortName: '10',
-    sub: 'อาคารเรียนรวมสถาปัตยกรรมทรงโค้งโมเดิร์น ฝั่งทิศใต้',
-    category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'box', pos: { x: 145.5, y: 0, z: 53.5 }, rotY: 0, anchorHeight: 17,
-    dimensions: { w: 23.0, h: 14.0, d: 13.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
-    floors: [{ num: 5, desc: 'ห้องสัมมนา' }, { num: 4, desc: 'ห้องเรียนรวม' }, { num: 3, desc: 'ห้องเรียน' }, { num: 2, desc: 'ห้องพักอาจารย์' }, { num: 1, desc: 'โถงกิจกรรม' }]
-  },
-  {
     id: 'bld-11', num: '11', name: '11. ยิมเนเซียม 1 (โรงยิม 1)', shortName: '11',
     sub: 'อาคารพลศึกษา สนามบาสเกตบอล วอลเลย์บอล และแบดมินตันในร่ม',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
-    archType: 'box', pos: { x: 96.9, y: 0, z: 6.9 }, rotY: 0, anchorHeight: 12,
-    dimensions: { w: 19.5, h: 9.0, d: 15.0 }, roofColor: 0x334155, accentColor: 0x38bdf8,
+    archType: 'box', pos: { x: 96.9, y: 0, z: 6.9 }, rotY: 0, anchorHeight: 11,
+    dimensions: { w: 19.5, h: 8.0, d: 15.0 }, roofColor: 0x334155, accentColor: 0x38bdf8,
     floors: [{ num: 2, desc: 'อัฒจันทร์ในร่ม' }, { num: 1, desc: 'สนามแข่งขันในร่ม' }]
   },
   {
     id: 'bld-12', num: '12', name: '12. อาคาร 75 ปี วไลยอลงกรณ์ (ศูนย์ภาษา)', shortName: '12',
     sub: 'สถาบันภาษา ศูนย์การเรียนรู้ภาษาต่างประเทศและห้องปฏิบัติการคอมพิวเตอร์',
     category: 'อาคารเรียนและภาษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 68.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 20.0, h: 12.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: 68.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ศูนย์ภาษา' }, { num: 3, desc: 'ห้อง Lab ภาษา' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'ประชาสัมพันธ์' }]
   },
   {
     id: 'bld-13', num: '13', name: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)', shortName: '13',
     sub: 'ศูนย์ปฏิบัติการวิทยาศาสตร์ เครื่องมือวิเคราะห์ขั้นสูง และห้องแล็บวิจัย',
     category: 'อาคารวิทยาศาสตร์และวิจัย', status: 'เปิดทำการ 08:30 - 17:00 น.',
-    archType: 'box', pos: { x: 54.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 20.0, h: 12.0, d: 12.0 }, roofColor: 0x1e293b, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: 54.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x1e293b, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องปฏิบัติการเคมี' }, { num: 3, desc: 'ห้องปฏิบัติการฟิสิกส์' }, { num: 2, desc: 'ห้องชีววิทยา' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
     id: 'bld-14', num: '14', name: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร', shortName: '14',
     sub: 'อาคารเรียนและห้องปฏิบัติการเทคโนโลยีการผลิตพืชและสัตว์',
     category: 'อาคารเรียนและเกษตร', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 38.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    archType: 'box', pos: { x: 38.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 18.0, h: 9.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องเรียน' }, { num: 2, desc: 'ห้องพักอาจารย์' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
     id: 'bld-15', num: '15', name: '15. คณะเทคโนโลยีการเกษตร (FAT)', shortName: '15',
     sub: 'สำนักงานคณบดีคณะเทคโนโลยีการเกษตร และศูนย์วิจัยแปรรูปผลผลิตทางการเกษตร',
     category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 22.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
+    archType: 'box', pos: { x: 22.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 18.0, h: 9.0, d: 12.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องประชุมคณะ' }, { num: 1, desc: 'บริการวิชาการ' }]
   },
   {
     id: 'bld-16', num: '16', name: '16. อาคารเรียนคณะครุศาสตร์', shortName: '16',
-    sub: 'อาคารเรียนรวมคณะครุศาสตร์ ศูนย์พัฒนาวิชาชีพครู',
+    sub: 'อาคารเรียนรวมคณะครุศาสตร์ ศูนย์พัฒนาวิชาชีพครู (ปีกทิศเหนือ)',
     category: 'อาคารเรียนและฝึกอบรม', status: 'เปิดทำการ 08:00 - 17:00 น.',
-    archType: 'box', pos: { x: 46.2, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 24.0, h: 12.0, d: 16.0 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
+    archType: 'box', pos: { x: 49.1, y: 0, z: 20.2 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 21.6, h: 10.0, d: 7.9 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
     floors: [{ num: 4, desc: 'ห้องเรียนรวม' }, { num: 3, desc: 'ห้องบรรยาย' }, { num: 2, desc: 'ห้องปฏิบัติการสอน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
     id: 'bld-17', num: '17', name: '17. คณะครุศาสตร์ (FE)', shortName: '17',
-    sub: 'สำนักงานคณบดีคณะครุศาสตร์ คณะแห่งแรกและประวัติศาสตร์ของมหาวิทยาลัย',
+    sub: 'สำนักงานคณบดีคณะครุศาสตร์ คณะแห่งแรกและประวัติศาสตร์ของมหาวิทยาลัย (ปีกทิศใต้)',
     category: 'สำนักงานคณะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 46.2, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 24.0, h: 12.0, d: 14.0 }, roofColor: 0x7f1d1d, accentColor: 0xdc2626,
+    archType: 'box', pos: { x: 60.4, y: 0, z: 33.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 21.6, h: 10.0, d: 6.3 }, roofColor: 0x7f1d1d, accentColor: 0xdc2626,
     floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องประชุมครุศาสตร์' }, { num: 2, desc: 'ฝ่ายวิชาการ' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
     id: 'bld-18', num: '18', name: '18. อาคารกองพัฒนานักศึกษา', shortName: '18',
     sub: 'กองพัฒนานักศึกษา, องค์การบริหารนักศึกษา, กองทุน กยศ., และงานแนะแนว',
     category: 'อาคารบริการนักศึกษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 68.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x047857, accentColor: 0x059669,
+    archType: 'box', pos: { x: 68.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 18.0, h: 9.0, d: 12.0 }, roofColor: 0x047857, accentColor: 0x059669,
     floors: [{ num: 3, desc: 'งานกองทุน กยศ.' }, { num: 2, desc: 'องค์การนักศึกษา' }, { num: 1, desc: 'จุดบริการนักศึกษา' }]
   },
   {
     id: 'bld-19', num: '19', name: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)', shortName: '19',
-    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาศาสตร์และเทคโนโลยี',
+    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาศาสตร์และเทคโนโลยี อาคารแนวยาวฝั่งทิศเหนือ',
     category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 45.5, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 36.0, h: 12.0, d: 11.0 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
+    archType: 'box', pos: { x: 51.0, y: 0, z: -20.4 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 61.2, h: 10.0, d: 12.4 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
     floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องปฏิบัติการคอมพิวเตอร์' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
     id: 'bld-20', num: '20', name: '20. อาคารพยาบาล และร้านค้า', shortName: '20',
     sub: 'ศูนย์บริการสาธารณสุขและพยาบาลปฐมพยาบาล ร้านสะดวกซื้อ และตู้บริการอัตโนมัติ',
     category: 'อาคารบริการสุขภาพและชุมชน', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 54.0, y: 0, z: -8.0 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 16.0, h: 6.0, d: 10.0 }, roofColor: 0x0284c7, accentColor: 0x0ea5e9,
+    archType: 'box', pos: { x: 54.0, y: 0, z: -8.0 }, rotY: 0, anchorHeight: 8,
+    dimensions: { w: 16.0, h: 5.0, d: 10.0 }, roofColor: 0x0284c7, accentColor: 0x0ea5e9,
     floors: [{ num: 2, desc: 'ห้องพักฟื้นและปฐมพยาบาล' }, { num: 1, desc: 'ร้านค้าสะดวกซื้อ' }]
-  },
-  {
-    id: 'bld-22', num: '22', name: '22. สำนักวิทยบริการ / หอสมุดกลาง (ARIT)', shortName: '22',
-    sub: 'สำนักวิทยบริการและเทคโนโลยีสารสนเทศ หอสมุดกลาง Co-Working Space',
-    category: 'อาคารหอสมุดและวิทยบริการ', status: 'เปิดบริการ 08:00 - 20:00 น.',
-    archType: 'box', pos: { x: -4.2, y: 0, z: 38.3 }, rotY: 0, anchorHeight: 17,
-    dimensions: { w: 20.5, h: 14.0, d: 14.0 }, roofColor: 0xea580c, accentColor: 0xf97316,
-    floors: [{ num: 4, desc: 'ห้องศึกษาค้นคว้าเดี่ยว' }, { num: 3, desc: 'คลังหนังสือวิชาการ' }, { num: 2, desc: 'ห้องบริการมัลติมีเดีย' }, { num: 1, desc: 'โถงยืม-คืนหนังสือ' }]
   },
   {
     id: 'bld-23', num: '23', name: '23. อาคาร 60 ปี วไลยอลงกรณ์', shortName: '23',
     sub: 'อาคาร 60 ปี วไลยอลงกรณ์ และศูนย์ฝึกปฏิบัติการคหกรรมศาสตร์',
     category: 'อาคารเรียนและปฏิบัติการ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 22.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 22.0, h: 10.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    archType: 'box', pos: { x: 22.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 22.0, h: 9.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องปฏิบัติการคหกรรม' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
     id: 'bld-28', num: '28', name: '28. คณะวิทยาการจัดการ (FMS)', shortName: '28',
-    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาการจัดการ ตึกทรง H หลังคาสีแดง',
+    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาการจัดการ หลังคาสีแดงเข้มฝั่งตะวันตก',
     category: 'สำนักงานคณะและเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'box', pos: { x: -43.5, y: 0, z: -9.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 22.5, h: 10.0, d: 13.5 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
+    archType: 'box', pos: { x: -43.5, y: 0, z: -9.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 22.5, h: 9.0, d: 13.5 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องเรียน MBA' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
     id: 'bld-29', num: '29', name: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)', shortName: '29',
     sub: 'อาคารเรียนรวมวิทยาศาสตร์ SCC2 และห้องปฏิบัติการพื้นฐาน',
     category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 17:00 น.',
-    archType: 'box', pos: { x: 4.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: 4.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 20.0, h: 9.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องบรรยาย' }, { num: 3, desc: 'ห้องปฏิบัติการ' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงอาคาร' }]
   },
   {
     id: 'bld-30', num: '30', name: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)', shortName: '30',
     sub: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (ฝ่ายมัธยม)',
     category: 'โรงเรียนสาธิต', status: 'เปิดทำการ 07:30 - 16:30 น.',
-    archType: 'box', pos: { x: -93.4, y: 0, z: 4.0 }, rotY: 0, anchorHeight: 14,
-    dimensions: { w: 26.0, h: 11.0, d: 16.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
+    archType: 'box', pos: { x: -93.4, y: 0, z: 4.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 26.0, h: 10.0, d: 16.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องเรียนมัธยมปลาย' }, { num: 2, desc: 'ห้องเรียนมัธยมต้น' }, { num: 1, desc: 'สำนักงานโรงเรียน' }]
   },
   {
-    id: 'bld-31', num: '31', name: '31. อาคารวิทยบริการเสริม', shortName: '31',
-    sub: 'อาคารวิทยบริการและศูนย์ฝึกอบรมวิชาการคอมพิวเตอร์',
-    category: 'อาคารวิชาการ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -6.9, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
-    floors: [{ num: 3, desc: 'ห้องอบรม' }, { num: 2, desc: 'ห้องสัมมนา' }, { num: 1, desc: 'จุดลงทะเบียน' }]
-  },
-  {
-    id: 'bld-32', num: '32', name: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)', shortName: '32',
-    sub: 'สำนักงานคณบดีและอาคารเรียนคณะมนุษยศาสตร์และสังคมศาสตร์',
-    category: 'สำนักงานคณะและเรียนรวม', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -6.0, y: 0, z: 18.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x581c87, accentColor: 0x7c3aed,
-    floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
-  },
-  {
-    id: 'bld-33', num: '33', name: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)', shortName: '33',
-    sub: 'อาคารเรียนรวมสังคมศาสตร์และห้องบรรยายขนาดใหญ่',
-    category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'box', pos: { x: -8.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 15,
-    dimensions: { w: 22.0, h: 12.0, d: 14.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
-    floors: [{ num: 4, desc: 'ห้องบรรยาย 4' }, { num: 3, desc: 'ห้องบรรยาย 3' }, { num: 2, desc: 'ห้องเรียนรวม' }, { num: 1, desc: 'โถงพักผ่อน' }]
-  },
-  {
-    id: 'bld-35', num: '35', name: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)', shortName: '35',
-    sub: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (ฝ่ายประถม)',
-    category: 'โรงเรียนสาธิต', status: 'เปิดทำการ 07:30 - 16:30 น.',
-    archType: 'box', pos: { x: -28.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 13,
-    dimensions: { w: 22.0, h: 10.0, d: 14.0 }, roofColor: 0x3b82f6, accentColor: 0x2563eb,
-    floors: [{ num: 3, desc: 'ห้องเรียนประถมปลาย' }, { num: 2, desc: 'ห้องเรียนประถมต้น' }, { num: 1, desc: 'ลานกิจกรรมและโรงอาหาร' }]
+    id: 'bld-31', num: '31', name: '31. สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (หอสมุดกลาง)', shortName: '31',
+    sub: 'หอสมุดกลาง อาคารหลังคาสีส้มพีชริมสระน้ำใหญ่ Co-Working Space ศูนย์การเรียนรู้ดิจิทัล',
+    category: 'อาคารหอสมุดและวิทยบริการ', status: 'เปิดบริการ 08:00 - 20:00 น.',
+    archType: 'box', pos: { x: -0.5, y: 0, z: 37.5 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 21.0, h: 13.0, d: 22.0 }, roofColor: 0xea580c, accentColor: 0xf97316,
+    floors: [{ num: 4, desc: 'ห้องศึกษาค้นคว้าเดี่ยว' }, { num: 3, desc: 'คลังหนังสือวิชาการ' }, { num: 2, desc: 'ห้องบริการมัลติมีเดีย' }, { num: 1, desc: 'โถงยืม-คืนหนังสือ' }]
   },
   {
     id: 'bld-36', num: '36', name: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)', shortName: '36',
@@ -249,8 +185,8 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-37', num: '37', name: '37. อาคารฝ่ายยานพาหนะ', shortName: '37',
     sub: 'ฝ่ายยานพาหนะ โรงจอดรถรางไฟฟ้า และศูนย์ซ่อมบำรุงรถส่วนกลาง',
     category: 'อาคารบริการและยานพาหนะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -44.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 18.0, h: 6.0, d: 12.0 }, roofColor: 0x475569, accentColor: 0x64748b,
+    archType: 'box', pos: { x: -44.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 8,
+    dimensions: { w: 18.0, h: 5.5, d: 12.0 }, roofColor: 0x475569, accentColor: 0x64748b,
     floors: [{ num: 2, desc: 'สำนักงานฝ่ายยานพาหนะ' }, { num: 1, desc: 'โรงจอดรถและสถานีชาร์จ EV' }]
   },
   {
@@ -265,64 +201,56 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-39', num: '39', name: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)', shortName: '39',
     sub: 'สำนักงานคณบดีคณะเทคโนโลยีอุตสาหกรรม และห้องปฏิบัติการวิศวกรรม',
     category: 'สำนักงานคณะและวิศวกรรม', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -85.8, y: 0, z: 26.0 }, rotY: 0, anchorHeight: 14,
-    dimensions: { w: 24.0, h: 11.0, d: 9.0 }, roofColor: 0x7c2d12, accentColor: 0xc2410c,
+    archType: 'box', pos: { x: -85.8, y: 0, z: 26.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 24.0, h: 10.0, d: 9.0 }, roofColor: 0x7c2d12, accentColor: 0xc2410c,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องปฏิบัติการไฟฟ้า' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
-    id: 'bld-40', num: '40', name: '40. หอพักโกเมน & หอพักเพทาย', shortName: '40',
+    id: 'bld-40', num: '40', name: '40. หอพักโกเมน & เพทาย', shortName: '40',
     sub: 'หอพักนักศึกษาหญิงในกำกับมหาวิทยาลัย สิ่งอำนวยความสะดวกครบครัน',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -82.0, y: 0, z: -25.0 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 20.0, h: 13.0, d: 14.0 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
+    archType: 'box', pos: { x: -82.0, y: 0, z: -25.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 20.0, h: 12.0, d: 14.0 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับและร้านสะดวกซื้อ' }]
   },
   {
     id: 'bld-42', num: '42', name: '42. ยิมเนเซียม 2', shortName: '42',
     sub: 'อาคารพลศึกษาและสนามกีฬาในร่ม 2 ศูนย์ฝึกซ้อมนักกีฬา',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
-    archType: 'box', pos: { x: -106.0, y: 0, z: -5.0 }, rotY: 0, anchorHeight: 11,
-    dimensions: { w: 16.5, h: 8.5, d: 5.5 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: -106.0, y: 0, z: -5.0 }, rotY: 0, anchorHeight: 10,
+    dimensions: { w: 16.5, h: 7.5, d: 5.5 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
     floors: [{ num: 2, desc: 'อัฒจันทร์' }, { num: 1, desc: 'สนามฝึกซ้อม' }]
   },
   {
     id: 'bld-43', num: '43', name: '43. หอพักนักศึกษา 1', shortName: '43',
     sub: 'หอพักนักศึกษา อาคาร 1 (ด้านทิศเหนือ ใกล้สระน้ำ)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -119.6, y: 0, z: -1.8 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: -118.0, y: 0, z: 4.5 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 14.0, h: 12.0, d: 7.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
     id: 'bld-44', num: '44', name: '44. หอพักนักศึกษา 2', shortName: '44',
     sub: 'หอพักนักศึกษา อาคาร 2 ติดถนนเมนหน้าสนามฟุตบอล',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -119.6, y: 0, z: 7.0 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: -118.0, y: 0, z: 12.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 14.0, h: 12.0, d: 7.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
     id: 'bld-45', num: '45', name: '45. หอพักนักศึกษา 3', shortName: '45',
     sub: 'หอพักนักศึกษา อาคาร 3 ขนานกับสนามกีฬากลาง',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -119.6, y: 0, z: 15.5 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
-    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
-  },
-  {
-    id: 'bld-46', num: '46', name: '46. หอพักนักศึกษา 4', shortName: '46',
-    sub: 'หอพักนักศึกษา อาคาร 4 โซนทิศใต้',
-    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -119.6, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    archType: 'box', pos: { x: -118.0, y: 0, z: 20.5 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 14.0, h: 12.0, d: 7.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
     id: 'bld-49', num: '49', name: '49. หอพักนักศึกษานานาชาติ', shortName: '49',
     sub: 'หอพักนักศึกษานานาชาติและนักศึกษาโครงการพิเศษ',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -92.0, y: 0, z: 28.0 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 20.0, h: 13.0, d: 14.0 }, roofColor: 0x475569, accentColor: 0x0ea5e9,
+    archType: 'box', pos: { x: -92.0, y: 0, z: 28.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 20.0, h: 12.0, d: 14.0 }, roofColor: 0x475569, accentColor: 0x0ea5e9,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
@@ -330,7 +258,7 @@ const HOSPITAL_BUILDINGS = [
     sub: 'ศูนย์ประสานงานโครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริ (อพ.สธ.)',
     category: 'ศูนย์อนุรักษ์และวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'box', pos: { x: -140.0, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 18.0, h: 7.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    dimensions: { w: 18.0, h: 6.5, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 2, desc: 'ห้องปฏิบัติการเพาะเลี้ยงเนื้อเยื่อ' }, { num: 1, desc: 'ศูนย์เรียนรู้พันธุ์พืช' }]
   },
   {
@@ -338,14 +266,14 @@ const HOSPITAL_BUILDINGS = [
     sub: 'Valaya Hub ศูนย์นวัตกรรมการเรียนรู้และที่พักรีสอร์ทเพื่อการศึกษา',
     category: 'ศูนย์การเรียนรู้และที่พัก', status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'box', pos: { x: -155.0, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 18.0, h: 6.5, d: 12.0 }, roofColor: 0x92400e, accentColor: 0xd97706,
+    dimensions: { w: 18.0, h: 6.0, d: 12.0 }, roofColor: 0x92400e, accentColor: 0xd97706,
     floors: [{ num: 2, desc: 'ห้องพักรับรอง' }, { num: 1, desc: 'Co-Working Space & Cafe' }]
   },
   {
     id: 'bld-57', num: '57', name: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ', shortName: '57',
     sub: 'สนามฟุตบอลหญ้าจริง ลู่วิ่งสังเคราะห์มาตรฐาน 400 เมตร 8 ลู่ และอัฒจันทร์ประธาน',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 06:00 - 21:00 น.',
-    archType: 'stadium', pos: { x: -142.1, y: 0, z: 11.5 }, rotY: 0, anchorHeight: 7,
+    archType: 'stadium', pos: { x: -142.1, y: 0, z: 13.5 }, rotY: 0, anchorHeight: 7,
     dimensions: { w: 27.3, h: 4.0, d: 49.0 }, roofColor: 0xdc2626, accentColor: 0x16a34a,
     floors: [{ num: 1, desc: 'สนามฟุตบอล ลู่วิ่ง 400 เมตร และอัฒจันทร์ประธาน' }]
   }
@@ -355,12 +283,21 @@ const BUILDINGS_MAP = {};
 HOSPITAL_BUILDINGS.forEach(b => { BUILDINGS_MAP[b.id] = b; });
 
 // View presets
+// View presets
+function getOverviewPreset() {
+  const isPortrait = window.innerHeight > window.innerWidth;
+  if (isPortrait) {
+    return { pos: { x: 235, y: 185, z: 0 }, target: { x: 0, y: 0, z: 0 } };
+  } else {
+    return { pos: { x: 160, y: 170, z: 95 }, target: { x: -10, y: 0, z: 0 } };
+  }
+}
+
 const VIEW_PRESETS = {
-  overview: { pos: { x: 160, y: 185, z: 130 }, target: { x: -20, y: 0, z: 0 } },
   front: { pos: { x: 235, y: 70, z: 25 }, target: { x: 160, y: 8, z: 15 } },
   academic: { pos: { x: 65, y: 75, z: 55 }, target: { x: 45, y: 5, z: 5 } },
   thaiLake: { pos: { x: 25, y: 55, z: 35 }, target: { x: -1, y: 4, z: 0 } },
-  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -142, y: 4, z: 12 } }
+  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -142, y: 4, z: 13.5 } }
 };
 
 let scene, camera, renderer, controls;
@@ -468,8 +405,9 @@ function initScene() {
   scene.background = new THREE.Color(0xdce7f2);
   scene.fog = new THREE.FogExp2(0xdce7f2, 0.0014);
 
+  const initPreset = getOverviewPreset();
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 1200);
-  camera.position.set(VIEW_PRESETS.overview.pos.x, VIEW_PRESETS.overview.pos.y, VIEW_PRESETS.overview.pos.z);
+  camera.position.set(initPreset.pos.x, initPreset.pos.y, initPreset.pos.z);
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -483,7 +421,7 @@ function initScene() {
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.target.set(VIEW_PRESETS.overview.target.x, VIEW_PRESETS.overview.target.y, VIEW_PRESETS.overview.target.z);
+  controls.target.set(initPreset.target.x, initPreset.target.y, initPreset.target.z);
   controls.maxPolarAngle = Math.PI / 2 - 0.02;
   controls.minPolarAngle = 0.04;
   controls.minDistance = 2.0;
@@ -965,25 +903,44 @@ function focusBuilding(bld) {
 }
 
 function updateDetailPanel(bld) {
-  const panel = document.getElementById('panel');
-  if (!panel) return;
+  const detail = document.getElementById('detail');
+  if (!detail) return;
 
-  document.getElementById('bldCode').textContent = bld.num;
-  document.getElementById('bldName').textContent = bld.name;
-  document.getElementById('bldSub').textContent = bld.sub || '';
-  document.getElementById('entityCategory').textContent = bld.category;
-  document.getElementById('entityStatus').textContent = bld.status;
+  const titleEl = document.getElementById('entityTitle');
+  if (titleEl) titleEl.textContent = bld.name;
 
-  const floorList = document.getElementById('floorList');
-  if (floorList) {
-    floorList.innerHTML = (bld.floors || []).map(f =>
-      '<div class="floor-row" style="padding: 6px 10px; background: rgba(0,0,0,0.03); border-radius: 6px; margin-bottom: 4px; font-size: 12px;">' +
-        '<strong>ชั้น ' + f.num + ':</strong> ' + f.desc +
-      '</div>'
-    ).join('');
+  const subEl = document.getElementById('entitySub');
+  if (subEl) subEl.textContent = bld.sub || (bld.category + ' · มรภ.วไลยอลงกรณ์ฯ');
+
+  const typeEl = document.getElementById('entityType');
+  if (typeEl) typeEl.textContent = bld.category;
+
+  const statusEl = document.getElementById('entityStatus');
+  if (statusEl) statusEl.textContent = bld.status;
+
+  const miniDiagram = document.getElementById('miniDiagram');
+  if (miniDiagram) {
+    if (bld.floors && bld.floors.length > 0) {
+      miniDiagram.innerHTML = bld.floors.map((f, idx) =>
+        '<div class="floor-block ' + (idx === 0 ? 'active' : '') + '" data-floor="' + f.num + '">' +
+          '<span>ชั้น ' + f.num + '</span><small>' + f.desc + '</small>' +
+        '</div>'
+      ).join('');
+    } else {
+      miniDiagram.innerHTML = '<div class="floor-block active"><span>ชั้น 1</span><small>พื้นที่บริการและการใช้งาน</small></div>';
+    }
   }
 
-  panel.hidden = false;
+  const detailNote = document.getElementById('detailNote');
+  if (detailNote) detailNote.textContent = bld.sub || '';
+
+  const emptyMsg = detail.querySelector('.detail-empty');
+  if (emptyMsg) emptyMsg.style.display = 'none';
+
+  const scrollArea = detail.querySelector('.detail-scroll');
+  if (scrollArea) scrollArea.style.display = 'block';
+
+  detail.hidden = false;
 }
 
 function resetView() {
@@ -998,12 +955,12 @@ function resetView() {
     });
   });
 
-  const p = VIEW_PRESETS.overview;
+  const p = getOverviewPreset();
   new TWEEN.Tween(controls.target).to(p.target, 1100).easing(TWEEN.Easing.Cubic.Out).start();
   new TWEEN.Tween(camera.position).to(p.pos, 1100).easing(TWEEN.Easing.Cubic.Out).start();
 
-  const panel = document.getElementById('panel');
-  if (panel) panel.hidden = true;
+  const detail = document.getElementById('detail');
+  if (detail) detail.hidden = true;
 }
 
 // UI Controls & Event Listeners
@@ -1018,31 +975,46 @@ function setupUI() {
 
   document.getElementById('brandReset')?.addEventListener('click', resetView);
   document.getElementById('reset')?.addEventListener('click', resetView);
-  document.getElementById('closePanel')?.addEventListener('click', () => {
-    const p = document.getElementById('panel');
-    if (p) p.hidden = true;
+
+  const closeDetail = document.getElementById('closeDetail');
+  closeDetail?.addEventListener('click', () => {
+    const d = document.getElementById('detail');
+    if (d) d.hidden = true;
   });
 
   setupSearch();
 
-  document.getElementById('btnOrbit360')?.addEventListener('click', () => {
+  const turntableBtn = document.getElementById('turntable');
+  turntableBtn?.addEventListener('click', () => {
     state.isOrbiting = !state.isOrbiting;
     controls.autoRotate = state.isOrbiting;
     controls.autoRotateSpeed = 1.6;
-    document.getElementById('btnOrbit360').classList.toggle('active', state.isOrbiting);
+    turntableBtn.classList.toggle('active', state.isOrbiting);
+    turntableBtn.setAttribute('aria-pressed', state.isOrbiting ? 'true' : 'false');
   });
 
-  document.getElementById('btnLabels')?.addEventListener('click', () => {
+  const labelsBtn = document.getElementById('toggleLabels');
+  labelsBtn?.addEventListener('click', () => {
     state.showLabels = !state.showLabels;
-    document.getElementById('btnLabels').classList.toggle('active', state.showLabels);
+    labelsBtn.classList.toggle('active', state.showLabels);
+    labelsBtn.setAttribute('aria-pressed', state.showLabels ? 'true' : 'false');
     updateLabelPositions();
   });
 
-  document.getElementById('btnTour')?.addEventListener('click', startCampusTour);
-  document.getElementById('btnTable')?.addEventListener('click', showDirectoryTable);
+  document.getElementById('tour')?.addEventListener('click', startCampusTour);
+
+  const toggleTableBtn = document.getElementById('toggleTable');
+  toggleTableBtn?.addEventListener('click', () => {
+    const tp = document.getElementById('tablePanel');
+    if (tp) {
+      tp.hidden = !tp.hidden;
+      if (!tp.hidden) showDirectoryTable();
+    }
+  });
+
   document.getElementById('closeTable')?.addEventListener('click', () => {
-    const tm = document.getElementById('tableModal');
-    if (tm) tm.hidden = true;
+    const tp = document.getElementById('tablePanel');
+    if (tp) tp.hidden = true;
   });
 
   const lightToggle = document.getElementById('lightToggle');
@@ -1054,14 +1026,40 @@ function setupUI() {
     lightPanel.hidden = true;
   });
 
-  document.getElementById('btnDay')?.addEventListener('click', () => setDayMode(true));
-  document.getElementById('btnNight')?.addEventListener('click', () => setDayMode(false));
+  // Light presets
+  document.querySelectorAll('[data-light]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-light');
+      if (mode === 'morning') {
+        setSunLight(-120, 30, 1.2, 0.45);
+      } else if (mode === 'noon') {
+        setSunLight(-40, 75, 1.6, 0.6);
+      } else if (mode === 'evening') {
+        setSunLight(130, 20, 1.3, 0.4);
+      } else if (mode === 'night') {
+        setDayMode(false);
+      }
+    });
+  });
 
-  const fsBtn = document.getElementById('fullscreenTop');
-  fsBtn?.addEventListener('click', toggleFullscreen);
-  document.getElementById('btnFullscreenDock')?.addEventListener('click', toggleFullscreen);
+  document.getElementById('fullscreenTop')?.addEventListener('click', toggleFullscreen);
+  document.getElementById('toggleUI')?.addEventListener('click', toggleFullscreen);
 
   setupMapModal();
+}
+
+function setSunLight(azDeg, elDeg, power, amb) {
+  setDayMode(true);
+  const azRad = THREE.MathUtils.degToRad(azDeg);
+  const elRad = THREE.MathUtils.degToRad(elDeg);
+  const dist = 300;
+  sunLight.position.set(
+    dist * Math.cos(elRad) * Math.sin(azRad),
+    dist * Math.sin(elRad),
+    dist * Math.cos(elRad) * Math.cos(azRad)
+  );
+  sunLight.intensity = power;
+  ambientLight.intensity = amb;
 }
 
 function setDayMode(isDay) {
@@ -1181,28 +1179,38 @@ function setupMapModal() {
 }
 
 function showDirectoryTable() {
-  const tm = document.getElementById('tableModal');
+  const tp = document.getElementById('tablePanel');
+  const thead = document.getElementById('tableHead');
   const tbody = document.getElementById('tableBody');
-  if (!tm || !tbody) return;
+  if (!tp || !tbody) return;
+
+  if (thead) {
+    thead.innerHTML = '<tr>' +
+      '<th style="padding: 8px 12px; text-align: left;">เลข</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">ชื่ออาคาร / หน่วยงาน</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">หมวดหมู่</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">สถานะ</th>' +
+    '</tr>';
+  }
 
   tbody.innerHTML = HOSPITAL_BUILDINGS.map(b =>
-    '<tr style="cursor: pointer;" data-id="' + b.id + '">' +
-      '<td style="padding: 8px 12px; font-weight: 700;">' + b.num + '</td>' +
-      '<td style="padding: 8px 12px;">' + b.name + '</td>' +
-      '<td style="padding: 8px 12px;">' + b.category + '</td>' +
-      '<td style="padding: 8px 12px; color: var(--accent);">' + b.status + '</td>' +
+    '<tr style="cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05);" data-id="' + b.id + '">' +
+      '<td style="padding: 8px 12px; font-weight: 700; color: var(--accent);">' + b.num + '</td>' +
+      '<td style="padding: 8px 12px; font-weight: 600;">' + b.name + '</td>' +
+      '<td style="padding: 8px 12px; color: var(--muted);">' + b.category + '</td>' +
+      '<td style="padding: 8px 12px;"><span class="badge" style="background: rgba(4,120,87,0.1); color: #047857; padding: 2px 8px; border-radius: 4px; font-size: 11px;">' + b.status + '</span></td>' +
     '</tr>'
   ).join('');
 
   tbody.querySelectorAll('tr').forEach(row => {
     row.addEventListener('click', () => {
       const id = row.getAttribute('data-id');
-      tm.hidden = true;
+      tp.hidden = true;
       selectBuilding(id, true);
     });
   });
 
-  tm.hidden = false;
+  tp.hidden = false;
 }
 
 let tourIndex = 0;
