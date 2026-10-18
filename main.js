@@ -490,328 +490,316 @@ function buildGround() {
   groundGroup.add(outerMesh);
 }
 
-// === Building 1 (หอประชุม 80 ปี วไลยอลงกรณ์) - With Full Glass & Illumination Engine ===
 function createAuditorium80Mesh() {
   const group = new THREE.Group();
 
-  // Materials
-  const wallMat = new THREE.MeshStandardMaterial({
-    color: 0xf8fafc,
-    roughness: 0.65,
-    metalness: 0.05
+  // === Master Materials (100% Matching Real Photographic Architecture) ===
+  // Pure White Architectural Stucco / Concrete
+  const whiteStuccoMat = new THREE.MeshStandardMaterial({
+    color: 0xf4f6f8,
+    roughness: 0.35,
+    metalness: 0.08
   });
+  // Dark Charcoal Gray Fascia / Accent Panels
+  const darkFasciaMat = new THREE.MeshStandardMaterial({
+    color: 0x22262a,
+    roughness: 0.45,
+    metalness: 0.3
+  });
+  // Emerald Green Solar-Reflective Glass (As seen in the real daytime photo)
+  const emeraldGlassMat = new THREE.MeshStandardMaterial({
+    color: 0x1e4b44,
+    roughness: 0.05,
+    metalness: 0.88,
+    transparent: true,
+    opacity: 0.85,
+    emissive: new THREE.Color(0xffaa22),
+    emissiveIntensity: 0.12
+  });
+  emissiveMaterials.push(emeraldGlassMat);
+
+  // Dark Anodized Aluminum Mullions
+  const mullionMat = new THREE.MeshStandardMaterial({
+    color: 0x181a1d,
+    roughness: 0.3,
+    metalness: 0.85
+  });
+  // Concrete Substructure & Foundations
   const concreteMat = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0,
-    roughness: 0.75,
-    metalness: 0.02
+    color: 0xe2e5e9,
+    roughness: 0.8,
+    metalness: 0.04
   });
-  const roofFlatMat = new THREE.MeshStandardMaterial({
-    color: 0xebedf0,
-    roughness: 0.40,
-    metalness: 0.15
-  });
-  const darkTrimMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.4,
-    metalness: 0.5
-  });
-  
-  // High-fidelity Amber-Gold Architectural Glass Material
-  const amberGoldGlassMat = new THREE.MeshStandardMaterial({
-    color: 0xc89d4c,
-    roughness: 0.06,
-    metalness: 0.85,
-    transparent: true,
-    opacity: 0.88,
-    emissive: new THREE.Color(0xff8c00),
-    emissiveIntensity: 0.15
-  });
-  emissiveMaterials.push(amberGoldGlassMat);
-
-  // Clear Blue Window Glass Material
-  const windowGlassMat = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
-    roughness: 0.1,
-    metalness: 0.8,
-    transparent: true,
-    opacity: 0.82,
-    emissive: new THREE.Color(0x0284c7),
-    emissiveIntensity: 0.1
-  });
-  emissiveMaterials.push(windowGlassMat);
-
-  const trussMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.25,
-    metalness: 0.35
-  });
+  // Warm Lamp Glow for Night Mode
   const lampGlowMat = new THREE.MeshStandardMaterial({
     color: 0xfff3e0,
     emissive: new THREE.Color(0xfff3e0),
     emissiveIntensity: 1.0
   });
 
-  const hallW = 30.12;
-  const hallD = 32.89;
-  const hallH = 10.5;
-  const podiumH = 0.8;
+  // Building Hall Dimensions (Facing East toward +X)
+  // Along Z: North is -Z, South is +Z (Total facade span ~ 32.0m)
+  // Along X: West is -X (rear), East is +X (front entrance facing road)
+  const hallWidth = 26.0;  // X depth from west to east
+  const hallLength = 32.89; // Z facade length from north to south
+  const floor1H = 4.2;     // Ground floor undercroft height
+  const floor2H = 7.8;     // Main hall 2nd floor height
+  const totalH = floor1H + floor2H; // 12.0m
+  const foyerX = 13.0;     // Front eastern facade plane
 
-  // --- 1. Base Concrete Podium ---
-  const podium = new THREE.Mesh(new THREE.BoxGeometry(hallW, podiumH, hallD), concreteMat);
-  podium.position.set(0, podiumH / 2, 0);
+  // --- 1. Base Concrete Foundation & Undercroft ---
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 4.0, 0.8, hallLength + 2.0), concreteMat);
+  podium.position.set(0, 0.4, 0);
   podium.receiveShadow = true;
   group.add(podium);
 
-  // --- 2. Main Hall Solid Body with Glass Ribbon Windows ---
-  const mainHall = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.96, hallH, hallD * 0.96), wallMat);
-  mainHall.position.set(0, podiumH + hallH / 2, 0);
-  mainHall.castShadow = true;
-  mainHall.receiveShadow = true;
-  group.add(mainHall);
+  // Main Hall Enclosed Body (West / Rear Massing)
+  const mainBody = new THREE.Mesh(new THREE.BoxGeometry(hallWidth, totalH, hallLength), whiteStuccoMat);
+  mainBody.position.set(-2.0, totalH / 2 + 0.8, 0);
+  mainBody.castShadow = true;
+  mainBody.receiveShadow = true;
+  group.add(mainBody);
 
-  // Glass Ribbon Windows around Upper Perimeter of Main Hall
-  const ribbonWin = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.97, 1.4, hallD * 0.97), windowGlassMat);
-  ribbonWin.position.set(0, podiumH + hallH - 1.2, 0);
-  group.add(ribbonWin);
+  // Dark Charcoal Upper Fascia Accent Band on Main Hall
+  const upperBand = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 0.2, 1.2, hallLength + 0.2), darkFasciaMat);
+  upperBand.position.set(-2.0, totalH + 0.2, 0);
+  group.add(upperBand);
 
-  // Mullion Grid Lines on Main Hall Windows
-  for (let wx = -hallW * 0.45; wx <= hallW * 0.45; wx += 3.5) {
-    const mulN = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.4, 0.2), darkTrimMat);
-    mulN.position.set(wx, podiumH + hallH - 1.2, -hallD * 0.485);
-    group.add(mulN);
-    const mulS = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.4, 0.2), darkTrimMat);
-    mulS.position.set(wx, podiumH + hallH - 1.2, hallD * 0.485);
-    group.add(mulS);
+  // --- 2. Full-Height Structural Glazing Curtain Wall (Facing East behind the Arches) ---
+  // Recessed 1.8m behind the colonnade
+  const glassW = hallLength * 0.94;
+  const glassH = floor2H - 0.4;
+  const glassPlane = new THREE.Mesh(new THREE.BoxGeometry(0.2, glassH, glassW), emeraldGlassMat);
+  glassPlane.position.set(foyerX - 1.6, floor1H + glassH / 2 + 0.8, 0);
+  glassPlane.castShadow = true;
+  group.add(glassPlane);
+
+  // Structural Dark Mullions Grid on Glass Wall
+  const numVerticalMullions = 18;
+  const mulStepZ = glassW / numVerticalMullions;
+  for (let i = 0; i <= numVerticalMullions; i++) {
+    const mz = -glassW / 2 + i * mulStepZ;
+    const mullionV = new THREE.Mesh(new THREE.BoxGeometry(0.3, glassH, 0.14), mullionMat);
+    mullionV.position.set(foyerX - 1.5, floor1H + glassH / 2 + 0.8, mz);
+    group.add(mullionV);
   }
-
-  // --- 3. COMPLETELY FLAT SOLID ROOF (NO GABLES) ---
-  const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.6, hallD + 0.6), roofFlatMat);
-  roofSlab.position.set(0, podiumH + hallH + 0.3, 0);
-  roofSlab.castShadow = true;
-  roofSlab.receiveShadow = true;
-  group.add(roofSlab);
-
-  const roofTier = new THREE.Mesh(new THREE.BoxGeometry(hallW * 0.65, 1.2, hallD * 0.65), roofFlatMat);
-  roofTier.position.set(0, podiumH + hallH + 0.6 + 0.6, 0);
-  roofTier.castShadow = true;
-  roofTier.receiveShadow = true;
-  group.add(roofTier);
-
-  // Parapet edge trims
-  const trimNorth = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.4, 0.25), darkTrimMat);
-  trimNorth.position.set(0, podiumH + hallH + 0.6 + 0.2, -hallD / 2 - 0.15);
-  group.add(trimNorth);
-  const trimSouth = new THREE.Mesh(new THREE.BoxGeometry(hallW + 0.6, 0.4, 0.25), darkTrimMat);
-  trimSouth.position.set(0, podiumH + hallH + 0.6 + 0.2, hallD / 2 + 0.15);
-  group.add(trimSouth);
-  const trimWest = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.4, hallD + 0.6), darkTrimMat);
-  trimWest.position.set(-hallW / 2 - 0.15, podiumH + hallH + 0.6 + 0.2, 0);
-  group.add(trimWest);
-
-  // --- 4. Perimeter White Space Frame / Sunshade Lattice ---
-  const trussY = podiumH + hallH + 0.1;
-  const westTruss = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.3, hallD), trussMat);
-  westTruss.position.set(-hallW / 2 - 1.75, trussY, 0);
-  westTruss.castShadow = true;
-  group.add(westTruss);
-
-  // --- 5. Front Entrance Foyer with Full Glass Curtain Wall & Colonnade ---
-  const foyerLocalX = 21.06;
-  const foyerLocalZ = -0.75;
-  const foyerW = 12.0;
-  const foyerD = 16.63;
-  const foyerH = 7.5;
-
-  const foyerBody = new THREE.Mesh(new THREE.BoxGeometry(foyerW, foyerH, foyerD), wallMat);
-  foyerBody.position.set(foyerLocalX, podiumH + foyerH / 2, foyerLocalZ);
-  foyerBody.castShadow = true;
-  foyerBody.receiveShadow = true;
-  group.add(foyerBody);
-
-  // Grand Full-Height Amber-Gold Glass Curtain Wall on East Facade
-  const glassFront = new THREE.Mesh(new THREE.BoxGeometry(0.2, foyerH * 0.85, foyerD * 0.88), amberGoldGlassMat);
-  glassFront.position.set(foyerLocalX + foyerW / 2 + 0.12, podiumH + foyerH / 2, foyerLocalZ);
-  glassFront.castShadow = true;
-  group.add(glassFront);
-
-  // Vertical Architectural Mullions on Glass Curtain Wall
-  const numMullions = 8;
-  const stepZ = (foyerD * 0.88) / numMullions;
-  for (let m = 0; m <= numMullions; m++) {
-    const mz = foyerLocalZ - (foyerD * 0.88) / 2 + m * stepZ;
-    const mullion = new THREE.Mesh(new THREE.BoxGeometry(0.3, foyerH * 0.86, 0.15), darkTrimMat);
-    mullion.position.set(foyerLocalX + foyerW / 2 + 0.18, podiumH + foyerH / 2, mz);
-    group.add(mullion);
-  }
-
-  // Horizontal Transom Lines
-  for (let ty of [podiumH + foyerH * 0.35, podiumH + foyerH * 0.65]) {
-    const transom = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.15, foyerD * 0.88), darkTrimMat);
-    transom.position.set(foyerLocalX + foyerW / 2 + 0.18, ty, foyerLocalZ);
+  for (let ty of [floor1H + glassH * 0.35 + 0.8, floor1H + glassH * 0.70 + 0.8]) {
+    const transom = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.14, glassW), mullionMat);
+    transom.position.set(foyerX - 1.5, ty, 0);
     group.add(transom);
   }
 
-  // Foyer Flat Canopy Roof
-  const foyerRoof = new THREE.Mesh(new THREE.BoxGeometry(foyerW + 1.8, 0.55, foyerD + 1.4), roofFlatMat);
-  foyerRoof.position.set(foyerLocalX + 0.5, podiumH + foyerH + 0.28, foyerLocalZ);
-  foyerRoof.castShadow = true;
-  group.add(foyerRoof);
+  // --- 3. THE 9 MONUMENTAL FLARING POINTED ARCHES (หน้าอาคารซุ้มโค้งยอดแหลม 9 ซุ้ม) ---
+  // Symmetrical: Center 5 Grand Arches + Left Wing 2 Arches + Right Wing 2 Arches
+  const archesGroup = new THREE.Group();
+  archesGroup.position.set(foyerX, floor1H + 0.8, 0);
 
-  // --- 6. SOUTH ASCENDING ENTRANCE RAMP (Calibrated Length) ---
-  const southRampX = 24.76;
-  const southRampZ_Start = 7.57;
-  const southRampZ_End = 25.12;
-  const southRampLen = southRampZ_End - southRampZ_Start; // 17.55m
-  const southRampMidZ = (southRampZ_Start + southRampZ_End) / 2;
-  const southRampW = 3.51;
-  const southRampTopY = 3.8;
+  // Function to create one flaring parabolic/pointed arch module
+  function createPointedArchModule(spanZ, archH, pierThick, archD) {
+    const aMod = new THREE.Group();
 
-  const southSlopeAngle = Math.atan2(southRampTopY, southRampLen);
-  const southDeckLen = Math.sqrt(southRampLen * southRampLen + southRampTopY * southRampTopY);
+    // Left and Right flaring column piers
+    const pierH = archH * 0.70;
+    const pNorth = new THREE.Mesh(new THREE.BoxGeometry(archD, pierH, pierThick), whiteStuccoMat);
+    pNorth.position.set(0, pierH / 2, -spanZ / 2 + pierThick / 2);
+    pNorth.castShadow = true;
+    aMod.add(pNorth);
 
-  const southRampDeck = new THREE.Mesh(new THREE.BoxGeometry(southRampW, 0.5, southDeckLen), concreteMat);
-  southRampDeck.position.set(southRampX, southRampTopY / 2, southRampMidZ);
-  southRampDeck.rotation.x = southSlopeAngle;
-  southRampDeck.castShadow = true;
-  southRampDeck.receiveShadow = true;
-  group.add(southRampDeck);
+    const pSouth = new THREE.Mesh(new THREE.BoxGeometry(archD, pierH, pierThick), whiteStuccoMat);
+    pSouth.position.set(0, pierH / 2, spanZ / 2 - pierThick / 2);
+    pSouth.castShadow = true;
+    aMod.add(pSouth);
+
+    // Flaring pointed arch cap (Hyperbolic flared curve meeting at pointed peak)
+    const curveRadius = spanZ / 2;
+    const archCurve = new THREE.Mesh(
+      new THREE.CylinderGeometry(curveRadius, curveRadius, archD, 16, 1, false, 0, Math.PI),
+      whiteStuccoMat
+    );
+    archCurve.rotation.z = Math.PI / 2;
+    archCurve.rotation.y = Math.PI / 2;
+    archCurve.position.set(0, pierH, 0);
+    archCurve.castShadow = true;
+    aMod.add(archCurve);
+
+    // Sharp Pointed Arch Keel Fin at top
+    const keelFin = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.9, 4), whiteStuccoMat);
+    keelFin.position.set(0, pierH + curveRadius + 0.45, 0);
+    keelFin.rotation.y = Math.PI / 4;
+    keelFin.castShadow = true;
+    aMod.add(keelFin);
+
+    return aMod;
+  }
+
+  // Grid of 9 arches along Z axis:
+  // Center: z = 0 (Bay 0 - Grand Central Arch)
+  // Inner Center flanks: z = +/- 3.6m (Bays -1, +1)
+  // Outer Center flanks: z = +/- 7.2m (Bays -2, +2)
+  // Wings: z = +/- 10.8m, +/- 14.4m (Bays -4, -3, +3, +4)
+  const archSpan = 3.6;
+  const colDepth = 1.1;
+  const colThick = 0.55;
+
+  for (let bay = -4; bay <= 4; bay++) {
+    const isCenter = (bay === 0);
+    const isCentralBlock = (Math.abs(bay) <= 2);
+    const bH = isCenter ? (floor2H + 0.8) : isCentralBlock ? floor2H : (floor2H - 1.2);
+    const bZ = bay * archSpan;
+    const archMod = createPointedArchModule(archSpan, bH, colThick, colDepth);
+    archMod.position.set(0, 0, bZ);
+    archesGroup.add(archMod);
+  }
+
+  // Central Double-Arched Commemorative Portal Frame (ซุ้มมณฑลประธานชั้น 2)
+  const portalFrame = new THREE.Mesh(new THREE.BoxGeometry(0.8, floor2H + 1.2, 4.2), whiteStuccoMat);
+  portalFrame.position.set(0.35, (floor2H + 1.2) / 2, 0);
+  portalFrame.castShadow = true;
+  archesGroup.add(portalFrame);
+
+  // Commemorative Royal Emblem on Central Portal
+  const emblemGold = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.15, 20), new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    metalness: 0.85,
+    roughness: 0.2
+  }));
+  emblemGold.rotation.z = Math.PI / 2;
+  emblemGold.position.set(0.8, floor2H + 0.5, 0);
+  archesGroup.add(emblemGold);
+
+  group.add(archesGroup);
+
+  // --- 4. TIERED MODERN FLAT ROOF WITH 45-DEGREE INVERTED CHAMFERED EAVES ---
+  // High Central Roof (Over center 5 arches: Z from -8.5 to +8.5)
+  const centralRoofW = hallWidth + 5.0; // extends out over front arches
+  const centralRoofD = 18.2;
+  const centralRoofH = 1.4;
+  const centralRoofY = totalH + 0.8 + 0.7;
+
+  const centralRoof = new THREE.Mesh(new THREE.BoxGeometry(centralRoofW, centralRoofH, centralRoofD), whiteStuccoMat);
+  centralRoof.position.set(0.5, centralRoofY, 0);
+  centralRoof.castShadow = true;
+  group.add(centralRoof);
+
+  // Chamfered Beveled Soffit underneath central roof overhang
+  const centralBevel = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, centralRoofD), whiteStuccoMat);
+  centralBevel.position.set(centralRoofW / 2 - 0.5, centralRoofY - 0.8, 0);
+  centralBevel.rotation.z = -0.785; // 45 degree chamfer
+  group.add(centralBevel);
+
+  // Lower Flanking Wing Roofs (Left & Right Wings)
+  const wingRoofW = hallWidth + 3.5;
+  const wingRoofD = 8.2;
+  const wingRoofH = 1.0;
+  const wingRoofY = totalH + 0.8 - 0.5;
 
   for (let s of [-1, 1]) {
-    const wallX = southRampX + s * (southRampW / 2 - 0.15);
-    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, southDeckLen), wallMat);
-    parapet.position.set(wallX, southRampTopY / 2 + 0.55, southRampMidZ);
-    parapet.rotation.x = southSlopeAngle;
-    parapet.castShadow = true;
-    group.add(parapet);
-
-    // Ramp Pathway Bollard Lights
-    for (let r = 0.2; r <= 0.85; r += 0.3) {
-      const bz = southRampZ_Start + r * southRampLen;
-      const by = (1 - r) * southRampTopY + 1.2;
-      const bPost = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.4, 6), darkTrimMat);
-      bPost.position.set(wallX, by, bz);
-      group.add(bPost);
-      const bCap = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), lampGlowMat);
-      bCap.position.set(wallX, by + 0.22, bz);
-      group.add(bCap);
-    }
+    const wingRoof = new THREE.Mesh(new THREE.BoxGeometry(wingRoofW, wingRoofH, wingRoofD), whiteStuccoMat);
+    wingRoof.position.set(-0.25, wingRoofY, s * (centralRoofD / 2 + wingRoofD / 2 - 0.2));
+    wingRoof.castShadow = true;
+    group.add(wingRoof);
   }
 
-  for (let f of [0.25, 0.55]) {
-    const pz = southRampZ_Start + f * southRampLen;
-    const currentH = (1 - f) * southRampTopY;
-    if (currentH > 0.8) {
-      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.6, currentH, 0.6), concreteMat);
-      pier.position.set(southRampX, currentH / 2, pz);
-      pier.castShadow = true;
-      group.add(pier);
-    }
+  // --- 5. 2ND FLOOR GRAND TERRACE CONCOURSE ---
+  const terraceW = 4.5;
+  const terraceD = hallLength + 2.0;
+  const terrace = new THREE.Mesh(new THREE.BoxGeometry(terraceW, 0.6, terraceD), concreteMat);
+  terrace.position.set(foyerX + terraceW / 2 - 0.5, floor1H + 0.5, 0);
+  terrace.receiveShadow = true;
+  group.add(terrace);
+
+  // Front parapet wall for terrace
+  const terraceParapet = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.0, terraceD), whiteStuccoMat);
+  terraceParapet.position.set(foyerX + terraceW - 0.65, floor1H + 1.1, 0);
+  group.add(terraceParapet);
+
+  // --- 6. DUAL ACCESS RAMPS (สะพานทางลาดคู่ - ทอดตัวสมบูรณ์จากชั้น 2 สู่ระดับพื้นดิน) ---
+  // 6.1 South Ramp: Sweeps down towards South ground
+  const rampW = 3.6;
+  const southRampLen = 17.55;
+  const southRampMidZ = (8.0 + 25.55) / 2;
+  const southRampTopY = floor1H + 0.8;
+  const southSlope = Math.atan2(southRampTopY, southRampLen);
+  const southRampDeckLen = Math.sqrt(southRampLen * southRampLen + southRampTopY * southRampTopY);
+
+  const southRamp = new THREE.Mesh(new THREE.BoxGeometry(rampW, 0.5, southRampDeckLen), concreteMat);
+  southRamp.position.set(foyerX + 2.0, southRampTopY / 2, southRampMidZ);
+  southRamp.rotation.x = southSlope;
+  southRamp.castShadow = true;
+  southRamp.receiveShadow = true;
+  group.add(southRamp);
+
+  for (let sw of [-1, 1]) {
+    const sp = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, southRampDeckLen), whiteStuccoMat);
+    sp.position.set(foyerX + 2.0 + sw * (rampW / 2 - 0.15), southRampTopY / 2 + 0.55, southRampMidZ);
+    sp.rotation.x = southSlope;
+    group.add(sp);
   }
 
-  const southLanding = new THREE.Mesh(new THREE.BoxGeometry(southRampW + 1.2, 0.25, 3.5), concreteMat);
-  southLanding.position.set(southRampX, 0.125, southRampZ_End + 1.75);
-  southLanding.receiveShadow = true;
-  group.add(southLanding);
+  // 6.2 North Ramp: Sweeps down towards North ground
+  const northRampLen = 16.0;
+  const northRampMidZ = (-8.0 - 24.0) / 2;
+  const northRampTopY = floor1H + 0.8;
+  const northSlope = -Math.atan2(northRampTopY, northRampLen);
+  const northRampDeckLen = Math.sqrt(northRampLen * northRampLen + northRampTopY * northRampTopY);
 
-  // --- 7. NORTH SLOPED BRIDGE (Reaching Down to Ground Level) ---
-  const northBridgeX = 22.82;
-  const northZ_Start = -7.95;
-  const northZ_End = -22.28;
-  const northBridgeLen = Math.abs(northZ_End - northZ_Start);
-  const northMidZ = (northZ_Start + northZ_End) / 2;
-  const northBridgeW = 2.95;
-  const northTopY = 3.8;
+  const northRamp = new THREE.Mesh(new THREE.BoxGeometry(rampW, 0.5, northRampDeckLen), concreteMat);
+  northRamp.position.set(foyerX + 2.0, northRampTopY / 2, northRampMidZ);
+  northRamp.rotation.x = northSlope;
+  northRamp.castShadow = true;
+  northRamp.receiveShadow = true;
+  group.add(northRamp);
 
-  const northSlopeAngle = -Math.atan2(northTopY, northBridgeLen);
-  const northDeckLen = Math.sqrt(northBridgeLen * northBridgeLen + northTopY * northTopY);
-
-  const northDeck = new THREE.Mesh(new THREE.BoxGeometry(northBridgeW, 0.45, northDeckLen), concreteMat);
-  northDeck.position.set(northBridgeX, northTopY / 2, northMidZ);
-  northDeck.rotation.x = northSlopeAngle;
-  northDeck.castShadow = true;
-  northDeck.receiveShadow = true;
-  group.add(northDeck);
-
-  for (let s of [-1, 1]) {
-    const wallX = northBridgeX + s * (northBridgeW / 2 - 0.15);
-    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.0, northDeckLen), wallMat);
-    parapet.position.set(wallX, northTopY / 2 + 0.5, northMidZ);
-    parapet.rotation.x = northSlopeAngle;
-    parapet.castShadow = true;
-    group.add(parapet);
-
-    // North Bridge Bollard Lights
-    for (let r of [0.25, 0.65]) {
-      const bz = northZ_Start - r * northBridgeLen;
-      const by = (1 - r) * northTopY + 1.1;
-      const bPost = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 6), darkTrimMat);
-      bPost.position.set(wallX, by, bz);
-      group.add(bPost);
-      const bCap = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), lampGlowMat);
-      bCap.position.set(wallX, by + 0.2, bz);
-      group.add(bCap);
-    }
+  for (let nw of [-1, 1]) {
+    const np = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, northRampDeckLen), whiteStuccoMat);
+    np.position.set(foyerX + 2.0 + nw * (rampW / 2 - 0.15), northRampTopY / 2 + 0.55, northRampMidZ);
+    np.rotation.x = northSlope;
+    group.add(np);
   }
 
-  for (let f of [0.3, 0.6]) {
-    const pz = northZ_Start - f * northBridgeLen;
-    const currentH = (1 - f) * northTopY;
-    if (currentH > 0.8) {
-      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.55, currentH, 0.55), concreteMat);
-      pier.position.set(northBridgeX, currentH / 2, pz);
-      pier.castShadow = true;
-      group.add(pier);
-    }
+  // 6.3 Central Grand Entrance Stairs (บันไดประธานด้านหน้า)
+  for (let st = 0; st < 6; st++) {
+    const sH = 0.45;
+    const sW = 1.0;
+    const sD = 10.0;
+    const step = new THREE.Mesh(new THREE.BoxGeometry(sW, (st + 1) * sH, sD), concreteMat);
+    step.position.set(foyerX + terraceW + (5 - st) * sW - 1.0, ((st + 1) * sH) / 2, 0);
+    step.receiveShadow = true;
+    group.add(step);
   }
 
-  const northLanding = new THREE.Mesh(new THREE.BoxGeometry(northBridgeW + 1.2, 0.25, 3.5), concreteMat);
-  northLanding.position.set(northBridgeX, 0.125, northZ_End - 1.75);
-  northLanding.receiveShadow = true;
-  group.add(northLanding);
+  // Central Arched White Signboard Stele on Ground (แท่นป้ายหน้าอาคาร)
+  const signStele = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.6, 4.2), whiteStuccoMat);
+  signStele.position.set(foyerX + terraceW + 6.0, 1.3, 0);
+  signStele.castShadow = true;
+  group.add(signStele);
 
-  // --- 8. ARCHITECTURAL LIGHTING ENGINE (ระบบไฟส่องสว่างโถงและภายนอก) ---
-  const lightsGroup = new THREE.Group();
-  lightsGroup.name = 'auditorium80Lighting';
+  // --- 7. NIGHT ILLUMINATION ENGINE (ไฟส่องซุ้มโค้งและโถงกระจกยามค่ำคืน) ---
+  const nightLightsGroup = new THREE.Group();
+  nightLightsGroup.name = 'auditorium80Lighting';
 
-  // 8.1 Warm Interior Chandelier Glow (Inside Foyer behind amber-gold glass)
-  for (let fz of [-4.0, 0, 4.0]) {
-    const foyerLight = new THREE.PointLight(0xffaa22, 2.2, 22, 1.6);
-    foyerLight.position.set(foyerLocalX + 3.0, podiumH + foyerH * 0.55, foyerLocalZ + fz);
-    lightsGroup.add(foyerLight);
+  // Interior Golden Chandelier Glow behind emerald glass
+  for (let z of [-7.2, 0, 7.2]) {
+    const intLight = new THREE.PointLight(0xff9e1b, 2.4, 25, 1.6);
+    intLight.position.set(foyerX - 3.5, floor1H + floor2H * 0.55, z);
+    nightLightsGroup.add(intLight);
   }
 
-  // 8.2 Main Hall Interior Glow (Behind Ribbon Windows)
-  const hallLight = new THREE.PointLight(0xff9900, 2.5, 35, 1.8);
-  hallLight.position.set(0, podiumH + hallH * 0.65, 0);
-  lightsGroup.add(hallLight);
-
-  // 8.3 Foyer Entrance Downlights under Canopy
-  for (let dz of [-5.0, 0, 5.0]) {
-    const downlight = new THREE.SpotLight(0xfff3e0, 2.0, 15, Math.PI / 4, 0.5, 1.5);
-    downlight.position.set(foyerLocalX + foyerW / 2 + 1.0, podiumH + foyerH + 0.2, foyerLocalZ + dz);
-    downlight.target.position.set(foyerLocalX + foyerW / 2 + 1.0, 0, foyerLocalZ + dz);
-    lightsGroup.add(downlight);
-    lightsGroup.add(downlight.target);
-
-    // Visible small ceiling lamp fixture
-    const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.1, 8), darkTrimMat);
-    fixture.position.set(foyerLocalX + foyerW / 2 + 1.0, podiumH + foyerH + 0.1, foyerLocalZ + dz);
-    group.add(fixture);
-    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), lampGlowMat);
-    bulb.position.set(foyerLocalX + foyerW / 2 + 1.0, podiumH + foyerH + 0.05, foyerLocalZ + dz);
-    group.add(bulb);
+  // Arch Uplights along the 9 Arches
+  for (let bay = -4; bay <= 4; bay += 2) {
+    const uplight = new THREE.PointLight(0xfff3e0, 1.8, 14, 1.5);
+    uplight.position.set(foyerX + 0.5, floor1H + 1.2, bay * archSpan);
+    nightLightsGroup.add(uplight);
   }
 
-  // 8.4 Ramp Base Pathway Glow (Soft warm light along approach)
-  const southRampLight = new THREE.PointLight(0xffe082, 1.6, 18, 1.8);
-  southRampLight.position.set(southRampX, 2.5, southRampMidZ);
-  lightsGroup.add(southRampLight);
+  // Spotlight on Central Emblem & Entrance
+  const pylonSpot = new THREE.SpotLight(0xffe082, 3.5, 20, Math.PI / 4, 0.5, 1.5);
+  pylonSpot.position.set(foyerX + 6.0, floor1H + 1.5, 0);
+  pylonSpot.target.position.set(foyerX, floor1H + floor2H * 0.8, 0);
+  nightLightsGroup.add(pylonSpot);
+  nightLightsGroup.add(pylonSpot.target);
 
-  const northBridgeLight = new THREE.PointLight(0xffe082, 1.4, 16, 1.8);
-  northBridgeLight.position.set(northBridgeX, 2.2, northMidZ);
-  lightsGroup.add(northBridgeLight);
-
-  group.add(lightsGroup);
+  group.add(nightLightsGroup);
 
   return group;
 }
