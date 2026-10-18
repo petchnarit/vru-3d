@@ -612,67 +612,107 @@ function createAuditorium80Mesh() {
   foyerRoof.castShadow = true;
   group.add(foyerRoof);
 
-  // --- 6. COMPLETE ASCENDING ENTRANCE RAMP ("ทางขึ้น" เติมเต็มครบ 100% เชื่อมสู่ระดับดิน) ---
-  // Local coords:
-  // Starts at south of foyer: Local X = 178.62 - 153.86 = +24.76, Local Z = 22.39 - 14.82 = +7.57
-  // Ends at ground touch: Local X = +24.76, Local Z = 47.14 - 14.82 = +32.32
-  // Total ramp length = 32.32 - 7.57 = 24.75m!
-  // Ramp width = 3.51m
-  // Ramp top height = 3.8m, Ramp bottom height = 0.0m
-  const rampX = 24.76;
-  const rampZ_Start = 7.57;
-  const rampZ_End = 32.32;
-  const rampLength = rampZ_End - rampZ_Start; // 24.75m
-  const rampMidZ = (rampZ_Start + rampZ_End) / 2; // ~19.95
-  const rampW = 3.51;
-  const rampTopY = 3.8;
+    // --- 6. SOUTH ASCENDING ENTRANCE RAMP (ทางขึ้นทิศใต้ - ปรับความยาวให้พอดี ไม่ยาวเกินไป) ---
+  // Starts at south of foyer (Local Z = +7.57, Y = 3.8m)
+  // Ends at ground touch point (Local Z = +25.12, Y = 0.0m)
+  // Calibrated exact length: 17.55 meters (shortened by 7.2m so it fits perfectly on drone image)
+  const southRampX = 24.76;
+  const southRampZ_Start = 7.57;
+  const southRampZ_End = 25.12;
+  const southRampLen = southRampZ_End - southRampZ_Start; // 17.55m
+  const southRampMidZ = (southRampZ_Start + southRampZ_End) / 2; // ~16.35
+  const southRampW = 3.51;
+  const southRampTopY = 3.8;
 
-  const slopeAngle = Math.atan2(rampTopY, rampLength); // smooth continuous slope ~8.7 deg
-  const rampDeckLen = Math.sqrt(rampLength * rampLength + rampTopY * rampTopY);
+  const southSlopeAngle = Math.atan2(southRampTopY, southRampLen); // ~12.2 deg slope
+  const southDeckLen = Math.sqrt(southRampLen * southRampLen + southRampTopY * southRampTopY);
 
-  // Solid concrete inclined ramp slab
-  const rampDeck = new THREE.Mesh(new THREE.BoxGeometry(rampW, 0.5, rampDeckLen), concreteMat);
-  rampDeck.position.set(rampX, rampTopY / 2, rampMidZ);
-  rampDeck.rotation.x = slopeAngle;
-  rampDeck.castShadow = true;
-  rampDeck.receiveShadow = true;
-  group.add(rampDeck);
+  // Inclined solid concrete ramp slab
+  const southRampDeck = new THREE.Mesh(new THREE.BoxGeometry(southRampW, 0.5, southDeckLen), concreteMat);
+  southRampDeck.position.set(southRampX, southRampTopY / 2, southRampMidZ);
+  southRampDeck.rotation.x = southSlopeAngle;
+  southRampDeck.castShadow = true;
+  southRampDeck.receiveShadow = true;
+  group.add(southRampDeck);
 
-  // Continuous side parapet walls along both sides of the ramp
+  // Parapet walls along both sides of south ramp
   for (let s of [-1, 1]) {
-    const wallX = rampX + s * (rampW / 2 - 0.15);
-    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, rampDeckLen), wallMat);
-    parapet.position.set(wallX, rampTopY / 2 + 0.55, rampMidZ);
-    parapet.rotation.x = slopeAngle;
+    const wallX = southRampX + s * (southRampW / 2 - 0.15);
+    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, southDeckLen), wallMat);
+    parapet.position.set(wallX, southRampTopY / 2 + 0.55, southRampMidZ);
+    parapet.rotation.x = southSlopeAngle;
     parapet.castShadow = true;
     group.add(parapet);
   }
 
-  // Concrete support piers under elevated section
-  for (let f of [0.2, 0.45, 0.7]) {
-    const pz = rampZ_Start + f * rampLength;
-    const currentH = (1 - f) * rampTopY;
+  // Support piers under elevated span
+  for (let f of [0.25, 0.55]) {
+    const pz = southRampZ_Start + f * southRampLen;
+    const currentH = (1 - f) * southRampTopY;
     if (currentH > 0.8) {
       const pier = new THREE.Mesh(new THREE.BoxGeometry(0.6, currentH, 0.6), concreteMat);
-      pier.position.set(rampX, currentH / 2, pz);
+      pier.position.set(southRampX, currentH / 2, pz);
       pier.castShadow = true;
       group.add(pier);
     }
   }
 
-  // Ground landing plaza where ramp touches ground
-  const landing = new THREE.Mesh(new THREE.BoxGeometry(rampW + 1.5, 0.25, 4.0), concreteMat);
-  landing.position.set(rampX, 0.125, rampZ_End + 2.0);
-  landing.receiveShadow = true;
-  group.add(landing);
+  // Ground landing at south end where ramp touches ground
+  const southLanding = new THREE.Mesh(new THREE.BoxGeometry(southRampW + 1.2, 0.25, 3.5), concreteMat);
+  southLanding.position.set(southRampX, 0.125, southRampZ_End + 1.75);
+  southLanding.receiveShadow = true;
+  group.add(southLanding);
 
-  // --- 7. North Connecting Bridge ---
-  // Local coords: X = 176.68 - 153.86 = +22.82, Z = -1.26 - 14.82 = -16.08
-  // Size: 2.95m wide x 14.04m long
-  const northBridge = new THREE.Mesh(new THREE.BoxGeometry(2.95, 0.5, 14.04), concreteMat);
-  northBridge.position.set(22.82, 3.8, -16.08);
-  northBridge.castShadow = true;
-  group.add(northBridge);
+  // --- 7. NORTH SLOPED BRIDGE (สะพานทิศเหนือ - ลาดเอียงลงสู่ระดับพื้นดิน ไม่ลอยเคว้ง) ---
+  // Starts at north of foyer (Local Z = -7.95, Y = 3.8m)
+  // Slopes down continuously to touch ground at north (Local Z = -22.28, Y = 0.0m)
+  // Calibrated exact length: 14.33 meters
+  const northBridgeX = 22.82;
+  const northZ_Start = -7.95;  // Foyer connection height 3.8m
+  const northZ_End = -22.28;   // Ground touch point height 0.0m
+  const northBridgeLen = Math.abs(northZ_End - northZ_Start); // 14.33m
+  const northMidZ = (northZ_Start + northZ_End) / 2; // -15.12
+  const northBridgeW = 2.95;
+  const northTopY = 3.8;
+
+  const northSlopeAngle = -Math.atan2(northTopY, northBridgeLen); // slopes DOWN towards north
+  const northDeckLen = Math.sqrt(northBridgeLen * northBridgeLen + northTopY * northTopY);
+
+  // Sloped concrete deck reaching smoothly from foyer down to ground
+  const northDeck = new THREE.Mesh(new THREE.BoxGeometry(northBridgeW, 0.45, northDeckLen), concreteMat);
+  northDeck.position.set(northBridgeX, northTopY / 2, northMidZ);
+  northDeck.rotation.x = northSlopeAngle;
+  northDeck.castShadow = true;
+  northDeck.receiveShadow = true;
+  group.add(northDeck);
+
+  // Parapet walls along both sides of north bridge
+  for (let s of [-1, 1]) {
+    const wallX = northBridgeX + s * (northBridgeW / 2 - 0.15);
+    const parapet = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.0, northDeckLen), wallMat);
+    parapet.position.set(wallX, northTopY / 2 + 0.5, northMidZ);
+    parapet.rotation.x = northSlopeAngle;
+    parapet.castShadow = true;
+    group.add(parapet);
+  }
+
+  // Support piers under elevated span of north bridge
+  for (let f of [0.3, 0.6]) {
+    const pz = northZ_Start - f * northBridgeLen;
+    const currentH = (1 - f) * northTopY;
+    if (currentH > 0.8) {
+      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.55, currentH, 0.55), concreteMat);
+      pier.position.set(northBridgeX, currentH / 2, pz);
+      pier.castShadow = true;
+      group.add(pier);
+    }
+  }
+
+  // Ground landing plaza where north ramp touches ground
+  const northLanding = new THREE.Mesh(new THREE.BoxGeometry(northBridgeW + 1.2, 0.25, 3.5), concreteMat);
+  northLanding.position.set(northBridgeX, 0.125, northZ_End - 1.75);
+  northLanding.receiveShadow = true;
+  group.add(northLanding);
 
   return group;
 }
