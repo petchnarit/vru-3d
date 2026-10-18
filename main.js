@@ -531,13 +531,21 @@ function createAuditorium80Mesh() {
     roughness: 0.08,
     metalness: 0.75,
     transparent: true,
-    opacity: 0.88
+    opacity: 0.88,
+    emissive: new THREE.Color(0xff8c00),
+    emissiveIntensity: 0.05
   });
+  emissiveMaterials.push(amberGoldGlassMat);
+
   const goldEmblemMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
     roughness: 0.2,
-    metalness: 0.85
+    metalness: 0.85,
+    emissive: new THREE.Color(0xf59e0b),
+    emissiveIntensity: 0.1
   });
+  emissiveMaterials.push(goldEmblemMat);
+
   const hedgeGreenMat = new THREE.MeshStandardMaterial({
     color: 0x2e7d32,
     roughness: 0.85,
@@ -550,10 +558,10 @@ function createAuditorium80Mesh() {
   });
   const waterPoolMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
-    roughness: 0.12,
-    metalness: 0.65,
+    roughness: 0.06,
+    metalness: 0.7,
     transparent: true,
-    opacity: 0.85
+    opacity: 0.88
   });
 
   // Overall building scale (42m long x 28m deep x 16m high)
@@ -562,7 +570,7 @@ function createAuditorium80Mesh() {
   const floor1H = 4.8;
   const floor2H = 7.2;
   const totalWallH = floor1H + floor2H; // 12.0m
-  const terraceZ = 6.0; // front terrace offset
+  const terraceZ = 6.0;
 
   // --- 1. Reflecting Pool & Front Water Concourse ---
   const poolW = 44.0;
@@ -570,22 +578,20 @@ function createAuditorium80Mesh() {
   const pool = new THREE.Mesh(new THREE.PlaneGeometry(poolW, poolD), waterPoolMat);
   pool.rotation.x = -Math.PI / 2;
   pool.position.set(0, 0.08, terraceZ + 12.0);
+  pool.userData.waterPool = true;
   group.add(pool);
 
   // Pool border curbing
-  const curbMat = concreteBaseMat;
-  const curbF = new THREE.Mesh(new THREE.BoxGeometry(poolW + 1.0, 0.35, 0.6), curbMat);
+  const curbF = new THREE.Mesh(new THREE.BoxGeometry(poolW + 1.0, 0.35, 0.6), concreteBaseMat);
   curbF.position.set(0, 0.17, terraceZ + 18.0);
   group.add(curbF);
 
   // --- 2. Ground Substructure & Undercroft ---
-  // Ground floor massing with recessed dark louvers
   const groundCore = new THREE.Mesh(new THREE.BoxGeometry(hallWidth, floor1H, hallDepth), darkCharcoalMat);
   groundCore.position.set(0, floor1H / 2, 0);
   groundCore.castShadow = true;
   group.add(groundCore);
 
-  // Undercroft square white support columns along front
   const numGroundCols = 8;
   const colSpacing = (hallWidth - 4.0) / (numGroundCols - 1);
   for (let i = 0; i < numGroundCols; i++) {
@@ -597,7 +603,6 @@ function createAuditorium80Mesh() {
   }
 
   // --- 3. 2nd Floor Grand Concourse & Amber-Gold Curtain Wall ---
-  // Amber-gold reflective glass facade across the full 2nd floor
   const glassW = hallWidth - 2.0;
   const glassH = floor2H - 1.2;
   const curtainWall = new THREE.Mesh(new THREE.BoxGeometry(glassW, glassH, hallDepth - 1.0), amberGoldGlassMat);
@@ -605,7 +610,6 @@ function createAuditorium80Mesh() {
   curtainWall.castShadow = true;
   group.add(curtainWall);
 
-  // Vertical dark bronze mullions on glass facade
   const numMullions = 22;
   const mulStep = glassW / numMullions;
   for (let m = 0; m <= numMullions; m++) {
@@ -615,25 +619,20 @@ function createAuditorium80Mesh() {
     group.add(mullion);
   }
 
-  // Dark charcoal upper fascia shadow line band
   const upperFascia = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 0.4, 1.2, hallDepth + 0.4), darkCharcoalMat);
   upperFascia.position.set(0, totalWallH - 0.6, 0);
   group.add(upperFascia);
 
   // --- 4. Monumental Flared Arches Colonnade (Front Arcade) ---
-  // 5 Majestic Arches across center + 2 flanking wing arches
   const arcadeGroup = new THREE.Group();
   arcadeGroup.position.set(0, floor1H, hallDepth / 2 + 1.2);
 
   const archSpan = 4.2;
-  const archThick = 0.7;
   const archDepth = 0.9;
   const archH = floor2H;
 
-  // Create individual flared parabolic arch module
   function createFlaredArchMesh(w, h, d) {
     const aGrp = new THREE.Group();
-    // Left & right flared legs
     const legW = 0.55;
     const pLeft = new THREE.Mesh(new THREE.BoxGeometry(legW, h * 0.75, d), whiteArchMat);
     pLeft.position.set(-w / 2 + legW / 2, h * 0.375, 0);
@@ -645,7 +644,6 @@ function createAuditorium80Mesh() {
     pRight.castShadow = true;
     aGrp.add(pRight);
 
-    // Arch Curved Top (Cylinder curve approximation)
     const curveRadius = w / 2;
     const archTop = new THREE.Mesh(
       new THREE.CylinderGeometry(curveRadius, curveRadius, d, 16, 1, false, 0, Math.PI),
@@ -656,17 +654,9 @@ function createAuditorium80Mesh() {
     archTop.position.set(0, h * 0.75, 0);
     archTop.castShadow = true;
     aGrp.add(archTop);
-
-    // Arch inner cutout block to reveal golden glass behind
-    const archHole = new THREE.Mesh(
-      new THREE.CylinderGeometry(curveRadius - legW, curveRadius - legW, d + 0.2, 16, 1, false, 0, Math.PI),
-      new THREE.MeshBasicMaterial({ color: 0x000000 })
-    );
-    // (Solid visual style without boolean for 60fps performance)
     return aGrp;
   }
 
-  // 5 Central Grand Arches
   for (let a = -2; a <= 2; a++) {
     const isCenter = (a === 0);
     const archMesh = createFlaredArchMesh(isCenter ? archSpan * 1.25 : archSpan, isCenter ? archH + 0.8 : archH, archDepth);
@@ -674,13 +664,11 @@ function createAuditorium80Mesh() {
     arcadeGroup.add(archMesh);
   }
 
-  // Outer Flanking Wing Arches & Y-Forked End Cantilever Pillars
   for (let s of [-1, 1]) {
     const wingArch = createFlaredArchMesh(archSpan * 0.9, archH * 0.9, archDepth);
     wingArch.position.set(s * (3 * archSpan + 0.8), 0, 0);
     arcadeGroup.add(wingArch);
 
-    // Y-Forked Cantilever End Column
     const endPillar = new THREE.Mesh(new THREE.BoxGeometry(0.7, archH, archDepth), whiteArchMat);
     endPillar.position.set(s * (hallWidth / 2 - 0.5), archH / 2, 0);
     endPillar.castShadow = true;
@@ -703,13 +691,11 @@ function createAuditorium80Mesh() {
   pylon.castShadow = true;
   group.add(pylon);
 
-  // Gold Royal Seal Emblem at Top of Pylon
   const royalEmblem = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.15, 24), goldEmblemMat);
   royalEmblem.rotation.x = Math.PI / 2;
   royalEmblem.position.set(0, floor1H + pylonH - 1.2, hallDepth / 2 + 2.45);
   group.add(royalEmblem);
 
-  // Commemorative Arch Niche with Royal Figure
   const niche = new THREE.Mesh(new THREE.BoxGeometry(2.0, 3.2, 0.6), darkCharcoalMat);
   niche.position.set(0, floor1H + 2.2, hallDepth / 2 + 2.2);
   group.add(niche);
@@ -719,7 +705,6 @@ function createAuditorium80Mesh() {
   group.add(royalStatue);
 
   // --- 6. Flat Tiered Modern Roof with Deep Cantilever Wingtips ---
-  // Central Elevated Roof Tier
   const centralRoofW = 24.0;
   const centralRoofD = hallDepth + 4.0;
   const centralRoof = new THREE.Mesh(new THREE.BoxGeometry(centralRoofW, 1.4, centralRoofD), whiteArchMat);
@@ -727,53 +712,44 @@ function createAuditorium80Mesh() {
   centralRoof.castShadow = true;
   group.add(centralRoof);
 
-  // Main Continuous Flat Roof Slab across the whole building
   const mainRoofSlab = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 2.0, 0.9, hallDepth + 3.0), whiteArchMat);
   mainRoofSlab.position.set(0, totalWallH + 0.1, 0.5);
   mainRoofSlab.castShadow = true;
   group.add(mainRoofSlab);
 
-  // Extreme Cantilever Wingtips extending left and right like majestic wings
   for (let s of [-1, 1]) {
     const wingTip = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.5, hallDepth + 1.0), whiteArchMat);
     wingTip.position.set(s * (hallWidth / 2 + 3.4), totalWallH + 0.2, 0);
-    wingTip.rotation.z = s * -0.06; // tapered sleek profile
+    wingTip.rotation.z = s * -0.06;
     wingTip.castShadow = true;
     group.add(wingTip);
   }
 
   // --- 7. Twin Symmetrical Ramps with Green Hedge Balustrades ---
-  // Left and Right sweeping ramps rising up to 2nd floor central terrace
   const rampLength = 22.0;
   const rampWidth = 3.6;
-  const rampSlopeAngle = 0.21; // ~1:10 slope up to 4.8m height
 
   for (let s of [-1, 1]) {
     const rampGroup = new THREE.Group();
-    // Position ramp starting at outer water edge and landing at central 2nd floor terrace
     rampGroup.position.set(s * 15.0, floor1H / 2, terraceZ + 7.5);
-    rampGroup.rotation.y = s * -0.32; // slight inward convergence towards center
-    rampGroup.rotation.x = 0.20; // inclined slope rising from water edge to terrace
+    rampGroup.rotation.y = s * -0.32;
+    rampGroup.rotation.x = 0.20;
 
-    // Solid concrete ramp walkway body
     const rampBody = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 0.6, rampLength), whiteArchMat);
     rampBody.castShadow = true;
     rampBody.receiveShadow = true;
     rampGroup.add(rampBody);
 
-    // Outer & inner white balustrade walls
     for (let bw of [-1, 1]) {
       const balustrade = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, rampLength), whiteArchMat);
       balustrade.position.set(bw * (rampWidth / 2 - 0.18), 0.55, 0);
       balustrade.castShadow = true;
       rampGroup.add(balustrade);
 
-      // Lush green hedge planter box on top of the balustrade
       const hedge = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.35, rampLength), hedgeGreenMat);
       hedge.position.set(bw * (rampWidth / 2 - 0.18), 1.25, 0);
       rampGroup.add(hedge);
 
-      // Flagpoles along the balustrade
       for (let f = -rampLength / 2 + 2.5; f < rampLength / 2; f += 4.5) {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.8, 6), whiteArchMat);
         pole.position.set(bw * (rampWidth / 2 - 0.18), 2.2, f);
@@ -785,11 +761,10 @@ function createAuditorium80Mesh() {
       }
     }
 
-    // Concrete support pillars under the ramp over water
     for (let p of [-6.0, 0, 6.0]) {
       const pPier = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 4.0, 8), whiteArchMat);
       pPier.position.set(0, -2.0, p);
-      pPier.rotation.x = -0.20; // plumb vertical
+      pPier.rotation.x = -0.20;
       pPier.castShadow = true;
       rampGroup.add(pPier);
     }
@@ -798,14 +773,12 @@ function createAuditorium80Mesh() {
   }
 
   // --- 8. Central 2nd Floor Grand Terrace Concourse ---
-  // Connecting the twin ramps and foyer entrance
   const terrace = new THREE.Mesh(new THREE.BoxGeometry(22.0, 0.8, 5.0), whiteArchMat);
   terrace.position.set(0, floor1H - 0.4, hallDepth / 2 + 2.5);
   terrace.castShadow = true;
   terrace.receiveShadow = true;
   group.add(terrace);
 
-  // Terrace front balustrade with green hedge
   const tBalustrade = new THREE.Mesh(new THREE.BoxGeometry(22.0, 1.1, 0.35), whiteArchMat);
   tBalustrade.position.set(0, floor1H + 0.55, hallDepth / 2 + 4.8);
   group.add(tBalustrade);
@@ -813,6 +786,44 @@ function createAuditorium80Mesh() {
   const tHedge = new THREE.Mesh(new THREE.BoxGeometry(22.0, 0.35, 0.4), hedgeGreenMat);
   tHedge.position.set(0, floor1H + 1.25, hallDepth / 2 + 4.8);
   group.add(tHedge);
+
+  // --- 9. Spectacular Night Illumination Fixtures (Dedicated Night Glow Engine) ---
+  const nightLightsGroup = new THREE.Group();
+  nightLightsGroup.name = 'auditorium80NightLights';
+
+  // 9.1 Interior Warm Chandelier Glow (Inside the hall behind golden glass)
+  for (let ix of [-9.0, 0, 9.0]) {
+    const interiorLight = new THREE.PointLight(0xff9800, 2.8, 30, 1.8);
+    interiorLight.position.set(ix, floor1H + floor2H * 0.5, hallDepth / 2 - 2.5);
+    nightLightsGroup.add(interiorLight);
+  }
+
+  // 9.2 Arch Uplighting (Warm Golden Wash across the 5 front arches)
+  for (let ax of [-8.5, -4.2, 0, 4.2, 8.5]) {
+    const archUplight = new THREE.PointLight(0xffe082, 2.2, 18, 1.5);
+    archUplight.position.set(ax, floor1H + 0.8, hallDepth / 2 + 1.8);
+    nightLightsGroup.add(archUplight);
+  }
+
+  // 9.3 Central Royal Emblem & Statue Focal Spotlight
+  const pylonSpot = new THREE.SpotLight(0xffca28, 4.2, 25, Math.PI / 5, 0.6, 1.5);
+  pylonSpot.position.set(0, floor1H + 0.5, hallDepth / 2 + 5.5);
+  pylonSpot.target = royalEmblem;
+  nightLightsGroup.add(pylonSpot);
+
+  // 9.4 Twin Ramps Lamp Post Glow
+  for (let s of [-1, 1]) {
+    for (let rz of [terraceZ + 3.0, terraceZ + 8.0, terraceZ + 14.0]) {
+      const rampLight = new THREE.PointLight(0xfff3e0, 1.6, 16, 1.8);
+      rampLight.position.set(s * 14.0, floor1H * 0.7, rz);
+      nightLightsGroup.add(rampLight);
+    }
+  }
+
+  // Set initial visibility according to state.dayMode
+  nightLightsGroup.visible = !state.dayMode;
+  group.add(nightLightsGroup);
+  group.userData.nightLights = nightLightsGroup;
 
   return group;
 }
@@ -1165,19 +1176,31 @@ function setDayMode(isDay) {
   state.dayMode = isDay;
   if (isDay) {
     scene.background.setHex(0xdce7f2);
-    scene.fog.color.setHex(0xdce7f2);
     ambientLight.color.setHex(0xfff7ed);
     ambientLight.intensity = 0.72;
     sunLight.intensity = 1.35;
-    emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.0; });
+    emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.05; });
+    toggleAuditorium80NightLights(false);
   } else {
-    scene.background.setHex(0x0f172a);
-    scene.fog.color.setHex(0x0f172a);
+    scene.background.setHex(0x0a111c); // Deep twilight navy sky
     ambientLight.color.setHex(0x1e293b);
-    ambientLight.intensity = 0.35;
-    sunLight.intensity = 0.2;
-    emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.85; });
+    ambientLight.intensity = 0.28;
+    sunLight.intensity = 0.12; // Gentle moonlight
+    emissiveMaterials.forEach(m => { m.emissiveIntensity = 2.4; }); // Radiant golden interior glow
+    toggleAuditorium80NightLights(true);
   }
+}
+
+function toggleAuditorium80NightLights(isNight) {
+  buildingsGroup.traverse(child => {
+    if (child.name === 'auditorium80NightLights') {
+      child.visible = isNight;
+    }
+    if (child.userData && child.userData.waterPool) {
+      child.material.color.setHex(isNight ? 0x050d18 : 0x0284c7);
+      child.material.roughness = isNight ? 0.02 : 0.06;
+    }
+  });
 }
 
 function toggleFullscreen() {
