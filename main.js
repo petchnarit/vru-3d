@@ -44,17 +44,19 @@ function campusToWorld(x, z) {
 }
 
 // ============================================================================
-// 1. VRU Masterplan Building Inventory (ครบ 57 หมายเลขตาม Artboard-6.png & MapVRU-2016.jpg)
-//    แกนพิกัด:
-//    - ทิศตะวันตก (หน้ามหาวิทยาลัย ติดถนนพหลโยธิน ทล.1): z = -142
-//    - ทิศตะวันออก (ท้ายมหาวิทยาลัย สนามกีฬากลาง & บ้านพักบุคลากร): z = +175
-//    - ทิศเหนือ (ฝั่งซ้ายของผัง อาคาร 75 ปี, ศูนย์วิทย์, ครุศาสตร์, สาธิตประถม): x = -60 ถึง -15
-//    - ทิศใต้ (ฝั่งขวาของผัง โรงแรม VRU, สระว่ายน้ำ, วิทยาการจัดการ, สระน้ำ): x = +20 ถึง +68
+// 1. VRU Masterplan Building Inventory (ครบ 57 หมายเลขตาม Artboard-6.png & Google Maps Ground Truth)
+//    แกนพิกัดมาตรฐาน 3D World (Ground Truth: Screenshot 2569-10-17 at 21.07.04.png):
+//    - ทิศตะวันออก (+X, ขวามือ): ถนนพหลโยธิน (ทล.1), ซุ้มประตูใหญ่, พระอนุสาวรีย์, หอประชุม 80 ปี (x = +112 ถึง +188)
+//    - ทิศตะวันตก (-X, ซ้ายมือ): สนามกีฬากลาง, ลู่วิ่ง 400ม., แฟลต/หมู่บ้านพักบุคลากร (x = -158 ถึง -220)
+//    - ทิศเหนือ (-Z, ด้านบน): โรงแรม VRU, สระว่ายน้ำ, รร.สาธิตมัธยม, ศูนย์วิทย์, สมาคมศิษย์เก่า (z = -20 ถึง -60)
+//    - ทิศใต้ (+Z, ด้านล่าง): คณะครุศาสตร์, รร.สาธิตประถม, คณะวิทยาการจัดการ, Community Mall (z = +15 ถึง +60)
+//    - ระบบ Solar Rooftop: ผูก lid: 8..19 เข้ากับอาคารจริง 12 หลัง และจำลองแผงโซลาร์บนหลังคา
+//    - ทางเชื่อมอาคาร: ปิด/ยกเลิกการสร้างทางเชื่อมทั้งหมดตามคำสั่งผู้ใช้งาน
 // ============================================================================
 
 const HOSPITAL_BUILDINGS = [
   {
-    id: 'bld-80yr',
+    id:  'bld-80yr',
     code: 'VRU-01',
     name: '1. หอประชุม 80 ปี วไลยอลงกรณ์ (80th Anniversary Grand Auditorium)',
     shortName: '1. หอประชุม 80 ปี วไลยอลงกรณ์',
@@ -62,7 +64,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารหอประชุมและแลนด์มาร์ค',
     status: 'เปิดทำการปกติ',
     archType: 'landmark80',
-    pos: { x: -2, y: 0, z: -88 },
+    pos: { x: 112, y: 0, z: 0 },
     rotY: 0,
     anchorHeight: 20,
     dimensions: { w: 44, h: 15, d: 36 },
@@ -83,7 +85,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-monument',
+    id:  'bld-monument',
     code: 'VRU-MON',
     name: 'พระอนุสาวรีย์ สมเด็จพระราชปิตุจฉา เจ้าฟ้าวไลยอลงกรณ์ กรมหลวงเพชรบุรีราชสิรินธร และหอพระ',
     shortName: 'พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ',
@@ -91,7 +93,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อนุสาวรีย์และสิ่งศักดิ์สิทธิ์',
     status: 'เปิดสักการะตลอดวัน',
     archType: 'monument',
-    pos: { x: -2, y: 0, z: -113 },
+    pos: { x: 142, y: 0, z: 0 },
     rotY: 0,
     anchorHeight: 10,
     dimensions: { w: 14, h: 7.5, d: 10 },
@@ -110,7 +112,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-100yr',
+    id:  'bld-100yr',
     code: 'VRU-02',
     name: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB - สำนักงานอธิการบดี)',
     shortName: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)',
@@ -118,8 +120,8 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริหารและสำนักงานกลาง',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'spb100',
-    pos: { x: -2, y: 0, z: -50 },
-    rotY: 0.32,
+    pos: { x: 76, y: 0, z: 0 },
+    rotY: 0,
     anchorHeight: 24,
     dimensions: { w: 26, h: 19, d: 20 },
     roofColor: 0x94a3b8,
@@ -142,20 +144,23 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-hotel',
+    id:  'bld-hotel',
     code: 'VRU-03',
-    name: '3. ศูนย์ฝึกประสบการณ์วิชาชีพ โรงแรมมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ (อาคารสมเด็จเจ้าฟ้าวไลยอลงกรณ์)',
-    shortName: '3. โรงแรม มรภ.วไลยอลงกรณ์ (ศูนย์ฝึกวิชาชีพ)',
+    name: '3. ศูนย์ฝึกประสบการณ์วิชาชีพ โรงแรมมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ (lid: 19)',
+    shortName: '3. โรงแรม มรภ.วไลยอลงกรณ์ฯ',
     sub: 'โรงแรมมาตรฐาน 3 ดาว ศูนย์ฝึกปฏิบัติการวิชาชีพการโรงแรมและการท่องเที่ยว ห้องพักรับรอง ห้องจัดเลี้ยง และห้องประชุมสัมมนา',
     category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'hotel',
-    pos: { x: 40, y: 0, z: -102 },
+    pos: { x: 98, y: 0, z: -34 },
     rotY: 0,
     anchorHeight: 21,
-    dimensions: { w: 18, h: 16.5, d: 24 },
+    dimensions: { w: 24, h: 16.5, d: 18 },
     roofColor: 0x334155,
     accentColor: 0x059669,
+        lid: 19,
+    hasSolar: true,
+    solarZone: 'Zone 2 (Solar Rooftop)',
     floors: [
       { num: 5, desc: 'ห้องพักรับรองพิเศษ (Executive Suites) และห้องพักมาตรฐานวิวสวน' },
       { num: 4, desc: 'ห้องพักผู้เข้าอบรมสัมมนาและคณาจารย์อาคันตุกะ (Deluxe Rooms)' },
@@ -164,7 +169,10 @@ const HOSPITAL_BUILDINGS = [
       { num: 1, desc: 'ล็อบบี้ต้อนรับ (Hotel Lobby), ห้องอาหารวไลยอลงกรณ์, คาเฟ่ และจุดจอดรถด้านหน้า' }
     ],
     stats: {
-      floors: '5 ชั้น (78 ห้องพัก)',
+          lid: 19,
+    hasSolar: true,
+    solarZone: 'Zone 2 (Solar Rooftop)',
+    floors: '5 ชั้น (78 ห้องพัก)',
       capacity: '350 คน/วัน',
       power: '115.0 kW',
       security: 'Keycard & CCTV 100%',
@@ -173,7 +181,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-mall',
+    id:  'bld-mall',
     code: 'VRU-04',
     name: '4. VRU Green Community Mall (ศูนย์การค้าชุมชนและร้านค้าหน้ามหาวิทยาลัย)',
     shortName: '4. VRU Green Community Mall',
@@ -181,7 +189,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและสวัสดิการ',
     status: 'เปิดบริการ 07:00 - 20:00 น.',
     archType: 'mall',
-    pos: { x: 54, y: 0, z: -115 },
+    pos: { x: 152, y: 0, z: 38 },
     rotY: 0,
     anchorHeight: 10,
     dimensions: { w: 22, h: 6.0, d: 16 },
@@ -201,26 +209,32 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-pool',
+    id:  'bld-pool',
     code: 'VRU-05',
-    name: '5. อาคารศูนย์ส่งเสริมสุขภาพ (สระว่ายน้ำอวยพร เปล่งวานิช)',
+    name: '5. อาคารศูนย์ส่งเสริมสุขภาพ (สระว่ายน้ำอวยพร เปล่งวานิช) (lid: 18)',
     shortName: '5. สระว่ายน้ำอวยพร เปล่งวานิช',
     sub: 'สระว่ายน้ำมาตรฐาน 50 เมตร อาคารศูนย์ส่งเสริมสุขภาพ ฟิตเนส และหลังคาโซลาร์เซลล์ขนาบสองฝั่งสระ',
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 19:30 น.',
     archType: 'pool',
-    pos: { x: 42, y: 0, z: -74 },
+    pos: { x: 72, y: 0, z: -34 },
     rotY: 0,
     anchorHeight: 11,
-    dimensions: { w: 24, h: 6.5, d: 26 },
+    dimensions: { w: 26, h: 6.5, d: 24 },
     roofColor: 0x0284c7,
     accentColor: 0x0ea5e9,
+        lid: 18,
+    hasSolar: true,
+    solarZone: 'Zone 2 (Solar Rooftop)',
     floors: [
       { num: 2, desc: 'อัฒจันทร์ชมการแข่งขันว่ายน้ำ, ห้องฟิตเนส และหลังคา Solar Rooftop' },
       { num: 1, desc: 'สระว่ายน้ำมาตรฐาน 8 ลู่ว่าย, สระเด็ก, ห้องเปลี่ยนเครื่องแต่งกาย และสำนักงานศูนย์ส่งเสริมสุขภาพ' }
     ],
     stats: {
-      floors: 'อาคาร 2 ชั้น + สระกลางแจ้ง',
+          lid: 18,
+    hasSolar: true,
+    solarZone: 'Zone 2 (Solar Rooftop)',
+    floors: 'อาคาร 2 ชั้น + สระกลางแจ้ง',
       capacity: '300 คน/วัน',
       power: '42.0 kW + Solar',
       security: 'เจ้าหน้าที่ไลฟ์การ์ด 100%',
@@ -229,26 +243,32 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-service-biz',
+    id:  'bld-service-biz',
     code: 'VRU-06-08',
-    name: '6-8. อาคารปฏิบัติการขยะ, อาคารปฏิบัติการด้านธุรกิจบริการ และอาคารส่งเสริมการเรียนรู้',
-    shortName: '6-8. อาคารปฏิบัติการธุรกิจบริการ & ส่งเสริมการเรียนรู้',
-    sub: 'ประกอบด้วย 6. อาคารปฏิบัติการขยะ, 7. อาคารปฏิบัติการด้านธุรกิจบริการ และ 8. อาคารส่งเสริมการเรียนรู้',
+    name: '7. อาคารธุรกิจบริการ (lid: 9)',
+    shortName: '7. อาคารธุรกิจบริการ',
+    sub: 'อาคารปฏิบัติการด้านธุรกิจบริการ มรภ.วไลยอลงกรณ์ฯ ติดตั้งระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์บนหลังคา (Solar Rooftop)',
     category: 'อาคารปฏิบัติการและบริการวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'cluster3',
-    pos: { x: 40, y: 0, z: -48 },
+    pos: { x: 108, y: 0, z: -52 },
     rotY: 0,
     anchorHeight: 12,
-    dimensions: { w: 18, h: 8.5, d: 22 },
+    dimensions: { w: 18, h: 7.5, d: 15 },
     roofColor: 0x64748b,
     accentColor: 0x0d9488,
+        lid: 9,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 2, desc: 'ห้องปฏิบัติการธุรกิจการบิน การโรงแรม และห้องอบรมส่งเสริมการเรียนรู้ตลอดชีวิต' },
       { num: 1, desc: 'ศูนย์จัดการสิ่งแวดล้อมและธนาคารขยะรีไซเคิล (Zero Waste), ห้องฝึกปฏิบัติการบริการ' }
     ],
     stats: {
-      floors: 'กลุ่มอาคาร 2 ชั้น',
+          lid: 9,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: 'กลุ่มอาคาร 2 ชั้น',
       capacity: '400 คน/วัน',
       power: '38.0 kW',
       security: 'ปกติ 100%',
@@ -257,7 +277,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-auditorium',
+    id:  'bld-auditorium',
     code: 'VRU-09',
     name: '9. หอประชุมวไลยอลงกรณ์ (Valaya Alongkorn Auditorium)',
     shortName: '9. หอประชุมวไลยอลงกรณ์',
@@ -265,10 +285,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารหอประชุมและกิจกรรม',
     status: 'เปิดทำการตามตารางกิจกรรม',
     archType: 'auditorium',
-    pos: { x: -8, y: 0, z: -22 },
+    pos: { x: 38, y: 0, z: 18 },
     rotY: 0,
     anchorHeight: 15,
-    dimensions: { w: 18, h: 10.5, d: 24 },
+    dimensions: { w: 24, h: 10.5, d: 18 },
     roofColor: 0xe2e8f0,
     accentColor: 0x047857,
     floors: [
@@ -285,7 +305,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-canteen',
+    id:  'bld-canteen',
     code: 'VRU-10',
     name: '10. ศูนย์อาหารกลาง (VRU Central Canteen / อาคารโรงอาหาร)',
     shortName: '10. ศูนย์อาหารกลาง (โรงอาหาร)',
@@ -293,10 +313,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและสวัสดิการ',
     status: 'เปิดบริการ 06:30 - 18:00 น.',
     archType: 'canteen',
-    pos: { x: -20, y: 0, z: -22 },
+    pos: { x: 22, y: 0, z: 18 },
     rotY: 0,
     anchorHeight: 11,
-    dimensions: { w: 16, h: 7.0, d: 22 },
+    dimensions: { w: 22, h: 7.0, d: 16 },
     roofColor: 0x047857,
     accentColor: 0x10b981,
     floors: [
@@ -313,25 +333,31 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-gym1',
+    id:  'bld-gym1',
     code: 'VRU-11',
-    name: '11. ยิมเนเซียม 1 (อาคารกีฬาในร่ม 1)',
-    shortName: '11. ยิมเนเซียม 1 (อาคารกีฬาในร่ม 1)',
+    name: '11. ยิมเนเซียม 1 (อาคารกีฬาในร่ม 1 - อาคารโรงยิม 1) (lid: 12)',
+    shortName: '11. ยิมเนเซียม 1 (โรงยิม 1)',
     sub: 'สนามกีฬาในร่มสำหรับแข่งขันบาสเกตบอล วอลเลย์บอล แบดมินตัน และเรียนวิชาพลศึกษา',
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 20:00 น.',
     archType: 'gym',
-    pos: { x: -32, y: 0, z: -22 },
+    pos: { x: 6, y: 0, z: 18 },
     rotY: 0,
     anchorHeight: 13,
-    dimensions: { w: 16, h: 9.5, d: 22 },
+    dimensions: { w: 22, h: 9.5, d: 18 },
     roofColor: 0x38bdf8,
     accentColor: 0x0284c7,
+        lid: 12,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 1, desc: 'สนามกีฬาอเนกประสงค์ในร่ม, อัฒจันทร์เชียร์กีฬา, ห้องอุปกรณ์กีฬา และห้องพักอาจารย์พลศึกษา' }
     ],
     stats: {
-      floors: '1 ชั้น (หลังคาโค้งสูง)',
+          lid: 12,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '1 ชั้น (หลังคาโค้งสูง)',
       capacity: '600 คน',
       power: '32.0 kW',
       security: 'ปกติ 100%',
@@ -340,7 +366,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-75yr',
+    id:  'bld-75yr',
     code: 'VRU-12',
     name: '12. อาคาร 75 ปี วไลยอลงกรณ์ (ศูนย์ภาษา - VAB)',
     shortName: '12. อาคาร 75 ปี วไลยอลงกรณ์ (ศูนย์ภาษา)',
@@ -348,10 +374,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารเรียนรวมและศูนย์ภาษา',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: -54, y: 0, z: -96 },
+    pos: { x: 48, y: 0, z: -22 },
     rotY: 0,
     anchorHeight: 19,
-    dimensions: { w: 16, h: 15.0, d: 26 },
+    dimensions: { w: 24, h: 15.0, d: 16 },
     roofColor: 0x334155,
     accentColor: 0x2563eb,
     floors: [
@@ -370,7 +396,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-scb',
+    id:  'bld-scb',
     code: 'VRU-13',
     name: '13. อาคารศูนย์วิทยาศาสตร์ (SCB - Science Center Building)',
     shortName: '13. ศูนย์วิทยาศาสตร์ (SCB)',
@@ -378,10 +404,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 18:00 น.',
     archType: 'academicSolar',
-    pos: { x: -54, y: 0, z: -64 },
+    pos: { x: 30, y: 0, z: -22 },
     rotY: 0,
     anchorHeight: 20,
-    dimensions: { w: 18, h: 16.0, d: 28 },
+    dimensions: { w: 26, h: 16.0, d: 18 },
     roofColor: 0x1e293b,
     accentColor: 0x0284c7,
     floors: [
@@ -400,7 +426,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-agri1',
+    id:  'bld-agri1',
     code: 'VRU-14',
     name: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร',
     shortName: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร',
@@ -408,10 +434,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicGable',
-    pos: { x: -54, y: 0, z: -36 },
+    pos: { x: 12, y: 0, z: -22 },
     rotY: 0,
     anchorHeight: 15,
-    dimensions: { w: 16, h: 11.5, d: 20 },
+    dimensions: { w: 20, h: 11.5, d: 16 },
     roofColor: 0x15803d,
     accentColor: 0x16a34a,
     floors: [
@@ -429,7 +455,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-agri2',
+    id:  'bld-agri2',
     code: 'VRU-15',
     name: '15. คณะเทคโนโลยีการเกษตร (FAT - Faculty of Agricultural Technology)',
     shortName: '15. คณะเทคโนโลยีการเกษตร (FAT)',
@@ -437,10 +463,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'academicSolar',
-    pos: { x: -54, y: 0, z: -12 },
+    pos: { x: -6, y: 0, z: -22 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 16, h: 12.0, d: 20 },
+    dimensions: { w: 20, h: 12.0, d: 16 },
     roofColor: 0x166534,
     accentColor: 0x15803d,
     floors: [
@@ -458,7 +484,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-edu1',
+    id:  'bld-edu1',
     code: 'VRU-16',
     name: '16. อาคารเรียนคณะครุศาสตร์ (อาคารเรียน 7)',
     shortName: '16. อาคารเรียนคณะครุศาสตร์',
@@ -466,10 +492,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'eduMaroon',
-    pos: { x: -34, y: 0, z: 2 },
+    pos: { x: 32, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 17,
-    dimensions: { w: 14, h: 13.5, d: 22 },
+    dimensions: { w: 22, h: 13.5, d: 14 },
     roofColor: 0x991b1b,
     accentColor: 0xdc2626,
     floors: [
@@ -488,7 +514,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-edu2',
+    id:  'bld-edu2',
     code: 'VRU-17',
     name: '17. คณะครุศาสตร์ (FE - Faculty of Education / อาคารเรียน 6)',
     shortName: '17. คณะครุศาสตร์ (FE)',
@@ -496,10 +522,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'eduMaroon',
-    pos: { x: -20, y: 0, z: 8 },
+    pos: { x: 48, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 18,
-    dimensions: { w: 16, h: 14.0, d: 20 },
+    dimensions: { w: 26, h: 14.0, d: 16 },
     roofColor: 0x7f1d1d,
     accentColor: 0xb91c1c,
     floors: [
@@ -518,7 +544,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-student-dev',
+    id:  'bld-student-dev',
     code: 'VRU-18',
     name: '18. อาคารกองพัฒนานักศึกษา (Student Development Division)',
     shortName: '18. กองพัฒนานักศึกษา',
@@ -526,10 +552,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริหารและบริการการศึกษา',
     status: 'เปิดทำการ 08:30 - 17:30 น.',
     archType: 'academicGable',
-    pos: { x: -20, y: 0, z: -6 },
+    pos: { x: 64, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 13,
-    dimensions: { w: 12, h: 9.0, d: 14 },
+    dimensions: { w: 18, h: 10.5, d: 14 },
     roofColor: 0x047857,
     accentColor: 0x10b981,
     floors: [
@@ -546,7 +572,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-fst',
+    id:  'bld-fst',
     code: 'VRU-19',
     name: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST - อาคารเรียน 5)',
     shortName: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)',
@@ -554,10 +580,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: -6, y: 0, z: -4 },
+    pos: { x: 42, y: 0, z: -4 },
     rotY: 0,
     anchorHeight: 18,
-    dimensions: { w: 16, h: 14.0, d: 22 },
+    dimensions: { w: 22, h: 13.0, d: 16 },
     roofColor: 0xd97706,
     accentColor: 0xf59e0b,
     floors: [
@@ -576,7 +602,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-clinic-bank',
+    id:  'bld-clinic-bank',
     code: 'VRU-20-22',
     name: '20-22. อาคารพยาบาล, ร้านสะดวกซื้อ และธนาคารกรุงไทย',
     shortName: '20-22. อาคารพยาบาล / ร้านสะดวกซื้อ / ธนาคาร',
@@ -584,10 +610,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารบริการและสวัสดิการ',
     status: 'เปิดบริการทุกวัน',
     archType: 'serviceStrip',
-    pos: { x: 6, y: 0, z: -6 },
+    pos: { x: 58, y: 0, z: 16 },
     rotY: 0,
     anchorHeight: 10,
-    dimensions: { w: 12, h: 5.5, d: 18 },
+    dimensions: { w: 18, h: 6.5, d: 14 },
     roofColor: 0x0284c7,
     accentColor: 0x0ea5e9,
     floors: [
@@ -603,7 +629,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-60yr',
+    id:  'bld-60yr',
     code: 'VRU-23-27',
     name: '23-27. อาคาร 60 ปี วไลยอลงกรณ์, อาคารคหกรรมศาสตร์ และสำนักส่งเสริมการเรียนรู้ฯ',
     shortName: '23-27. อาคาร 60 ปีฯ & ปฏิบัติการคหกรรมศาสตร์',
@@ -611,10 +637,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'cluster5',
-    pos: { x: 18, y: 0, z: -2 },
+    pos: { x: 25, y: 0, z: -4 },
     rotY: 0,
     anchorHeight: 15,
-    dimensions: { w: 14, h: 11.0, d: 34 },
+    dimensions: { w: 24, h: 13.5, d: 16 },
     roofColor: 0x15803d,
     accentColor: 0x059669,
     floors: [
@@ -632,7 +658,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-fms',
+    id:  'bld-fms',
     code: 'VRU-28',
     name: '28. คณะวิทยาการจัดการ (FMS - Faculty of Management Science / อาคารเรียน 2)',
     shortName: '28. คณะวิทยาการจัดการ (FMS)',
@@ -640,10 +666,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'fmsLong',
-    pos: { x: 36, y: 0, z: -2 },
+    pos: { x: 12, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 19,
-    dimensions: { w: 14, h: 14.5, d: 52 },
+    dimensions: { w: 32, h: 14.5, d: 18 },
     roofColor: 0xea580c,
     accentColor: 0xf97316,
     floors: [
@@ -662,20 +688,23 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-scc2',
+    id:  'bld-scc2',
     code: 'VRU-29',
-    name: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2) และคณะสาธารณสุขศาสตร์',
+    name: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2) และคณะสาธารณสุขศาสตร์ (lid: 15)',
     shortName: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)',
     sub: 'อาคารเรียนรวมวิทยาศาสตร์สุขภาพ คณะสาธารณสุขศาสตร์ ห้องปฏิบัติการอนามัยสิ่งแวดล้อม อาชีวอนามัย และห้องบรรยายขนาดใหญ่',
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: 54, y: 0, z: 12 },
-    rotY: -0.15,
+    pos: { x: 6, y: 0, z: -4 },
+    rotY: 0,
     anchorHeight: 20,
-    dimensions: { w: 18, h: 15.5, d: 28 },
+    dimensions: { w: 24, h: 16.5, d: 18 },
     roofColor: 0x334155,
     accentColor: 0x0284c7,
+        lid: 15,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 4, desc: 'ห้องปฏิบัติการอาชีวอนามัยและความปลอดภัย ห้องวิจัยสาธารณสุขชุมชน' },
       { num: 3, desc: 'ห้องปฏิบัติการวิทยาศาสตร์สุขภาพ กายวิภาคศาสตร์ และสรีรวิทยา' },
@@ -683,7 +712,10 @@ const HOSPITAL_BUILDINGS = [
       { num: 1, desc: 'โถงต้อนรับ คลินิกส่งเสริมสุขภาพชุมชน และชมรมถันยรักษ์ มรภ.วไลยอลงกรณ์ฯ' }
     ],
     stats: {
-      floors: '4 ชั้น + Solar Roof',
+          lid: 15,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '4 ชั้น + Solar Roof',
       capacity: '900 คน/วัน',
       power: '105.0 kW',
       security: 'ปกติ 100%',
@@ -692,20 +724,23 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-satit-sec',
+    id:  'bld-satit-sec',
     code: 'VRU-30',
-    name: '30. โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (ฝ่ายมัธยม)',
-    shortName: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)',
+    name: '30. โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (ฝ่ายมัธยม - อาคารโรงเรียนมัธยมสาธิต) (lid: 11)',
+    shortName: '30. สาธิต มรภ.วไลยอลงกรณ์ฯ (มัธยม)',
     sub: 'จัดการเรียนการสอนระดับมัธยมศึกษาตอนต้นและตอนปลาย (หลักสูตรปกติและ English Program) พร้อมห้องปฏิบัติการวิทยาศาสตร์-คณิตศาสตร์',
     category: 'โรงเรียนสาธิต',
     status: 'เปิดทำการ 07:30 - 16:30 น.',
     archType: 'uCourtyard',
-    pos: { x: 18, y: 0, z: 24 },
+    pos: { x: -24, y: 0, z: -36 },
     rotY: 0,
     anchorHeight: 17,
-    dimensions: { w: 20, h: 13.0, d: 18 },
+    dimensions: { w: 28, h: 12.5, d: 20 },
     roofColor: 0x166534,
     accentColor: 0x15803d,
+        lid: 11,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 4, desc: 'ห้องปฏิบัติการวิทยาศาสตร์ คอมพิวเตอร์ ดนตรี-นาฏศิลป์ และหอประชุมโรงเรียนสาธิต' },
       { num: 3, desc: 'ห้องเรียนระดับชั้นมัธยมศึกษาตอนปลาย (ม.4 - ม.6)' },
@@ -713,7 +748,10 @@ const HOSPITAL_BUILDINGS = [
       { num: 1, desc: 'ห้องธุรการโรงเรียนสาธิต (มัธยม), ห้องพักครู และลานกิจกรรมหน้าเสาธง' }
     ],
     stats: {
-      floors: '4 ชั้น (อาคารรูปตัวยู)',
+          lid: 11,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '4 ชั้น (อาคารรูปตัวยู)',
       capacity: '950 คน/วัน',
       power: '76.0 kW',
       security: 'Smart School Gate 100%',
@@ -722,20 +760,23 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-arit',
+    id:  'bld-arit',
     code: 'VRU-31',
-    name: '31. สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (หอสมุดกลาง & ศูนย์คอมพิวเตอร์)',
-    shortName: '31. สำนักวิทยบริการฯ (หอสมุดกลาง)',
+    name: '31. อาคารหอสมุดกลาง (Central Library - สำนักวิทยบริการฯ) (lid: 17)',
+    shortName: '31. อาคารหอสมุดกลาง',
     sub: 'หอสมุดกลางอัจฉริยะ (Smart Library), Co-Working Space 24 ชม., ศูนย์ข้อมูลเครือข่ายอินเทอร์เน็ตความเร็วสูง และสตูดิโอสื่อดิจิทัล',
     category: 'อาคารบริหารและบริการการศึกษา',
     status: 'เปิดบริการ 08:00 - 20:00 น.',
     archType: 'academicSolar',
-    pos: { x: -12, y: 0, z: 22 },
+    pos: { x: -8, y: 0, z: -4 },
     rotY: 0,
     anchorHeight: 18,
-    dimensions: { w: 18, h: 14.0, d: 14 },
+    dimensions: { w: 22, h: 16.0, d: 18 },
     roofColor: 0x1e293b,
     accentColor: 0x059669,
+        lid: 17,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 4, desc: 'ศูนย์ควบคุมระบบเครือข่ายหลัก (NOC & Data Center) และห้องอบรมคอมพิวเตอร์' },
       { num: 3, desc: 'คลังหนังสือวิชาการ วารสารวิจัย วิทยานิพนธ์ และห้องค้นคว้ากลุ่มย่อย (Group Study Rooms)' },
@@ -743,7 +784,10 @@ const HOSPITAL_BUILDINGS = [
       { num: 1, desc: 'เคาน์เตอร์บริการยืม-คืนอัตโนมัติ (RFID), Co-Working Space และสตูดิโอผลิตสื่อ e-Learning' }
     ],
     stats: {
-      floors: '4 ชั้น + Solar Roof',
+          lid: 17,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '4 ชั้น + Solar Roof',
       capacity: '1,100 คน/วัน',
       power: '110.0 kW',
       security: 'Automated Gate 100%',
@@ -752,7 +796,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-fhs',
+    id:  'bld-fhs',
     code: 'VRU-32',
     name: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS - อาคารเรียน 8)',
     shortName: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)',
@@ -760,10 +804,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'uCourtyard',
-    pos: { x: -30, y: 0, z: 24 },
+    pos: { x: -6, y: 0, z: 18 },
     rotY: 0,
     anchorHeight: 18,
-    dimensions: { w: 18, h: 14.0, d: 16 },
+    dimensions: { w: 22, h: 13.0, d: 16 },
     roofColor: 0x581c87,
     accentColor: 0x7e22ce,
     floors: [
@@ -782,20 +826,23 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-slb-rdi',
+    id:  'bld-slb-rdi',
     code: 'VRU-33-34',
-    name: '33-34. อาคารเรียนรวมสังคมศาสตร์ (SLB) และสถาบันวิจัยและพัฒนา (RDI)',
-    shortName: '33-34. อาคารเรียนรวมสังคมศาสตร์ & สถาบันวิจัยฯ',
+    name: '33-34. อาคารเรียนรวมสังคมศาสตร์ (SLB) และสถาบันวิจัยและพัฒนา (RDI) (lid: 13)',
+    shortName: '33-34. เรียนรวมสังคมศาสตร์ (SLB)',
     sub: '33. อาคารเรียนรวมสังคมศาสตร์ 6 ชั้น (SLB), 34. สถาบันวิจัยและพัฒนา (RDI), บัณฑิตวิทยาลัย และวิทยาลัยนวัตกรรมการจัดการ',
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicSolar',
-    pos: { x: -54, y: 0, z: 22 },
+    pos: { x: -8, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 22,
-    dimensions: { w: 18, h: 18.0, d: 28 },
+    dimensions: { w: 26, h: 15.0, d: 18 },
     roofColor: 0x15803d,
     accentColor: 0x059669,
+        lid: 13,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 6, desc: 'ห้องประชุมสัมมนาระดับบัณฑิตศึกษา และศูนย์บ่มเพาะงานวิจัย' },
       { num: 5, desc: 'วิทยาลัยนวัตกรรมการจัดการ (RCIM) และบัณฑิตวิทยาลัย' },
@@ -805,7 +852,10 @@ const HOSPITAL_BUILDINGS = [
       { num: 1, desc: 'โถงนิทรรศการงานวิจัยเพื่อพัฒนาท้องถิ่นปทุมธานี และสำนักงานประสานงานวิจัย' }
     ],
     stats: {
-      floors: '6 ชั้น',
+          lid: 13,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '6 ชั้น',
       capacity: '1,250 คน/วัน',
       power: '115.0 kW',
       security: 'ปกติ 100%',
@@ -814,7 +864,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-satit-pri',
+    id:  'bld-satit-pri',
     code: 'VRU-35',
     name: '35. โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (ฝ่ายประถมและปฐมวัย)',
     shortName: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)',
@@ -822,10 +872,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'โรงเรียนสาธิต',
     status: 'เปิดทำการ 07:30 - 16:30 น.',
     archType: 'uCourtyard',
-    pos: { x: -34, y: 0, z: 48 },
+    pos: { x: -28, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 24, h: 12.0, d: 20 },
+    dimensions: { w: 28, h: 11.5, d: 20 },
     roofColor: 0x3b82f6,
     accentColor: 0x2563eb,
     floors: [
@@ -843,7 +893,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-thai-pavilion',
+    id:  'bld-thai-pavilion',
     code: 'VRU-36',
     name: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์ / เรือนไทยภาคกลาง)',
     shortName: '36. เรือนไทย วไลยอลงกรณ์ (เรือนเจ้าฟ้า)',
@@ -851,10 +901,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารอนุรักษ์ศิลปวัฒนธรรม',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'thaiPavilion',
-    pos: { x: -2, y: 0, z: 46 },
+    pos: { x: -18, y: 0, z: -16 },
     rotY: 0,
     anchorHeight: 13,
-    dimensions: { w: 22, h: 9.0, d: 18 },
+    dimensions: { w: 16, h: 6.5, d: 14 },
     roofColor: 0xb45309,
     accentColor: 0xd97706,
     floors: [
@@ -871,7 +921,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-vehicle',
+    id:  'bld-vehicle',
     code: 'VRU-37',
     name: '37. อาคารฝ่ายยานพาหนะ และสถานีรถรางไฟฟ้ามหาวิทยาลัย',
     shortName: '37. ฝ่ายยานพาหนะ & รถรางไฟฟ้า',
@@ -879,10 +929,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารสนับสนุนและสาธารณูปโภค',
     status: 'เปิดบริการ 06:30 - 20:00 น.',
     archType: 'garage',
-    pos: { x: 14, y: 0, z: 68 },
+    pos: { x: -44, y: 0, z: -16 },
     rotY: 0,
     anchorHeight: 10,
-    dimensions: { w: 14, h: 6.0, d: 12 },
+    dimensions: { w: 20, h: 6.5, d: 14 },
     roofColor: 0x475569,
     accentColor: 0x059669,
     floors: [
@@ -898,7 +948,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-ind-lab',
+    id:  'bld-ind-lab',
     code: 'VRU-38',
     name: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม (Workshop Halls 1-3)',
     shortName: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม',
@@ -906,10 +956,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'workshop',
-    pos: { x: -2, y: 0, z: 66 },
+    pos: { x: -44, y: 0, z: 8 },
     rotY: 0,
     anchorHeight: 12,
-    dimensions: { w: 16, h: 8.0, d: 14 },
+    dimensions: { w: 22, h: 7.5, d: 18 },
     roofColor: 0x9a3412,
     accentColor: 0xea580c,
     floors: [
@@ -926,7 +976,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-fit',
+    id:  'bld-fit',
     code: 'VRU-39',
     name: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT - อาคารเรียน 9)',
     shortName: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)',
@@ -934,10 +984,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'คณะและอาคารวิชาการ',
     status: 'เปิดทำการ 08:00 - 17:00 น.',
     archType: 'academicGable',
-    pos: { x: 2, y: 0, z: 80 },
+    pos: { x: -44, y: 0, z: 32 },
     rotY: 0,
     anchorHeight: 17,
-    dimensions: { w: 18, h: 13.0, d: 14 },
+    dimensions: { w: 24, h: 14.0, d: 16 },
     roofColor: 0x7c2d12,
     accentColor: 0xd97706,
     floors: [
@@ -956,7 +1006,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-dorm-komen',
+    id:  'bld-dorm-komen',
     code: 'VRU-40-41',
     name: '40-41. หอพักโกเมน และ หอพักเพทาย (พร้อมร้าน Slow Bar Taisoi)',
     shortName: '40-41. หอพักโกเมน & หอพักเพทาย',
@@ -964,10 +1014,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'twinDorm',
-    pos: { x: -18, y: 0, z: 66 },
+    pos: { x: -82, y: 0, z: -32 },
     rotY: 0,
     anchorHeight: 15,
-    dimensions: { w: 16, h: 11.5, d: 14 },
+    dimensions: { w: 20, h: 14.5, d: 22 },
     roofColor: 0xd97706,
     accentColor: 0xf59e0b,
     floors: [
@@ -985,25 +1035,31 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-gym2',
+    id:  'bld-gym2',
     code: 'VRU-42',
-    name: '42. ยิมเนเซียม 2 และสนามฟุตซอลกลางแจ้ง (Gymnasium 2 & Futsal Courts)',
-    shortName: '42. ยิมเนเซียม 2 & สนามฟุตซอล',
+    name: '42. ยิมเนเซียม 2 และสนามฟุตซอลกลางแจ้ง (อาคารโรงยิม 2) (lid: 14)',
+    shortName: '42. ยิมเนเซียม 2 (โรงยิม 2)',
     sub: 'อาคารกีฬาในร่ม 2 สนามฟุตซอล สนามบาสเกตบอล และสนามเทนนิสกลางแจ้งสำหรับนักศึกษาโซนหอพัก',
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 08:30 - 21:00 น.',
     archType: 'gymCourts',
-    pos: { x: -38, y: 0, z: 76 },
+    pos: { x: -115, y: 0, z: -38 },
     rotY: 0,
     anchorHeight: 13,
-    dimensions: { w: 20, h: 9.5, d: 28 },
+    dimensions: { w: 26, h: 10.5, d: 22 },
     roofColor: 0x0284c7,
     accentColor: 0x10b981,
+        lid: 14,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
     floors: [
       { num: 1, desc: 'อาคารยิมเนเซียม 2, สนามฟุตซอลกลางแจ้ง, สนามบาสเกตบอล และลานออกกำลังกาย' }
     ],
     stats: {
-      floors: '1 ชั้น + สนามกีฬากลางแจ้ง 4 สนาม',
+          lid: 14,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: '1 ชั้น + สนามกีฬากลางแจ้ง 4 สนาม',
       capacity: '550 คน/วัน',
       power: '36.0 kW (ไฟสปอตไลท์สนาม)',
       security: 'ปกติ 100%',
@@ -1012,7 +1068,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-dorms-main',
+    id:  'bld-dorms-main',
     code: 'VRU-43-48',
     name: '43-48. กลุ่มหอพักนักศึกษา มรภ.วไลยอลงกรณ์ฯ (หอพักหญิง & หอพักชาย อาคาร 43-48)',
     shortName: '43-48. กลุ่มหอพักนักศึกษา (6 อาคาร)',
@@ -1020,10 +1076,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'dormCluster6',
-    pos: { x: -8, y: 0, z: 100 },
+    pos: { x: -92, y: 0, z: 2 },
     rotY: 0,
     anchorHeight: 19,
-    dimensions: { w: 32, h: 15.0, d: 24 },
+    dimensions: { w: 28, h: 15.0, d: 26 },
     roofColor: 0xd97706,
     accentColor: 0xf59e0b,
     floors: [
@@ -1042,7 +1098,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-dorms-intl',
+    id:  'bld-dorms-intl',
     code: 'VRU-49-52',
     name: '49-52. หอพักนักศึกษานานาชาติ (International Student Dormitories 49-52)',
     shortName: '49-52. หอพักนักศึกษานานาชาติ (4 อาคาร)',
@@ -1050,10 +1106,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'เปิดบริการ 24 ชั่วโมง',
     archType: 'dormRow4',
-    pos: { x: -8, y: 0, z: 118 },
+    pos: { x: -92, y: 0, z: 34 },
     rotY: 0,
     anchorHeight: 18,
-    dimensions: { w: 36, h: 14.0, d: 12 },
+    dimensions: { w: 24, h: 14.5, d: 22 },
     roofColor: 0x475569,
     accentColor: 0x0ea5e9,
     floors: [
@@ -1072,7 +1128,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-rspg',
+    id:  'bld-rspg',
     code: 'VRU-53-54',
     name: '53-54. ศูนย์ประสานงานและอาคารปฏิบัติการโครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริฯ (อพ.สธ.)',
     shortName: '53-54. ศูนย์อนุรักษ์พันธุกรรมพืช (อพ.สธ.)',
@@ -1080,10 +1136,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'ศูนย์วิจัยและอนุรักษ์ธรรมชาติ',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'rspg',
-    pos: { x: 24, y: 0, z: 96 },
+    pos: { x: -130, y: 0, z: 36 },
     rotY: 0,
     anchorHeight: 13,
-    dimensions: { w: 16, h: 8.5, d: 18 },
+    dimensions: { w: 20, h: 7.5, d: 16 },
     roofColor: 0x15803d,
     accentColor: 0x16a34a,
     floors: [
@@ -1100,7 +1156,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-valaya-hub',
+    id:  'bld-valaya-hub',
     code: 'VRU-55-56',
     name: '55-56. Valaya Hub และ รีสอร์ท (Valaya Hut & Eco-Resort)',
     shortName: '55-56. Valaya Hub & รีสอร์ท (Valaya Hut)',
@@ -1108,10 +1164,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก',
     status: 'เปิดบริการทุกวัน',
     archType: 'resort',
-    pos: { x: 38, y: 0, z: 112 },
+    pos: { x: -155, y: 0, z: 38 },
     rotY: 0,
     anchorHeight: 11,
-    dimensions: { w: 18, h: 6.5, d: 18 },
+    dimensions: { w: 24, h: 6.5, d: 18 },
     roofColor: 0x92400e,
     accentColor: 0xd97706,
     floors: [
@@ -1127,7 +1183,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-stadium',
+    id:  'bld-stadium',
     code: 'VRU-57',
     name: '57. สนามกีฬากลาง มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (VRU Main Stadium)',
     shortName: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ',
@@ -1135,10 +1191,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 06:00 - 21:00 น.',
     archType: 'stadium',
-    pos: { x: -8, y: 0, z: 140 },
+    pos: { x: -158, y: 0, z: 4 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 68, h: 11.0, d: 36 },
+    dimensions: { w: 55, h: 11.5, d: 90 },
     roofColor: 0xdc2626,
     accentColor: 0x16a34a,
     floors: [
@@ -1155,7 +1211,7 @@ const HOSPITAL_BUILDINGS = [
     }
   },
   {
-    id: 'bld-staff-housing',
+    id:  'bld-staff-housing',
     code: 'VRU-STAFF',
     name: '48 (2016). หมู่บ้านพักอาจารย์และแฟลตบ้านพักเจ้าหน้าที่ (Staff Housing & Flats)',
     shortName: 'แฟลตบ้านพักอาจารย์และเจ้าหน้าที่',
@@ -1163,10 +1219,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'หอพักนักศึกษาและที่พักบุคลากร',
     status: 'พื้นที่พักอาศัยบุคลากร',
     archType: 'staffVillage',
-    pos: { x: -32, y: 0, z: 164 },
+    pos: { x: -202, y: 0, z: 4 },
     rotY: 0,
     anchorHeight: 14,
-    dimensions: { w: 36, h: 9.0, d: 22 },
+    dimensions: { w: 22, h: 8.5, d: 75 },
     roofColor: 0x475569,
     accentColor: 0x047857,
     floors: [
@@ -1180,6 +1236,268 @@ const HOSPITAL_BUILDINGS = [
       security: 'รปภ. โซนที่พักอาศัย 24 ชม.',
       load: 88,
       note: 'ปรากฏชัดเจนทั้งใน Artboard-6.png, MapVRU-2016.jpg (หมายเลข 48) และภาพถ่ายดาวเทียม /vru บริเวณด้านหลังสนามกีฬาและแนวขอบทิศเหนือ'
+    }
+  },
+  {
+    id: 'bld-waste-management',
+    code: 'VRU-06',
+    name: '6. อาคารจัดการขยะชุมชน (lid: 8)',
+    shortName: '6. อาคารจัดการขยะชุมชน',
+    sub: 'ศูนย์จัดการและคัดแยกขยะชุมชนต้นแบบ มรภ.วไลยอลงกรณ์ฯ ติดตั้งระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์ (Solar Rooftop)',
+    category: 'สาธารณูปโภคและสิ่งแวดล้อม',
+    status: 'เปิดทำการปกติ',
+    archType: 'workshop',
+    pos: { x: 118, y: 0, z: -36 },
+    rotY: 0,
+    anchorHeight: 10,
+    dimensions: { w: 16, h: 6.5, d: 14 },
+    roofColor: 0x475569,
+    accentColor: 0x059669,
+    lid: 8,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: [
+      { num: 1, desc: 'พื้นที่คัดแยก แปรรูปขยะรีไซเคิล และระบบควบคุมพลังงานแสงอาทิตย์ Solar PV' },
+    ],
+    stats: {
+      floors: 1,
+      capacity: '30 ตัน/สัปดาห์',
+      power: 'Solar 15 kWp',
+      security: 'พร้อมใช้งาน 100%',
+      load: 75,
+      note: 'อาคารอนุรักษ์สิ่งแวดล้อมและพลังงานหมุนเวียน ติดตั้งระบบ Solar Rooftop (lid: 8)'
+    }
+  },
+  {
+    id: 'bld-multipurpose',
+    code: 'VRU-08',
+    name: '8. อาคารอเนกประสงค์ (lid: 10)',
+    shortName: '8. อาคารอเนกประสงค์',
+    sub: 'อาคารกิจกรรมอเนกประสงค์และส่งเสริมการเรียนรู้ ติดตั้งระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์ (Solar Rooftop)',
+    category: 'อาคารบริการการศึกษา',
+    status: 'เปิดทำการปกติ',
+    archType: 'academicGable',
+    pos: { x: 92, y: 0, z: -52 },
+    rotY: 0,
+    anchorHeight: 12,
+    dimensions: { w: 20, h: 8.5, d: 16 },
+    roofColor: 0x065f46,
+    accentColor: 0xfbbf24,
+    lid: 10,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: [
+      { num: 1, desc: 'โถงกิจกรรมอเนกประสงค์ นิทรรศการ และศูนย์อบรม' },
+      { num: 2, desc: 'ห้องสัมมนากลุ่มย่อย และห้องปฏิบัติการสื่อดิจิทัล' },
+    ],
+    stats: {
+      floors: 2,
+      capacity: '350 ที่นั่ง',
+      power: 'Solar 35 kWp',
+      security: 'พร้อมใช้งาน 100%',
+      load: 80,
+      note: 'ติดตั้งระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์บนหลังคา Solar Rooftop (lid: 10)'
+    }
+  },
+  {
+    id: 'bld-arit-center',
+    code: 'VRU-31B',
+    name: '31B. อาคารวิทยบริการ (ARIT Academic Resource & Computer Center) (lid: 16)',
+    shortName: '31B. อาคารวิทยบริการ',
+    sub: 'ศูนย์เทคโนโลยีสารสนเทศ สำนักวิทยบริการและคอมพิวเตอร์ ติดตั้งระบบ Solar Rooftop มรภ.วไลยอลงกรณ์ฯ',
+    category: 'เทคโนโลยีสารสนเทศและบริการวิชาการ',
+    status: 'เปิดบริการ 08:30 - 20:30 น.',
+    archType: 'academicSolar',
+    pos: { x: -25, y: 0, z: -4 },
+    rotY: 0,
+    anchorHeight: 20,
+    dimensions: { w: 22, h: 16.0, d: 18 },
+    roofColor: 0x0284c7,
+    accentColor: 0x0369a1,
+    lid: 16,
+    hasSolar: true,
+    solarZone: 'Zone 1 (Solar Rooftop)',
+    floors: [
+      { num: 1, desc: 'Data Center, VRU Smart NOC Network Operations Center' },
+      { num: 2, desc: 'ห้องปฏิบัติการคอมพิวเตอร์แม่ข่าย และบริการดิจิทัลนักศึกษา' },
+      { num: 3, desc: 'ห้องสอบมาตรฐาน E-Testing และงานพัฒนาระบบสารสนเทศ' },
+      { num: 4, desc: 'ห้องประชุมไอทีและระบบควบคุมพลังงานหมุนเวียน' },
+    ],
+    stats: {
+      floors: 4,
+      capacity: '600 เครื่อง',
+      power: 'Solar 65 kWp',
+      security: 'พร้อมใช้งาน 100%',
+      load: 90,
+      note: 'ศูนย์กลางแม่ข่ายเครือข่ายและระบบสารสนเทศมหาวิทยาลัย ติดตั้ง Solar Rooftop (lid: 16)'
+    }
+  },
+  {
+    id: 'bld-alumni-club',
+    code: 'VRU-ALUMNI',
+    name: 'อาคารสมาคมศิษย์เก่า มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์',
+    shortName: 'อาคารสมาคมศิษย์เก่า',
+    sub: 'ศูนย์ประสานงานสมาคมศิษย์เก่าและเครือข่ายสัมพันธ์ ตั้งอยู่โซนทิศเหนือติดแนวขอบมหาวิทยาลัย',
+    category: 'องค์กรและเครือข่ายสัมพันธ์',
+    status: 'เปิดทำการปกติ',
+    archType: 'academicGable',
+    pos: { x: 70, y: 0, z: -52 },
+    rotY: 0,
+    anchorHeight: 12,
+    dimensions: { w: 20, h: 8.5, d: 16 },
+    roofColor: 0x1e3a8a,
+    accentColor: 0xf59e0b,
+    floors: [
+      { num: 1, desc: 'สำนักงานสมาคมศิษย์เก่า, ห้องต้อนรับ และพิพิธภัณฑ์ประวัติเกียรติยศ' },
+      { num: 2, desc: 'ห้องประชุมคณะกรรมการสมาคมศิษย์เก่า' },
+    ],
+    stats: {
+      floors: 2,
+      capacity: '150 คน',
+      power: '18.5 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 60,
+      note: 'อาคารโซนทิศเหนือตามผังดาวเทียม Google Maps Ground Truth'
+    }
+  },
+  {
+    id: 'bld-north-exec-hotel',
+    code: 'VRU-EXEC',
+    name: 'อาคารศูนย์สัมมนาและที่พักผู้บริหาร (Executive Guest House / VRU Residence North)',
+    shortName: 'อาคารที่พักผู้บริหารโซนเหนือ',
+    sub: 'อาคารที่พักรับรองผู้ทรงคุณวุฒิและศูนย์สัมมนาพิเศษ โซนทิศเหนือ',
+    category: 'อาคารบริการและที่พักรับรอง',
+    status: 'เปิดทำการ 24 ชม.',
+    archType: 'hotel',
+    pos: { x: 42, y: 0, z: -52 },
+    rotY: 0,
+    anchorHeight: 14,
+    dimensions: { w: 22, h: 10.5, d: 16 },
+    roofColor: 0x334155,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ล็อบบี้ต้อนรับ ห้องอาหารรับรอง และห้องประชุม' },
+      { num: 2, desc: 'ห้องพักรับรองผู้บริหารและอาจารย์พิเศษ' },
+      { num: 3, desc: 'ห้องพักรับรองสวีท' },
+    ],
+    stats: {
+      floors: 3,
+      capacity: '48 ห้องพัก',
+      power: '32.0 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 75,
+      note: 'อาคารโซนทิศเหนือตามผังดาวเทียม Google Maps'
+    }
+  },
+  {
+    id: 'bld-north-staff-residence',
+    code: 'VRU-RES-N',
+    name: 'กลุ่มเรือนพักอาจารย์และบุคลากรโซนเหนือ (North Staff Residences)',
+    shortName: 'เรือนพักบุคลากรโซนเหนือ',
+    sub: 'กลุ่มอาคารที่พักอาศัยอาจารย์และบุคลากร โซนทิศเหนือติดสวนเกษตร',
+    category: 'อาคารที่พักอาศัยบุคลากร',
+    status: 'เปิดทำการ 24 ชม.',
+    archType: 'cluster3',
+    pos: { x: 16, y: 0, z: -52 },
+    rotY: 0,
+    anchorHeight: 11,
+    dimensions: { w: 24, h: 7.5, d: 15 },
+    roofColor: 0x991b1b,
+    accentColor: 0xd97706,
+    floors: [
+      { num: 1, desc: 'ห้องพักบุคลากรและพื้นที่สันทนาการ' },
+      { num: 2, desc: 'ห้องพักบุคลากร' },
+    ],
+    stats: {
+      floors: 2,
+      capacity: '32 ยูนิต',
+      power: '25.0 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 85,
+      note: 'อาคารโซนทิศเหนือตามผังดาวเทียม Google Maps'
+    }
+  },
+  {
+    id: 'bld-satit-kindergarten',
+    code: 'VRU-SATIT-K',
+    name: 'อาคารโรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (แผนกปฐมวัย)',
+    shortName: 'สาธิต มรภ.วไลยอลงกรณ์ฯ (ปฐมวัย)',
+    sub: 'อาคารจัดการเรียนการสอนระดับอนุบาลและปฐมวัย โรงเรียนสาธิตฯ',
+    category: 'อาคารเรียนสาธิต',
+    status: 'เปิดทำการ 07:30 - 16:30 น.',
+    archType: 'uCourtyard',
+    pos: { x: -8, y: 0, z: -50 },
+    rotY: 0,
+    anchorHeight: 12,
+    dimensions: { w: 22, h: 8.5, d: 16 },
+    roofColor: 0x059669,
+    accentColor: 0xfbbf24,
+    floors: [
+      { num: 1, desc: 'ห้องเรียนเตรียมอนุบาล ลานกิจกรรมกลางแจ้ง สนามเด็กเล่น' },
+      { num: 2, desc: 'ห้องเรียนอนุบาล 1-3 ห้องส่งเสริมพัฒนาการเด็ก' },
+    ],
+    stats: {
+      floors: 2,
+      capacity: '180 คน',
+      power: '22.0 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 80,
+      note: 'อาคารเรียนปฐมวัยโซนทิศเหนือติดกับสาธิตมัธยม'
+    }
+  },
+  {
+    id: 'bld-smart-agri',
+    code: 'VRU-AGRI-LAB',
+    name: 'ศูนย์นวัตกรรมเกษตรอัจฉริยะ (Smart Agriculture Innovation Center)',
+    shortName: 'ศูนย์นวัตกรรมเกษตรอัจฉริยะ',
+    sub: 'ศูนย์วิจัยเทคโนโลยีการเกษตรแม่นยำและห้องปฏิบัติการ IoT เกษตรอัจฉริยะ',
+    category: 'วิจัยและนวัตกรรมการเกษตร',
+    status: 'เปิดทำการปกติ',
+    archType: 'workshop',
+    pos: { x: -68, y: 0, z: -52 },
+    rotY: 0,
+    anchorHeight: 11,
+    dimensions: { w: 20, h: 8.0, d: 16 },
+    roofColor: 0x166534,
+    accentColor: 0x4ade80,
+    floors: [
+      { num: 1, desc: 'ห้องปฏิบัติการวิเคราะห์ดิน น้ำ ผลิตภัณฑ์เกษตร และโรงเก็บเครื่องมือจักรกลเกษตรอัจฉริยะ' },
+      { num: 2, desc: 'ห้องวิจัยเทคโนโลยีชีวภาพ และระบบควบคุม IoT แปลงเกษตร' },
+    ],
+    stats: {
+      floors: 2,
+      capacity: '120 คน',
+      power: '28.0 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 78,
+      note: 'อาคารนวัตกรรมเกษตรโซนทิศเหนือติดคลองซอย'
+    }
+  },
+  {
+    id: 'bld-agri-greenhouses',
+    code: 'VRU-GREENHOUSE',
+    name: 'กลุ่มโรงเรือนวิจัยพืชศาสตร์และเกษตรแม่นยำ (Agri-Science Research Greenhouses)',
+    shortName: 'โรงเรือนวิจัยพืชศาสตร์',
+    sub: 'กลุ่มโรงเรือนควบคุมสภาพแวดล้อมเพื่อการวิจัยพืชศาสตร์ คณะเทคโนโลยีการเกษตร',
+    category: 'วิจัยและนวัตกรรมการเกษตร',
+    status: 'เปิดทำการ 24 ชม.',
+    archType: 'serviceStrip',
+    pos: { x: -92, y: 0, z: -50 },
+    rotY: 0,
+    anchorHeight: 9,
+    dimensions: { w: 24, h: 6.0, d: 18 },
+    roofColor: 0x22c55e,
+    accentColor: 0x16a34a,
+    floors: [
+      { num: 1, desc: 'โรงเรือนเพาะปลูกระบบปิด Evaporative Cooling และโรงเรือนไฮโดรโปนิกส์' },
+    ],
+    stats: {
+      floors: 1,
+      capacity: '4 โรงเรือน',
+      power: '16.5 kW',
+      security: 'พร้อมใช้งาน 100%',
+      load: 85,
+      note: 'กลุ่มโรงเรือนโซนเหนือด้านหลังคลองซอยตัดเฉียง'
     }
   }
 ];
@@ -1247,7 +1565,7 @@ const state = {
   isTurntable: false,
   isTouring: false,
   showLabels: true,
-  showWalkways: true,
+  showWalkways: false, // คำสั่งผู้ใช้งาน: ทางเชื่อม ไม่ต้องมี
   isExploded: false,
   uiHidden: false,
   tourIndex: 0,
@@ -1256,14 +1574,13 @@ const state = {
   activeMapTab: 'floor'
 };
 
-// Camera overview positioned on the West/Front (Phahonyothin Rd) looking East across the entire campus
-// matching `/vru/Screenshot 2569-10-17 at 18.52.23.png` and `Artboard-6.png`
+// Camera overview calibrated to Google Maps Ground Truth (North is UP: -Z, East is RIGHT: +X)
 const VIEW_PRESETS = {
-  overview: { pos: { x: 25, y: 115, z: -185 }, target: { x: 0, y: 2, z: -10 } },
-  front: { pos: { x: 0, y: 42, z: -155 }, target: { x: -2, y: 6, z: -80 } },
-  academic: { pos: { x: 40, y: 65, z: -55 }, target: { x: 0, y: 5, z: 5 } },
-  thaiLake: { pos: { x: 35, y: 45, z: 10 }, target: { x: -2, y: 4, z: 46 } },
-  stadium: { pos: { x: 30, y: 65, z: 70 }, target: { x: -8, y: 4, z: 130 } }
+  overview: { pos: { x: 0, y: 220, z: 180 }, target: { x: 0, y: 0, z: -10 } },
+  front: { pos: { x: 210, y: 55, z: 35 }, target: { x: 112, y: 6, z: 0 } },
+  academic: { pos: { x: 45, y: 75, z: 50 }, target: { x: 25, y: 5, z: -5 } },
+  thaiLake: { pos: { x: -18, y: 55, z: 35 }, target: { x: -18, y: 4, z: -16 } },
+  stadium: { pos: { x: -155, y: 70, z: 75 }, target: { x: -158, y: 4, z: 2 } }
 };
 
 let scene, camera, renderer, controls;
@@ -1542,27 +1859,27 @@ function initLights() {
   scene.add(ambientLight);
 
   hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x334155, 0.35);
-  hemiLight.position.set(0, 120, 0);
+  hemiLight.position.set(0, 140, 0);
   scene.add(hemiLight);
 
   sunLight = new THREE.DirectionalLight(0xfff7ed, 1.65);
-  sunLight.position.set(-75, 110, -95);
+  sunLight.position.set(-60, 160, 110);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 4096;
   sunLight.shadow.mapSize.height = 4096;
   sunLight.shadow.camera.near = 10;
-  sunLight.shadow.camera.far = 480;
+  sunLight.shadow.camera.far = 520;
   sunLight.shadow.bias = -0.0003;
   sunLight.shadow.normalBias = 0.04;
 
-  const shadowDist = 195;
+  const shadowDist = 240;
   sunLight.shadow.camera.left = -shadowDist;
   sunLight.shadow.camera.right = shadowDist;
   sunLight.shadow.camera.top = shadowDist;
   sunLight.shadow.camera.bottom = -shadowDist;
 
   sunTargetObj = new THREE.Object3D();
-  sunTargetObj.position.set(0, 0, 15);
+  sunTargetObj.position.set(0, 0, 0);
   scene.add(sunTargetObj);
   sunLight.target = sunTargetObj;
   scene.add(sunLight);
@@ -1671,38 +1988,52 @@ function addRoadStrip(parent, cx, cz, w, d, rotY = 0) {
 }
 
 function buildPure3DMasterplanTerrain() {
-  // 1. Main Campus Ground Base (Elongated West-to-East rectangle matching VRU Masterplan)
-  const baseGeo = new THREE.PlaneGeometry(240, 380);
+  // 1. Aerial Drone Orthophoto Masterplan Base Plane (Aspect Ratio 3.472:1, X: 416.6, Z: 120)
+  // Calibrated 1:1 to Google Maps Ground Truth (North is -Z, East is +X)
+  const droneGeo = new THREE.PlaneGeometry(416.6, 120);
+  const droneMat = new THREE.MeshStandardMaterial({
+    map: sharedTextures.droneMap,
+    roughness: 0.85,
+    metalness: 0.05
+  });
+  const droneMesh = new THREE.Mesh(droneGeo, droneMat);
+  droneMesh.rotation.x = -Math.PI / 2;
+  droneMesh.position.set(0, -0.05, 0);
+  droneMesh.receiveShadow = true;
+  groundGroup.add(droneMesh);
+
+  // Main Campus Ground Base Underlay (X: 440, Z: 150)
+  const baseGeo = new THREE.PlaneGeometry(440, 150);
   const baseMat = new THREE.MeshStandardMaterial({
-    color: 0x487344,
+    color: 0x3d6339,
     map: sharedTextures.grass,
     roughness: 0.9,
     metalness: 0.02
   });
   const baseMesh = new THREE.Mesh(baseGeo, baseMat);
   baseMesh.rotation.x = -Math.PI / 2;
-  baseMesh.position.set(0, -0.1, 20);
+  baseMesh.position.set(0, -0.1, 0);
   baseMesh.receiveShadow = true;
   groundGroup.add(baseMesh);
 
   // Outer Surrounding Ground Plane for seamless horizon
-  const outerGeo = new THREE.PlaneGeometry(700, 700);
+  const outerGeo = new THREE.PlaneGeometry(800, 800);
   const outerMat = new THREE.MeshStandardMaterial({
-    color: 0x3f623b,
+    color: 0x355431,
     roughness: 0.95
   });
   const outerMesh = new THREE.Mesh(outerGeo, outerMat);
   outerMesh.rotation.x = -Math.PI / 2;
-  outerMesh.position.set(0, -0.22, 20);
+  outerMesh.position.set(0, -0.22, 0);
   outerMesh.receiveShadow = true;
   groundGroup.add(outerMesh);
 
-  // 2. ถนนพหลโยธิน (Phahonyothin Highway - ทล.1) across the Front (West: z = -140)
+  // 2. ถนนพหลโยธิน (Phahonyothin Highway - ทล.1) across the East front (+X = +188, running along Z from -70 to +70)
   const hwWidth = 26;
-  const hwLen = 280;
-  const hwZ = -140;
+  const hwLen = 140;
+  const hwX = 188;
   const hwMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(hwLen, hwWidth),
+    new THREE.PlaneGeometry(hwWidth, hwLen),
     new THREE.MeshStandardMaterial({
       color: 0x1e293b,
       map: sharedTextures.asphalt,
@@ -1710,71 +2041,71 @@ function buildPure3DMasterplanTerrain() {
     })
   );
   hwMesh.rotation.x = -Math.PI / 2;
-  hwMesh.position.set(0, 0.05, hwZ);
+  hwMesh.position.set(hwX, 0.05, 0);
   hwMesh.receiveShadow = true;
   groundGroup.add(hwMesh);
 
-  // Highway median barrier & green strip
+  // Highway median barrier & green strip running along Z
   const median = new THREE.Mesh(
-    new THREE.BoxGeometry(hwLen, 0.55, 2.2),
+    new THREE.BoxGeometry(2.2, 0.55, hwLen),
     new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.6 })
   );
-  median.position.set(0, 0.28, hwZ);
+  median.position.set(hwX, 0.28, 0);
   groundGroup.add(median);
 
   const stripeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  for (let x = -hwLen / 2 + 8; x < hwLen / 2 - 8; x += 10) {
-    for (let zOff of [-6.5, 6.5]) {
-      const st = new THREE.Mesh(new THREE.PlaneGeometry(5, 0.22), stripeMat);
+  for (let z = -hwLen / 2 + 8; z < hwLen / 2 - 8; z += 10) {
+    for (let xOff of [-6.5, 6.5]) {
+      const st = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 5), stripeMat);
       st.rotation.x = -Math.PI / 2;
-      st.position.set(x, 0.07, hwZ + zOff);
+      st.position.set(hwX + xOff, 0.07, z);
       groundGroup.add(st);
     }
   }
 
-  // Pedestrian Overpass Bridge across Phahonyothin Road (สะพานลอยหน้า มรภ.วไลยอลงกรณ์ฯ)
+  // Pedestrian Overpass Bridge across Phahonyothin Road (สะพานลอยหน้า มรภ.วไลยอลงกรณ์ฯ) at Z = -35
   const overpass = new THREE.Group();
-  overpass.position.set(-22, 0, hwZ);
+  overpass.position.set(hwX, 0, -35);
   const opDeck = new THREE.Mesh(
-    new THREE.BoxGeometry(3.2, 0.6, hwWidth + 8),
+    new THREE.BoxGeometry(hwWidth + 8, 0.6, 3.2),
     new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
   );
   opDeck.position.y = 6.2;
   opDeck.castShadow = true;
   overpass.add(opDeck);
   const opRoof = new THREE.Mesh(
-    new THREE.BoxGeometry(3.6, 0.25, hwWidth + 8),
+    new THREE.BoxGeometry(hwWidth + 8, 0.25, 3.6),
     new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.4 })
   );
   opRoof.position.y = 8.6;
   overpass.add(opRoof);
-  for (let pz of [-hwWidth / 2 - 2.5, 0, hwWidth / 2 + 2.5]) {
+  for (let px of [-hwWidth / 2 - 2.5, 0, hwWidth / 2 + 2.5]) {
     const pier = new THREE.Mesh(
       new THREE.CylinderGeometry(0.45, 0.5, 6.2, 12),
       new THREE.MeshStandardMaterial({ color: 0x94a3b8 })
     );
-    pier.position.set(0, 3.1, pz);
+    pier.position.set(px, 3.1, 0);
     pier.castShadow = true;
     overpass.add(pier);
   }
   groundGroup.add(overpass);
 
-  // 3. Main University Entrance & Exit Archway + Signboard at Phahonyothin Rd
-  addRoadStrip(groundGroup, -8, -124, 6.5, 16); // ทางเข้า (Inbound)
-  addRoadStrip(groundGroup, 6, -124, 6.5, 16);  // ทางออก (Outbound)
+  // 3. Main University Entrance & Exit Roads at Phahonyothin Rd facing East (+X)
+  addRoadStrip(groundGroup, 172, -6, 18, 6.5); // ทางเข้า (Inbound)
+  addRoadStrip(groundGroup, 172, 6, 18, 6.5);  // ทางออก (Outbound)
 
-  // Grand VRU Signboard Wall at Front Gate
+  // Grand VRU Signboard Wall at Front Gate (facing East towards Phahonyothin)
   const gateSignGroup = new THREE.Group();
-  gateSignGroup.position.set(-1, 0, -126);
+  gateSignGroup.position.set(170, 0, -1);
   const signBase = new THREE.Mesh(
-    new THREE.BoxGeometry(11.5, 1.2, 1.4),
+    new THREE.BoxGeometry(1.4, 1.2, 11.5),
     new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 })
   );
   signBase.position.y = 0.6;
   gateSignGroup.add(signBase);
 
   const signBoard = new THREE.Mesh(
-    new THREE.BoxGeometry(10.8, 2.7, 0.5),
+    new THREE.BoxGeometry(0.5, 2.7, 10.8),
     new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.3 })
   );
   signBoard.position.y = 2.55;
@@ -1785,31 +2116,31 @@ function buildPure3DMasterplanTerrain() {
     new THREE.PlaneGeometry(10.4, 2.5),
     new THREE.MeshBasicMaterial({ map: sharedTextures.vruMainSign })
   );
-  signFace.position.set(0, 2.55, -0.27);
-  signFace.rotation.y = Math.PI;
+  signFace.position.set(0.27, 2.55, 0);
+  signFace.rotation.y = Math.PI / 2;
   gateSignGroup.add(signFace);
   groundGroup.add(gateSignGroup);
 
-  // 4. Longitudinal Campus Roads (West-to-East Avenues matching Artboard-6 & MapVRU-2016)
-  addRoadStrip(groundGroup, -44, 25, 6.0, 290); // ถนนสายเหนือ (North Perimeter Road)
-  addRoadStrip(groundGroup, -28, -5, 5.5, 130); // ถนนสายในฝั่งเหนือ (Inner North Road)
-  addRoadStrip(groundGroup, 28, 20, 6.5, 280);  // ถนนสายหลักฝั่งใต้ (South Main Avenue)
-  addRoadStrip(groundGroup, 66, 15, 5.5, 260);  // ถนนเลียบขอบใต้ (Outer South Road)
+  // 4. Longitudinal Campus Roads (East-West Avenues running along X, recalibrated to 350-380m)
+  addRoadStrip(groundGroup, -10, -58, 380, 6.0); // ถนนสายเหนือ (North Perimeter Road)
+  addRoadStrip(groundGroup, 30, -28, 240, 5.5);  // ถนนสายในฝั่งเหนือ (Inner North Road)
+  addRoadStrip(groundGroup, -15, 0, 360, 6.5);   // ถนนแกนกลางมหาวิทยาลัย (Central Main Avenue)
+  addRoadStrip(groundGroup, -10, 26, 360, 6.5);  // ถนนสายหลักฝั่งใต้ (South Main Avenue)
+  addRoadStrip(groundGroup, -10, 56, 360, 5.5);  // ถนนเลียบขอบใต้ (Outer South Road)
 
-  // 5. Cross Campus Roads (North-to-South Avenues)
-  addRoadStrip(groundGroup, 6, -116, 102, 6.0); // ถนนหน้าสระน้ำหอประชุม 80 ปี
-  addRoadStrip(groundGroup, -8, -64, 74, 6.0);  // ถนนคั่นหอประชุม 80 ปี กับ อาคาร 100 ปี SPB
-  addRoadStrip(groundGroup, -8, -33, 74, 6.0);  // ถนนหน้าโซนวิชาการและหอประชุมวไลยอลงกรณ์
-  addRoadStrip(groundGroup, -8, 12, 74, 5.0);   // ถนนซอยกลางโซนวิชาการ
-  addRoadStrip(groundGroup, -8, 32, 74, 5.5);   // ถนนหน้าสระน้ำเรือนไทยเจ้าฟ้า
-  addRoadStrip(groundGroup, -8, 58, 74, 5.5);   // ถนนหลังสระน้ำเรือนไทยเจ้าฟ้า
-  addRoadStrip(groundGroup, -8, 86, 74, 5.5);   // ถนนหน้ากลุ่มหอพักนักศึกษา 43-48
-  addRoadStrip(groundGroup, -8, 124, 74, 6.0);  // ถนนหน้าสนามกีฬากลาง (#57)
-  addRoadStrip(groundGroup, -8, 154, 74, 5.5);  // ถนนหลังสนามกีฬากลาง & หน้าสระเก็บน้ำ
+  // 5. Cross Campus Roads (North-South Avenues running along Z, recalibrated)
+  addRoadStrip(groundGroup, 138, 0, 6.0, 90); // ถนนหน้าสระน้ำหอประชุม 80 ปี
+  addRoadStrip(groundGroup, 95, 0, 6.0, 85);  // ถนนคั่นหอประชุม 80 ปี กับ อาคาร 100 ปี SPB
+  addRoadStrip(groundGroup, 55, 0, 6.0, 85);  // ถนนหน้าโซนวิชาการและหอประชุมวไลยอลงกรณ์
+  addRoadStrip(groundGroup, 18, 0, 5.0, 85);  // ถนนซอยกลางโซนวิชาการ
+  addRoadStrip(groundGroup, -35, 0, 5.5, 85); // ถนนหน้าสระน้ำเรือนไทยเจ้าฟ้า
+  addRoadStrip(groundGroup, -72, 0, 5.5, 90); // ถนนหน้ากลุ่มหอพักนักศึกษา 43-48
+  addRoadStrip(groundGroup, -135, 0, 6.0, 95);// ถนนหน้าสนามกีฬากลาง (#57)
+  addRoadStrip(groundGroup, -180, 0, 5.5, 95);// ถนนหลังสนามกีฬากลาง & หน้าสระเก็บน้ำ
 
-  // 3D Roundabout in front of Building #2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์)
+  // 3D Roundabout in front of Building #2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ SPB)
   const rndGroup = new THREE.Group();
-  rndGroup.position.set(-2, 0.14, -64);
+  rndGroup.position.set(86, 0.14, 0);
   const rndRim = new THREE.Mesh(
     new THREE.CylinderGeometry(5.2, 5.5, 0.35, 32),
     new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
@@ -1830,28 +2161,33 @@ function buildPure3DMasterplanTerrain() {
   rndGroup.add(spire);
   groundGroup.add(rndGroup);
 
-  // 6. All Lakes, Ponds & Diagonal Canal (ครบตามผังจริง VRU)
+  // 6. All Lakes, Ponds & Diagonal Canal (Recalibrated coordinates)
   // 6.1 สระน้ำหน้าหอประชุม 80 ปี วไลยอลงกรณ์ (#1)
-  addWaterBasin(groundGroup, -2, -88, 52, 46);
+  addWaterBasin(groundGroup, 112, 0, 56, 52);
 
   // 6.2 สระน้ำกลางโซนวิชาการ (ติดสำนักวิทยบริการ #31 และ รร.สาธิตมัธยม #30)
-  addWaterBasin(groundGroup, 2, 22, 14, 15);
+  addWaterBasin(groundGroup, 40, -6, 15, 14);
 
   // 6.3 สระน้ำใหญ่กลางมหาวิทยาลัย & เกาะเรือนไทยเจ้าฟ้า (#36)
-  addWaterBasin(groundGroup, 0, 45, 44, 22, 0, true);
+  addWaterBasin(groundGroup, -18, -16, 54, 38, 0, true);
 
-  // 6.4 กลุ่มสระน้ำฝั่งทิศใต้ (3 สระใหญ่ริมถนนสายใต้ ตาม Artboard-6)
-  addWaterBasin(groundGroup, 50, -28, 22, 32);
-  addWaterBasin(groundGroup, 50, 38, 20, 18);
-  addWaterBasin(groundGroup, 50, 58, 20, 16);
+  // 6.4 กลุ่มสระน้ำฝั่งทิศใต้ (3 สระใหญ่ริมถนนสายใต้)
+  addWaterBasin(groundGroup, 68, 48, 32, 22);
+  addWaterBasin(groundGroup, -10, 48, 22, 18);
+  addWaterBasin(groundGroup, -40, 48, 20, 16);
 
-  // 6.5 คลองซอยตัดเฉียง (Diagonal Canal แบ่งโซนวิชาการกับโซนหอพัก/สนามกีฬา)
-  addWaterBasin(groundGroup, 0, 78, 148, 8.5, 0.34);
+  // 6.5 กลุ่มสระน้ำโซนเหนือ
+  addWaterBasin(groundGroup, 8, -56, 24, 16);
+  addWaterBasin(groundGroup, -65, -56, 22, 16);
 
-  // สะพานคอนกรีตข้ามคลองซอยตัดเฉียง 3 จุด
-  [[-44, 62], [-26, 69], [28, 88]].forEach(([bx, bz]) => {
+  // 6.6 คลองซอยตัดเฉียง (Diagonal Canal แบ่งโซนวิชาการกับโซนหอพัก/สนามกีฬา จาก NW สู่ SE)
+  // Center at X = -42, Z = 0, Length ~ 160, rotY ~ -0.72 rad
+  addWaterBasin(groundGroup, -42, 0, 160, 8.5, -0.72);
+
+  // สะพานคอนกรีตข้ามคลองซอยตัดเฉียง 3 จุด (ที่จุดตัดถนน Z = -58, Z = 0, Z = +26)
+  [[-93, -58], [-42, 0], [-19, 26]].forEach(([bx, bz]) => {
     const br = new THREE.Mesh(
-      new THREE.BoxGeometry(7.5, 0.55, 13),
+      new THREE.BoxGeometry(13, 0.55, 7.5),
       new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
     );
     br.position.set(bx, 0.28, bz);
@@ -1859,16 +2195,19 @@ function buildPure3DMasterplanTerrain() {
     groundGroup.add(br);
   });
 
-  // 6.6 สระน้ำคู่ขนาบกลุ่มหอพักนักศึกษา 43-48
-  addWaterBasin(groundGroup, -32, 100, 16, 24);
-  addWaterBasin(groundGroup, 14, 100, 14, 24);
+  // 6.7 สระน้ำคู่ขนาบกลุ่มหอพักนักศึกษา 43-48
+  addWaterBasin(groundGroup, -118, -22, 24, 16);
+  addWaterBasin(groundGroup, -118, 36, 24, 16);
 
-  // 6.7 สระเก็บน้ำขนาดใหญ่หลังสนามกีฬากลาง (#57)
-  addWaterBasin(groundGroup, -8, 164, 64, 16);
+  // 6.8 สระเก็บน้ำขนาดใหญ่หลังสนามกีฬากลาง (#57)
+  addWaterBasin(groundGroup, -185, 5, 22, 82);
 
-  // 7. แปลงสาธิตเกษตรอินทรีย์ (Agricultural Plots with neat green crop rows as in Artboard-6)
+  // 6.9 สระน้ำด้านทิศเหนือเหนือสนามกีฬากลาง
+  addWaterBasin(groundGroup, -158, -45, 48, 26);
+
+  // 7. แปลงสาธิตเกษตรอินทรีย์ (Agricultural Plots with neat green crop rows)
   const plotGroup = new THREE.Group();
-  plotGroup.position.set(48, 0.05, 82);
+  plotGroup.position.set(-68, 0.05, 36);
   const soil = new THREE.Mesh(
     new THREE.BoxGeometry(24, 0.12, 22),
     new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.95 })
@@ -1882,34 +2221,34 @@ function buildPure3DMasterplanTerrain() {
   }
   groundGroup.add(plotGroup);
 
-  // 8. Twin Parking Plazas (P) flanking Building #2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์)
+  // 8. Twin Parking Plazas (P) flanking Building #2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ SPB)
   const carColors = [0xffffff, 0xcbd5e1, 0x1e293b, 0x0284c7, 0xdc2626, 0x059669];
-  [-22, 18].forEach((px, pIdx) => {
+  [-22, 22].forEach((pz, pIdx) => {
     const lot = new THREE.Mesh(
-      new THREE.BoxGeometry(16, 0.12, 18),
+      new THREE.BoxGeometry(18, 0.12, 16),
       new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 })
     );
-    lot.position.set(px, 0.06, -48);
+    lot.position.set(62, 0.06, pz);
     lot.receiveShadow = true;
     groundGroup.add(lot);
 
     // Solar Carport Roofs over Parking Lots
-    for (let rowZ of [-53, -43]) {
+    for (let rowX of [58, 66]) {
       const carport = new THREE.Mesh(
-        new THREE.BoxGeometry(13, 0.15, 4.5),
+        new THREE.BoxGeometry(4.5, 0.15, 13),
         new THREE.MeshStandardMaterial({ map: sharedTextures.solar, roughness: 0.3 })
       );
-      carport.position.set(px, 2.6, rowZ);
+      carport.position.set(rowX, 2.6, pz);
       carport.castShadow = true;
       groundGroup.add(carport);
 
-      for (let cx = -5; cx <= 5; cx += 2.5) {
+      for (let cz = -5; cz <= 5; cz += 2.5) {
         const car = new THREE.Group();
-        car.position.set(px + cx, 0.12, rowZ);
+        car.position.set(rowX, 0.12, pz + cz);
         const cBody = new THREE.Mesh(
-          new THREE.BoxGeometry(1.7, 0.65, 3.6),
+          new THREE.BoxGeometry(3.6, 0.65, 1.7),
           new THREE.MeshStandardMaterial({
-            color: carColors[Math.abs(Math.round(cx + pIdx * 3)) % carColors.length],
+            color: carColors[Math.abs(Math.round(cz + pIdx * 3)) % carColors.length],
             roughness: 0.25,
             metalness: 0.4
           })
@@ -1918,10 +2257,10 @@ function buildPure3DMasterplanTerrain() {
         cBody.castShadow = true;
         car.add(cBody);
         const cTop = new THREE.Mesh(
-          new THREE.BoxGeometry(1.5, 0.5, 2.0),
+          new THREE.BoxGeometry(2.0, 0.5, 1.5),
           new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.15 })
         );
-        cTop.position.set(0, 0.95, -0.15);
+        cTop.position.set(-0.15, 0.95, 0);
         car.add(cTop);
         groundGroup.add(car);
       }
@@ -1930,44 +2269,8 @@ function buildPure3DMasterplanTerrain() {
 }
 
 function buildCoveredWalkways() {
-  const roofMat = new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.5 });
-  const postMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 });
-  const pathMat = new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.6 });
-
-  const segments = [
-    { x: -2, z: -66, w: 3.6, d: 12 },   // เชื่อมหอประชุม 80 ปี สู่ อาคาร 100 ปี SPB
-    { x: -14, z: -2, w: 2.8, d: 48 },   // ทางเดินเชื่อมโซนวิชาการกลาง (เหนือ-ใต้)
-    { x: 0, z: -12, w: 34, d: 2.8 },    // ทางเดินเชื่อมขวางหน้าคณะวิทย์-ครุศาสตร์
-    { x: 0, z: 12, w: 34, d: 2.8 },     // ทางเดินเชื่อมหน้าสำนักวิทยบริการฯ
-    { x: -8, z: 109, w: 3.0, d: 16 }    // ทางเดินเชื่อมกลุ่มหอพักนักศึกษา
-  ];
-
-  segments.forEach(seg => {
-    const wg = new THREE.Group();
-    wg.position.set(seg.x, 0, seg.z);
-
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(seg.w, 0.16, seg.d), pathMat);
-    floor.position.y = 0.08;
-    floor.receiveShadow = true;
-    wg.add(floor);
-
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(seg.w + 0.5, 0.22, seg.d + 0.5), roofMat);
-    roof.position.y = 3.1;
-    roof.castShadow = true;
-    wg.add(roof);
-
-    const steps = Math.max(2, Math.floor(Math.max(seg.w, seg.d) / 6));
-    for (let i = 0; i <= steps; i++) {
-      const frac = -0.5 + i / steps;
-      const px = seg.w > seg.d ? frac * (seg.w - 1) : 0;
-      const pz = seg.d >= seg.w ? frac * (seg.d - 1) : 0;
-      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3.0, 8), postMat);
-      col.position.set(px, 1.5, pz);
-      wg.add(col);
-    }
-
-    walkwaysGroup.add(wg);
-  });
+  // คำสั่งเพิ่มเติมจากผู้ใช้งาน: "ทางเชื่อม ไม่ต้องมี"
+  // ปิด/ยกเลิกการสร้าง covered walkways, skywalks, connecting bridges/corridors ออกทั้งหมด
 }
 
 // ============================================================================
@@ -2494,8 +2797,8 @@ function buildHospitalBuildings() {
       f1.add(trackCenter);
 
       for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(d * 0.43, d * 0.43, 0.26, 32), trackMat);
-        cap.position.set(side * (w * 0.28), 0.15, 0);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.43, w * 0.43, 0.26, 32), trackMat);
+        cap.position.set(0, 0.15, side * (d * 0.28));
         f1.add(cap);
       }
 
@@ -2518,21 +2821,21 @@ function buildHospitalBuildings() {
       centerRing.position.y = 0.35;
       f1.add(centerRing);
 
-      // Covered Main Grandstand on the South/Front-of-stadium side (+Z / -Z)
+      // Covered Main Grandstand on the West side (-X facing East towards football pitch)
       const stand = new THREE.Mesh(
-        new THREE.BoxGeometry(w * 0.52, 6.0, 5.5),
+        new THREE.BoxGeometry(5.5, 6.0, d * 0.52),
         new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
       );
-      stand.position.set(0, 3.0, -d * 0.48);
+      stand.position.set(-w * 0.46, 3.0, 0);
       stand.castShadow = true;
       f2.add(stand);
 
       const standRoof = new THREE.Mesh(
-        new THREE.BoxGeometry(w * 0.56, 0.45, 8.0),
+        new THREE.BoxGeometry(8.0, 0.45, d * 0.56),
         new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.4 })
       );
-      standRoof.position.set(0, 8.8, -d * 0.46);
-      standRoof.rotation.x = 0.15;
+      standRoof.position.set(-w * 0.44, 8.8, 0);
+      standRoof.rotation.z = -0.15;
       standRoof.castShadow = true;
       f2.add(standRoof);
 
@@ -2610,6 +2913,24 @@ function buildHospitalBuildings() {
       buildMultiFloorBox(bldGroup, numFloors, w, h, d, wallMat, windowMat, bld.roofColor, hasSolar);
     }
 
+    // Automatic Solar Rooftop Photovoltaic Array (for 12 IoT Monitored Buildings lid: 8..19)
+    if (bld.hasSolar || bld.lid) {
+      const sW = Math.max(5, w * 0.68);
+      const sD = Math.max(5, d * 0.62);
+      const sH = (bld.dimensions.h || 12);
+      const solarMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(sW, 0.2, sD),
+        new THREE.MeshStandardMaterial({
+          map: sharedTextures.solar,
+          roughness: 0.25,
+          metalness: 0.6
+        })
+      );
+      solarMesh.position.set(0, sH + 0.8, 0);
+      solarMesh.castShadow = true;
+      bldGroup.add(solarMesh);
+    }
+
     buildingsGroup.add(bldGroup);
     buildingMeshes.set(bld.id, bldGroup);
   });
@@ -2623,8 +2944,9 @@ function buildStreetLightingAndProps() {
   const lampMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.2 });
   const bulbMat = new THREE.MeshStandardMaterial({ color: 0xfff7ed, emissive: 0xffedd5, emissiveIntensity: 1.2 });
 
-  for (let z = -120; z <= 150; z += 30) {
-    for (let x of [-40, 24]) {
+  // Street lamps along East-West avenues
+  for (let x = -180; x <= 160; x += 36) {
+    for (let z of [-28, 0, 26]) {
       const lamp = new THREE.Group();
       lamp.position.set(x, 0, z);
       const post = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 6.2, 8), lampMat);
@@ -2639,10 +2961,10 @@ function buildStreetLightingAndProps() {
 
   // VRU Emerald-Green EV Campus Shuttle Trams (รถรางไฟฟ้ารับ-ส่งนักศึกษา VRU)
   const tramPositions = [
-    { x: -2, z: -68, ry: Math.PI / 2 },
-    { x: 28, z: -15, ry: 0 },
-    { x: -28, z: 32, ry: 0 },
-    { x: -8, z: 124, ry: Math.PI / 2 }
+    { x: 86, z: 0, ry: 0 },
+    { x: 20, z: -28, ry: Math.PI / 2 },
+    { x: -35, z: 26, ry: Math.PI / 2 },
+    { x: -140, z: 0, ry: 0 }
   ];
   tramPositions.forEach(tp => {
     const tram = new THREE.Group();
@@ -2684,21 +3006,19 @@ function buildLandscapingTrees() {
   ];
 
   const treeCoords = [];
-  // Trees along Phahonyothin Road front boundary
-  for (let x = -85; x <= 85; x += 14) {
-    if (Math.abs(x) > 14) treeCoords.push({ x, z: -127, h: 6.5, r: 2.4 });
+  // Trees along Phahonyothin Road front boundary (East: X = 172, along Z from -65 to +65)
+  for (let z = -65; z <= 65; z += 14) {
+    if (Math.abs(z) > 12) treeCoords.push({ x: 172, z, h: 6.5, r: 2.4 });
   }
-  // Trees along North & South perimeter avenues and around lakes
-  for (let z = -110; z <= 165; z += 16) {
-    treeCoords.push({ x: -66, z, h: 7.0, r: 2.6 });
-    treeCoords.push({ x: -38, z, h: 5.8, r: 2.0 });
-    treeCoords.push({ x: 32, z, h: 6.2, r: 2.2 });
-    treeCoords.push({ x: 72, z, h: 6.8, r: 2.5 });
+  // Trees along North perimeter avenue (Z = -58) & South perimeter avenue (Z = 56)
+  for (let x = -195; x <= 160; x += 18) {
+    treeCoords.push({ x, z: -58, h: 6.8, r: 2.5 });
+    treeCoords.push({ x, z: 56, h: 6.5, r: 2.3 });
   }
   // Trees around Thai Pavilion Lake & Canal
-  for (let x = -22; x <= 22; x += 9) {
-    treeCoords.push({ x, z: 34, h: 6.0, r: 2.2 });
-    treeCoords.push({ x, z: 56, h: 6.2, r: 2.3 });
+  for (let z = -32; z <= 4; z += 9) {
+    treeCoords.push({ x: -44, z, h: 6.0, r: 2.2 });
+    treeCoords.push({ x: 8, z, h: 6.2, r: 2.3 });
   }
 
   treeCoords.forEach((tc, i) => {
@@ -2848,7 +3168,7 @@ function focusBuilding(bld) {
   const targetY = (bld.dimensions.h || 10) * 0.45;
   const targetZ = bld.pos.z;
 
-  const off = bld.cameraOffset || { x: 18, y: 32, z: -42 };
+  const off = bld.cameraOffset || { x: 18, y: 32, z: 42 };
   new TWEEN.Tween(controls.target)
     .to({ x: targetX, y: targetY, z: targetZ }, 1000)
     .easing(TWEEN.Easing.Cubic.Out)
@@ -2928,6 +3248,20 @@ function updateDetailPanel(bld) {
   document.getElementById('entityTitle').textContent = bld.name;
   document.getElementById('entitySub').textContent = bld.sub || `${bld.category} · มรภ.วไลยอลงกรณ์ฯ`;
   document.getElementById('entityStatus').textContent = bld.status || 'เปิดทำการปกติ';
+  const entityType = document.getElementById('entityType');
+  if (entityType) {
+    if (bld.hasSolar || bld.lid) {
+      entityType.textContent = `🟢 Solar Rooftop (lid: ${bld.lid}) · ${bld.solarZone || 'Zone 1'}`;
+      entityType.style.background = 'rgba(16, 185, 129, 0.2)';
+      entityType.style.color = '#047857';
+      entityType.style.borderColor = '#10b981';
+    } else {
+      entityType.textContent = 'ข้อมูลอาคาร';
+      entityType.style.background = '';
+      entityType.style.color = '';
+      entityType.style.borderColor = '';
+    }
+  }
   document.getElementById('detailNote').textContent = bld.stats?.note || '';
 
   const miniDiag = document.getElementById('miniDiagram');
@@ -3182,6 +3516,7 @@ function setupEventListeners() {
   });
 
   const btnWalkways = document.getElementById('toggleWalkways');
+    if (btnWalkways) btnWalkways.style.display = 'none'; // ทางเชื่อม ไม่ต้องมี
   btnWalkways?.addEventListener('click', () => {
     state.showWalkways = !state.showWalkways;
     btnWalkways.classList.toggle('active', state.showWalkways);
