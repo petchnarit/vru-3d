@@ -515,28 +515,21 @@ function buildGround() {
 function createAuditorium80Mesh() {
   const group = new THREE.Group();
 
-  // === Materials matching exact Google Maps satellite photo (upload_20261018_164025_1.jpeg) ===
-  // Light grey / off-white metal sheet roof cladding with flat shading for realistic facet shadows
-  const roofSheetMat = new THREE.MeshStandardMaterial({
+  // === Materials ===
+  // Clean modern architectural off-white roof surface (Flat, solid, completely filled)
+  const roofFlatMat = new THREE.MeshStandardMaterial({
     color: 0xebedf0,
-    roughness: 0.42,
-    metalness: 0.22,
-    flatShading: true
-  });
-  const roofNorthSlopeMat = new THREE.MeshStandardMaterial({
-    color: 0xcfd4d9,
-    roughness: 0.48,
-    metalness: 0.18,
-    flatShading: true
+    roughness: 0.38,
+    metalness: 0.15
   });
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
-    roughness: 0.72,
+    color: 0xf8fafc,
+    roughness: 0.65,
     metalness: 0.05
   });
   const concreteMat = new THREE.MeshStandardMaterial({
     color: 0xe2e8f0,
-    roughness: 0.82,
+    roughness: 0.78,
     metalness: 0.04
   });
   const trussMat = new THREE.MeshStandardMaterial({
@@ -547,117 +540,78 @@ function createAuditorium80Mesh() {
   const darkTrimMat = new THREE.MeshStandardMaterial({
     color: 0x334155,
     roughness: 0.5,
-    metalness: 0.3
+    metalness: 0.25
   });
-  const ridgeCapMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.2,
-    metalness: 0.15
+  const glassMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.1,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.8
   });
 
-  const baseH = 8.5; // Wall height
-  const roofPeakH = 15.0; // Roof ridge height
+  const baseH = 8.5; // Main hall wall height
+  const podiumH = 1.2;
   const halfW = 19.5; // ~39m total width
   const halfD = 14.5; // ~29m total depth
 
   // --- 1. Base Solid Podium ---
-  const podium = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 2.0, 1.2, halfD * 2 + 1.5), concreteMat);
-  podium.position.y = 0.6;
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 2.0, podiumH, halfD * 2 + 1.5), concreteMat);
+  podium.position.y = podiumH / 2;
   podium.receiveShadow = true;
   group.add(podium);
 
-  // --- 2. Main Hall Walls ---
+  // --- 2. Main Hall Solid Body ---
   const mainWalls = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2, baseH, halfD * 2), wallMat);
-  mainWalls.position.set(0, baseH / 2 + 0.6, 0);
+  mainWalls.position.set(0, podiumH + baseH / 2, 0);
   mainWalls.castShadow = true;
   mainWalls.receiveShadow = true;
   group.add(mainWalls);
 
-  // Perimeter ribbon windows
+  // Perimeter upper ribbon windows
   const winBand = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 0.15, 1.2, halfD * 2 + 0.15), darkTrimMat);
-  winBand.position.set(0, baseH - 1.0, 0);
+  winBand.position.set(0, podiumH + baseH - 1.0, 0);
   group.add(winBand);
 
-  // --- 3. Multi-Tiered Solid Hip Roof (Exact match to Google Maps satellite geometry) ---
-  // Geometry constructed with vertices:
-  // Base corners at Y = baseH + 0.6:
-  // vNW: (-halfW, Y, -halfD), vNE: (halfW, Y, -halfD)
-  // vSW: (-halfW, Y,  halfD), vSE: (halfW, Y,  halfD)
-  // Ridge vertices at Y = roofPeakH along the central axis:
-  // rN: (0, roofPeakH, -halfD * 0.45), rS: (0, roofPeakH, halfD * 0.45)
-  const Yb = baseH + 0.6;
-  const Yr = roofPeakH;
-  const rZ = halfD * 0.45;
+  // --- 3. COMPLETELY FLAT SOLID ROOF (NO GABLES, NO SLOPED PEAKS - หลังคาเรียบแบนเต็มผืน ไร้จั่ว) ---
+  // Layer 1: Continuous Main Flat Roof Slab covering the entire building
+  const mainRoofSlab = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 2.5, 0.8, halfD * 2 + 2.5), roofFlatMat);
+  mainRoofSlab.position.set(0, podiumH + baseH + 0.4, 0);
+  mainRoofSlab.castShadow = true;
+  mainRoofSlab.receiveShadow = true;
+  group.add(mainRoofSlab);
 
-  const roofGeo = new THREE.BufferGeometry();
-  const positions = [
-    // South Triangular Hip Slope (vSW, vSE, rS)
-    -halfW, Yb, halfD,    halfW, Yb, halfD,    0, Yr, rZ,
-    // North Triangular Hip Slope (vNE, vNW, rN)
-    halfW, Yb, -halfD,    -halfW, Yb, -halfD,  0, Yr, -rZ,
-    // West Trapezoidal Slope (2 triangles: vNW, vSW, rN and rN, vSW, rS)
-    -halfW, Yb, -halfD,   -halfW, Yb, halfD,   0, Yr, -rZ,
-    0, Yr, -rZ,           -halfW, Yb, halfD,   0, Yr, rZ,
-    // East Trapezoidal Slope (2 triangles: vSE, vNE, rS and rS, vNE, rN)
-    halfW, Yb, halfD,     halfW, Yb, -halfD,   0, Yr, rZ,
-    0, Yr, rZ,            halfW, Yb, -halfD,   0, Yr, -rZ
-  ];
-  roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  roofGeo.computeVertexNormals();
+  // Layer 2: Elevated Flat Central Tier (Low-profile modern parapet block, perfectly flat)
+  const centralTier = new THREE.Mesh(new THREE.BoxGeometry(halfW * 1.35, 1.2, halfD * 1.35), roofFlatMat);
+  centralTier.position.set(-1.0, podiumH + baseH + 0.8 + 0.6, 0);
+  centralTier.castShadow = true;
+  centralTier.receiveShadow = true;
+  group.add(centralTier);
 
-  const mainRoofMesh = new THREE.Mesh(roofGeo, roofSheetMat);
-  mainRoofMesh.castShadow = true;
-  mainRoofMesh.receiveShadow = true;
-  group.add(mainRoofMesh);
+  // Layer 3: Top Clean Flat Cap
+  const topCap = new THREE.Mesh(new THREE.BoxGeometry(halfW * 1.38, 0.3, halfD * 1.38), trussMat);
+  topCap.position.set(-1.0, podiumH + baseH + 0.8 + 1.2 + 0.15, 0);
+  topCap.castShadow = true;
+  group.add(topCap);
 
-  // --- 4. East Entrance Wing Projection (Facing Front/East) ---
-  const eW = 8.5;
-  const eD = 14.0;
-  const eX = halfW + eW / 2;
-  const eWall = new THREE.Mesh(new THREE.BoxGeometry(eW, baseH * 0.85, eD), wallMat);
-  eWall.position.set(eX, (baseH * 0.85) / 2 + 0.6, 0);
-  eWall.castShadow = true;
-  group.add(eWall);
+  // Architectural Parapet Border Trims (Clean horizontal perimeter trim)
+  const parapetN = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 2.5, 0.5, 0.35), darkTrimMat);
+  parapetN.position.set(0, podiumH + baseH + 0.8 + 0.25, -halfD - 1.1);
+  group.add(parapetN);
+  const parapetS = new THREE.Mesh(new THREE.BoxGeometry(halfW * 2 + 2.5, 0.5, 0.35), darkTrimMat);
+  parapetS.position.set(0, podiumH + baseH + 0.8 + 0.25, halfD + 1.1);
+  group.add(parapetS);
+  const parapetW = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.5, halfD * 2 + 2.5), darkTrimMat);
+  parapetW.position.set(-halfW - 1.1, podiumH + baseH + 0.8 + 0.25, 0);
+  group.add(parapetW);
+  const parapetE = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.5, halfD * 2 + 2.5), darkTrimMat);
+  parapetE.position.set(halfW + 1.1, podiumH + baseH + 0.8 + 0.25, 0);
+  group.add(parapetE);
 
-  // East Wing Hip Roof
-  const eRoofGeo = new THREE.BufferGeometry();
-  const ePos = [
-    halfW, Yb, -eD / 2,   halfW + eW, Yb, -eD / 2,   halfW + eW * 0.65, Yr * 0.85, 0,
-    halfW, Yb, -eD / 2,   halfW + eW * 0.65, Yr * 0.85, 0,  halfW, Yr * 0.9, 0,
-    halfW + eW, Yb, eD / 2,  halfW, Yb, eD / 2,     halfW, Yr * 0.9, 0,
-    halfW + eW, Yb, eD / 2,  halfW, Yr * 0.9, 0,     halfW + eW * 0.65, Yr * 0.85, 0,
-    halfW + eW, Yb, -eD / 2, halfW + eW, Yb, eD / 2, halfW + eW * 0.65, Yr * 0.85, 0
-  ];
-  eRoofGeo.setAttribute('position', new THREE.Float32BufferAttribute(ePos, 3));
-  eRoofGeo.computeVertexNormals();
-  const eRoofMesh = new THREE.Mesh(eRoofGeo, roofSheetMat);
-  eRoofMesh.castShadow = true;
-  group.add(eRoofMesh);
-
-  // --- 5. White Architectural Ridge & Hip Caps (Sharp defined seam lines) ---
-  const ridgeGroup = new THREE.Group();
-  function createRidgeLine(p1, p2) {
-    const v1 = new THREE.Vector3(...p1);
-    const v2 = new THREE.Vector3(...p2);
-    const len = v1.distanceTo(v2);
-    const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, len, 6), ridgeCapMat);
-    bar.position.copy(new THREE.Vector3().addVectors(v1, v2).multiplyScalar(0.5));
-    bar.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), v2.clone().sub(v1).normalize());
-    bar.castShadow = true;
-    return bar;
-  }
-  // Central ridge
-  ridgeGroup.add(createRidgeLine([0, Yr + 0.1, -rZ], [0, Yr + 0.1, rZ]));
-  // 4 Corner Hips
-  ridgeGroup.add(createRidgeLine([0, Yr + 0.1, -rZ], [-halfW, Yb + 0.1, -halfD]));
-  ridgeGroup.add(createRidgeLine([0, Yr + 0.1, -rZ], [halfW, Yb + 0.1, -halfD]));
-  ridgeGroup.add(createRidgeLine([0, Yr + 0.1, rZ], [-halfW, Yb + 0.1, halfD]));
-  ridgeGroup.add(createRidgeLine([0, Yr + 0.1, rZ], [halfW, Yb + 0.1, halfD]));
-  group.add(ridgeGroup);
-
-  // --- 6. Exposed White Steel Space Frame / Truss Lattice (Around eaves/corners as in satellite) ---
-  const trussY = Yb + 0.2;
-  function createTrussCanopy(w, d, px, pz) {
+  // --- 4. Perimeter White Cantilever Space Frame / Truss Canopy ---
+  // Cantilevered horizontal lattice extending out around North, South, and West eaves
+  const trussY = podiumH + baseH + 0.2;
+  function createFlatTrussCanopy(w, d, px, pz) {
     const tGroup = new THREE.Group();
     tGroup.position.set(px, trussY, pz);
 
@@ -671,7 +625,7 @@ function createAuditorium80Mesh() {
     bSide.position.set(w / 2, 0, 0);
     tGroup.add(bSide);
 
-    // Lattice grid bars
+    // Grid struts
     for (let x = -w / 2 + 2.5; x < w / 2; x += 2.5) {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, d), trussMat);
       bar.position.set(x, 0, 0);
@@ -679,30 +633,93 @@ function createAuditorium80Mesh() {
     }
     return tGroup;
   }
+  group.add(createFlatTrussCanopy(halfW * 2 + 4.0, 3.5, 0, -halfD - 1.75));
+  group.add(createFlatTrussCanopy(halfW * 2 + 4.0, 3.5, 0, halfD + 1.75));
+  group.add(createFlatTrussCanopy(3.8, halfD * 2 + 2.0, -halfW - 1.9, 0));
 
-  // North & Corner Truss Lattice (Matching the visible white trusses in satellite photo)
-  group.add(createTrussCanopy(halfW * 2 + 4.0, 3.5, 0, -halfD - 1.75));
-  group.add(createTrussCanopy(halfW * 2 + 4.0, 3.5, 0, halfD + 1.75));
-  group.add(createTrussCanopy(4.0, halfD * 2, -halfW - 2.0, 0));
+  // --- 5. East Entrance Foyer (Front Facade towards Road) ---
+  const eW = 9.0;
+  const eD = 18.0;
+  const eX = halfW + eW / 2;
+  const eWall = new THREE.Mesh(new THREE.BoxGeometry(eW, baseH * 0.85, eD), wallMat);
+  eWall.position.set(eX, podiumH + (baseH * 0.85) / 2, 0);
+  eWall.castShadow = true;
+  group.add(eWall);
 
-  // --- 7. Full Solid Ascending Entrance Ramp (Connecting from ground to entrance) ---
-  const rampW = 5.5;
-  const rampLen = 16.0;
-  const rampMesh = new THREE.Mesh(new THREE.BoxGeometry(rampW, 2.0, rampLen), concreteMat);
-  rampMesh.position.set(halfW + 3.0, 1.0, 14.0);
-  rampMesh.rotation.x = 0.125;
-  rampMesh.castShadow = true;
-  rampMesh.receiveShadow = true;
-  group.add(rampMesh);
+  // East Entrance Foyer Flat Canopy
+  const eCanopy = new THREE.Mesh(new THREE.BoxGeometry(eW + 2.0, 0.6, eD + 1.5), trussMat);
+  eCanopy.position.set(eX + 0.5, podiumH + baseH * 0.85 + 0.3, 0);
+  eCanopy.castShadow = true;
+  group.add(eCanopy);
 
-  // Parapet walls for ramp
+  // East Grand Entrance Terrace Concourse
+  const terraceW = 8.0;
+  const terraceD = 14.0;
+  const terraceMesh = new THREE.Mesh(new THREE.BoxGeometry(terraceW, 2.2, terraceD), concreteMat);
+  terraceMesh.position.set(eX + eW / 2 + terraceW / 2 - 2.0, 1.1, 5.0);
+  terraceMesh.receiveShadow = true;
+  terraceMesh.castShadow = true;
+  group.add(terraceMesh);
+
+  // --- 6. GRAND ELEVATED ENTRANCE RAMP ("ทางขึ้น" เติมเต็มครบ 100% เชื่อมระดับดินสู่ชั้น 2) ---
+  // In world coords: Building center is at (159.8, 16.3).
+  // The ramp starts at South Ground: World Z = 51.9 -> Local Z = 51.9 - 16.3 = +35.6
+  // The ramp ends at North Junction: World Z = 24.4 -> Local Z = 24.4 - 16.3 = +8.1
+  // Local X offset: World X = 176.5 -> Local X = 176.5 - 159.8 = +16.7
+  const rampStartX = 17.0;
+  const rampZ_North = 8.1;
+  const rampZ_South = 35.6;
+  const rampTotalLength = rampZ_South - rampZ_North; // 27.5 meters!
+  const rampMidZ = (rampZ_North + rampZ_South) / 2;  // ~21.85
+  const rampWidth = 6.8; // Wide monumental ramp
+  const rampTopY = 4.2;  // Meets 2nd floor terrace
+
+  // 6.1 Solid Ascending Concrete Ramp Deck (Slopes continuously from ground Y=0 to terrace Y=4.2)
+  const slopeAngle = Math.atan2(rampTopY, rampTotalLength); // ~8.7 degrees continuous slope
+  const rampDeckLen = Math.sqrt(rampTotalLength * rampTotalLength + rampTopY * rampTopY);
+
+  const rampDeck = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 0.6, rampDeckLen), concreteMat);
+  rampDeck.position.set(rampStartX, rampTopY / 2, rampMidZ);
+  rampDeck.rotation.x = slopeAngle;
+  rampDeck.castShadow = true;
+  rampDeck.receiveShadow = true;
+  group.add(rampDeck);
+
+  // 6.2 Solid Continuous Side Parapet Walls / Balustrades along the full length of the ramp
   for (let s of [-1, 1]) {
-    const bal = new THREE.Mesh(new THREE.BoxGeometry(0.35, 2.8, rampLen), wallMat);
-    bal.position.set(halfW + 3.0 + s * (rampW / 2 - 0.2), 1.4, 14.0);
-    bal.rotation.x = 0.125;
-    bal.castShadow = true;
-    group.add(bal);
+    const wallX = rampStartX + s * (rampWidth / 2 - 0.2);
+    const parapetWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.1, rampDeckLen), wallMat);
+    parapetWall.position.set(wallX, rampTopY / 2 + 0.65, rampMidZ);
+    parapetWall.rotation.x = slopeAngle;
+    parapetWall.castShadow = true;
+    group.add(parapetWall);
   }
+
+  // 6.3 Solid Concrete Piers / Support Columns under the elevated ramp span
+  // Under the elevated section (from midZ to North junction)
+  for (let pz of [rampZ_North + 4.0, rampZ_North + 11.0, rampZ_North + 18.0]) {
+    const frac = (rampZ_South - pz) / rampTotalLength;
+    const currentPierH = frac * rampTopY;
+    if (currentPierH > 1.0) {
+      for (let px of [rampStartX - 2.2, rampStartX + 2.2]) {
+        const pier = new THREE.Mesh(new THREE.BoxGeometry(0.8, currentPierH, 0.8), concreteMat);
+        pier.position.set(px, currentPierH / 2, pz);
+        pier.castShadow = true;
+        group.add(pier);
+      }
+      // Cross beam
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 0.5, 0.8), concreteMat);
+      beam.position.set(rampStartX, currentPierH - 0.25, pz);
+      beam.castShadow = true;
+      group.add(beam);
+    }
+  }
+
+  // 6.4 Ground Landing Plaza (Wide flared landing at the south end where ramp touches ground)
+  const groundLanding = new THREE.Mesh(new THREE.BoxGeometry(rampWidth + 2.5, 0.35, 6.0), concreteMat);
+  groundLanding.position.set(rampStartX, 0.175, rampZ_South + 2.5);
+  groundLanding.receiveShadow = true;
+  group.add(groundLanding);
 
   return group;
 }
