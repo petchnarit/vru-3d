@@ -515,33 +515,26 @@ function buildGround() {
 function createAuditorium80Mesh() {
   const group = new THREE.Group();
 
-  // Materials matching satellite aerial photography
-  const roofMat = new THREE.MeshStandardMaterial({
-    color: 0xd6d8d9,
-    roughness: 0.52,
-    metalness: 0.18,
-    flatShading: true
-  });
-  const roofNorthMat = new THREE.MeshStandardMaterial({
-    color: 0xb2b6b9,
-    roughness: 0.58,
-    metalness: 0.15,
-    flatShading: true
+  // Materials matching clean modern architectural finish
+  const roofSolidMat = new THREE.MeshStandardMaterial({
+    color: 0xd8dcd6,
+    roughness: 0.45,
+    metalness: 0.15
   });
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0xe2e0dc,
-    roughness: 0.78,
+    color: 0xf1f5f9,
+    roughness: 0.75,
     metalness: 0.05
   });
-  const trussMat = new THREE.MeshStandardMaterial({
-    color: 0xf8fafc,
-    roughness: 0.28,
-    metalness: 0.45
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    roughness: 0.85,
+    metalness: 0.02
   });
-  const voidMat = new THREE.MeshStandardMaterial({
-    color: 0x1e242b,
-    roughness: 0.9,
-    metalness: 0.1
+  const trussMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.25,
+    metalness: 0.35
   });
   const glassMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
@@ -550,189 +543,155 @@ function createAuditorium80Mesh() {
     transparent: true,
     opacity: 0.8
   });
-  const ridgeMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.3,
-    metalness: 0.2
+  const darkTrimMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.5,
+    metalness: 0.3
   });
 
-  const baseH = 8.5; // Wall height before roof slope
-  const roofPeakH = 15.5; // Apex of hip roof
+  const baseH = 10.5; // Main hall height
+  const podiumH = 1.2;
 
-  // --- 1. Base Wall Podium ---
-  // Main Hall Wall
-  const mainWalls = new THREE.Mesh(new THREE.BoxGeometry(26.0, baseH, 32.0), wallMat);
-  mainWalls.position.set(0, baseH / 2, 0);
-  mainWalls.castShadow = true;
-  group.add(mainWalls);
+  // --- 1. Base Solid Podium ---
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(41.9, podiumH, 30.1), concreteMat);
+  podium.position.y = podiumH / 2;
+  podium.receiveShadow = true;
+  group.add(podium);
 
-  // East Foyer Projection Wall
-  const eastFoyerWall = new THREE.Mesh(new THREE.BoxGeometry(11.0, baseH * 0.85, 18.0), wallMat);
-  eastFoyerWall.position.set(13.0 + 5.5, (baseH * 0.85) / 2, 0);
-  eastFoyerWall.castShadow = true;
-  group.add(eastFoyerWall);
+  // --- 2. Main Hall Solid Body ---
+  // Covers the entire rectangular footprint without voids
+  const mainBody = new THREE.Mesh(new THREE.BoxGeometry(37.5, baseH, 26.5), wallMat);
+  mainBody.position.set(-1.0, podiumH + baseH / 2, 0);
+  mainBody.castShadow = true;
+  mainBody.receiveShadow = true;
+  group.add(mainBody);
 
-  // West Stepped Wings
-  const westWing1 = new THREE.Mesh(new THREE.BoxGeometry(6.5, baseH * 0.75, 24.0), wallMat);
-  westWing1.position.set(-13.0 - 3.25, (baseH * 0.75) / 2, 0);
-  westWing1.castShadow = true;
-  group.add(westWing1);
+  // Ribbon windows around upper perimeter
+  const ribbonWindows = new THREE.Mesh(new THREE.BoxGeometry(37.7, 1.2, 26.7), darkTrimMat);
+  ribbonWindows.position.set(-1.0, podiumH + baseH - 1.5, 0);
+  group.add(ribbonWindows);
 
-  const westWing2 = new THREE.Mesh(new THREE.BoxGeometry(5.0, baseH * 0.6, 14.0), wallMat);
-  westWing2.position.set(-13.0 - 6.5 - 2.5, (baseH * 0.6) / 2, 0);
-  westWing2.castShadow = true;
-  group.add(westWing2);
+  // --- 3. Full Solid Roof (No gables, completely continuous & filled) ---
+  // Layer 1: Solid lower roof slab
+  const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.8, 28.5), roofSolidMat);
+  roofSlab.position.set(-1.0, podiumH + baseH + 0.4, 0);
+  roofSlab.castShadow = true;
+  roofSlab.receiveShadow = true;
+  group.add(roofSlab);
 
-  // --- 2. Main Complex Hip Roof Geometry ---
-  // Vertices for Main Hip Roof (Hipped on 4 sides with central ridge along Z axis)
-  // Base corners at Y = baseH:
-  // vNW: (-13, baseH, -16), vNE: (13, baseH, -16)
-  // vSW: (-13, baseH, 16),  vSE: (13, baseH, 16)
-  // Ridge vertices at Y = roofPeakH:
-  // rN: (0, roofPeakH, -7), rS: (0, roofPeakH, 7)
-  const roofGeo = new THREE.BufferGeometry();
-  const positions = [
-    // South triangular slope (vSW, vSE, rS)
-    -13, baseH, 16,   13, baseH, 16,   0, roofPeakH, 7,
-    // West trapezoid slope (vNW, vSW, rN and rN, vSW, rS)
-    -13, baseH, -16,  -13, baseH, 16,   0, roofPeakH, -7,
-    0, roofPeakH, -7,  -13, baseH, 16,   0, roofPeakH, 7,
-    // North triangular slope with cutout area
-    13, baseH, -16,   -13, baseH, -16,  0, roofPeakH, -7,
-    // East slope part North (vNE, east-junction, rN)
-    13, baseH, -16,   13, baseH, -9,    0, roofPeakH, -7,
-    0, roofPeakH, -7,  13, baseH, -9,    0, roofPeakH, 0,
-    // East slope part South (east-junction, vSE, rS)
-    13, baseH, 9,     13, baseH, 16,    0, roofPeakH, 7,
-    0, roofPeakH, 0,   13, baseH, 9,     0, roofPeakH, 7,
-  ];
-  roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  roofGeo.computeVertexNormals();
-  const mainRoofMesh = new THREE.Mesh(roofGeo, roofMat);
-  mainRoofMesh.castShadow = true;
-  mainRoofMesh.receiveShadow = true;
-  group.add(mainRoofMesh);
+  // Layer 2: Solid upper central roof tier (low-profile modern flat block)
+  const roofTier2 = new THREE.Mesh(new THREE.BoxGeometry(26.0, 1.4, 19.5), roofSolidMat);
+  roofTier2.position.set(-2.5, podiumH + baseH + 0.8 + 0.7, 0);
+  roofTier2.castShadow = true;
+  roofTier2.receiveShadow = true;
+  group.add(roofTier2);
 
-  // --- 3. East Wing Hip Roof (Projecting towards entrance) ---
-  // Meets main roof at X = 13, Y = baseH, extends to X = 24.0, ridge at Y = 13.5
-  const eastRoofGeo = new THREE.BufferGeometry();
-  const eastPos = [
-    // East-North slope
-    13, baseH, -9,   24, baseH, -9,   20, 13.5, 0,
-    13, baseH, -9,   20, 13.5, 0,     13, 14.5, 0,
-    // East-South slope
-    24, baseH, 9,    13, baseH, 9,    13, 14.5, 0,
-    24, baseH, 9,    13, 14.5, 0,     20, 13.5, 0,
-    // East triangle end cap (sloping east)
-    24, baseH, -9,   24, baseH, 9,    20, 13.5, 0
-  ];
-  eastRoofGeo.setAttribute('position', new THREE.Float32BufferAttribute(eastPos, 3));
-  eastRoofGeo.computeVertexNormals();
-  const eastRoofMesh = new THREE.Mesh(eastRoofGeo, roofMat);
-  eastRoofMesh.castShadow = true;
-  group.add(eastRoofMesh);
+  // Layer 3: Solid top canopy cap
+  const roofCap = new THREE.Mesh(new THREE.BoxGeometry(27.0, 0.35, 20.5), trussMat);
+  roofCap.position.set(-2.5, podiumH + baseH + 0.8 + 1.4 + 0.18, 0);
+  roofCap.castShadow = true;
+  group.add(roofCap);
 
-  // --- 4. North Lightwell / Skylight Courtyard Void ---
-  // Recessed courtyard cut into north slope
-  const lightwellVoid = new THREE.Mesh(new THREE.BoxGeometry(9.0, 3.5, 4.5), voidMat);
-  lightwellVoid.position.set(0, baseH + 1.2, -13.5);
-  group.add(lightwellVoid);
+  // Architectural Parapet Edge Trims (Clean border lines around full roof)
+  const parapetNorth = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.6, 0.4), darkTrimMat);
+  parapetNorth.position.set(-1.0, podiumH + baseH + 0.8 + 0.3, -14.25);
+  group.add(parapetNorth);
+  const parapetSouth = new THREE.Mesh(new THREE.BoxGeometry(39.5, 0.6, 0.4), darkTrimMat);
+  parapetSouth.position.set(-1.0, podiumH + baseH + 0.8 + 0.3, 14.25);
+  group.add(parapetSouth);
+  const parapetWest = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.6, 28.5), darkTrimMat);
+  parapetWest.position.set(-1.0 - 19.75, podiumH + baseH + 0.8 + 0.3, 0);
+  group.add(parapetWest);
 
-  // Lightwell internal skylight glass
-  const skylight = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 3.8), glassMat);
-  skylight.rotation.x = -Math.PI / 2;
-  skylight.position.set(0, baseH + 0.1, -13.5);
-  group.add(skylight);
+  // --- 4. Perimeter White Cantilever Space Frame / Truss Lattice ---
+  // Solid clean lattice grid extending along North, East, and South eaves
+  const trussY = podiumH + baseH + 0.2;
+  function createSolidTrussWing(w, d, px, pz) {
+    const tGroup = new THREE.Group();
+    tGroup.position.set(px, trussY, pz);
 
-  // Two rooftop HVAC / Chiller units flanking the lightwell
-  for (let sx of [-6.0, 6.0]) {
-    const hvac = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 2.5), trussMat);
-    hvac.position.set(sx, baseH + 1.2, -14.0);
-    hvac.castShadow = true;
-    group.add(hvac);
-  }
+    const fTop = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, 0.5), trussMat);
+    fTop.position.set(0, 0, -d / 2);
+    tGroup.add(fTop);
+    const fBot = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, 0.5), trussMat);
+    fBot.position.set(0, 0, d / 2);
+    tGroup.add(fBot);
+    const fOuter = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, d), trussMat);
+    fOuter.position.set(w / 2, 0, 0);
+    tGroup.add(fOuter);
 
-  // --- 5. White Steel Space Frame / Cantilever Trellis Canopy ---
-  // Cantilevers out 3.5m around North, East, and South eaves
-  const trussGroup = new THREE.Group();
-  const trussY = baseH + 0.2;
-  const barThickness = 0.25;
-
-  function createTrussLattice(w, d, px, pz) {
-    const latGroup = new THREE.Group();
-    latGroup.position.set(px, trussY, pz);
-
-    // Frame perimeter border
-    const borderMat = trussMat;
-    const bTop = new THREE.Mesh(new THREE.BoxGeometry(w, barThickness, 0.4), borderMat);
-    bTop.position.set(0, 0, -d / 2);
-    latGroup.add(bTop);
-    const bBot = new THREE.Mesh(new THREE.BoxGeometry(w, barThickness, 0.4), borderMat);
-    bBot.position.set(0, 0, d / 2);
-    latGroup.add(bBot);
-    const bLeft = new THREE.Mesh(new THREE.BoxGeometry(0.4, barThickness, d), borderMat);
-    bLeft.position.set(-w / 2, 0, 0);
-    latGroup.add(bLeft);
-    const bRight = new THREE.Mesh(new THREE.BoxGeometry(0.4, barThickness, d), borderMat);
-    bRight.position.set(w / 2, 0, 0);
-    latGroup.add(bRight);
-
-    // Internal grid struts
-    const step = 2.0;
-    for (let x = -w / 2 + step; x < w / 2 - 0.5; x += step) {
-      const strut = new THREE.Mesh(new THREE.BoxGeometry(0.18, barThickness * 0.8, d), borderMat);
-      strut.position.set(x, 0, 0);
-      latGroup.add(strut);
+    // Cross bars
+    for (let x = -w / 2 + 2.5; x < w / 2; x += 2.5) {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, d), trussMat);
+      b.position.set(x, 0, 0);
+      tGroup.add(b);
     }
-    for (let z = -d / 2 + step; z < d / 2 - 0.5; z += step) {
-      const strut = new THREE.Mesh(new THREE.BoxGeometry(w, barThickness * 0.8, 0.18), borderMat);
-      strut.position.set(0, 0, z);
-      latGroup.add(strut);
-    }
+    return tGroup;
+  }
+  // North & South Cantilevers
+  group.add(createSolidTrussWing(36.0, 3.5, -1.0, -15.5));
+  group.add(createSolidTrussWing(36.0, 3.5, -1.0, 15.5));
 
-    return latGroup;
+  // --- 5. Front Entrance Foyer (East Facade) ---
+  const foyerW = 9.0;
+  const foyerH = 7.5;
+  const foyerD = 18.5;
+  const foyerX = 14.0;
+  const foyer = new THREE.Mesh(new THREE.BoxGeometry(foyerW, foyerH, foyerD), wallMat);
+  foyer.position.set(foyerX, podiumH + foyerH / 2, 0);
+  foyer.castShadow = true;
+  group.add(foyer);
+
+  // East Glass Facade & Grand Doors
+  const glassFacade = new THREE.Mesh(new THREE.PlaneGeometry(foyerD * 0.85, foyerH * 0.75), glassMat);
+  glassFacade.rotation.y = Math.PI / 2;
+  glassFacade.position.set(foyerX + foyerW / 2 + 0.05, podiumH + foyerH / 2, 0);
+  group.add(glassFacade);
+
+  // Foyer Extended Roof Canopy
+  const foyerRoof = new THREE.Mesh(new THREE.BoxGeometry(foyerW + 2.5, 0.6, foyerD + 1.5), trussMat);
+  foyerRoof.position.set(foyerX + 1.0, podiumH + foyerH + 0.3, 0);
+  foyerRoof.castShadow = true;
+  group.add(foyerRoof);
+
+  // --- 6. Full Solid Entrance Ramp & Grand Steps (Filled Completely from Ground to Entrance) ---
+  // 6.1 Main Ascending Solid Ramp Block (Gradually rises from ground 0 to entrance terrace 2.2m)
+  const rampLength = 16.5;
+  const rampWidth = 6.2;
+  const rampMesh = new THREE.Mesh(new THREE.BoxGeometry(rampWidth, 2.2, rampLength), concreteMat);
+  // Pivot ramp so it touches ground at south end (Z = 23.5) and meets entrance terrace at north end (Z = 7.0)
+  rampMesh.position.set(foyerX + 1.5, 1.1, 15.2);
+  rampMesh.rotation.x = 0.135; // smooth continuous slope right to ground
+  rampMesh.castShadow = true;
+  rampMesh.receiveShadow = true;
+  group.add(rampMesh);
+
+  // 6.2 Solid Concrete Side Balustrades / Parapet Walls for the Ramp
+  for (let side of [-1, 1]) {
+    const balustrade = new THREE.Mesh(new THREE.BoxGeometry(0.4, 3.0, rampLength), wallMat);
+    balustrade.position.set(foyerX + 1.5 + side * (rampWidth / 2 - 0.2), 1.6, 15.2);
+    balustrade.rotation.x = 0.135;
+    balustrade.castShadow = true;
+    group.add(balustrade);
   }
 
-  // North Truss Canopy (X: -14 to 14, extends North by 4m)
-  trussGroup.add(createTrussLattice(30.0, 4.0, 0, -18.0));
-  // South Truss Canopy (X: -14 to 14, extends South by 4m)
-  trussGroup.add(createTrussLattice(30.0, 4.0, 0, 18.0));
-  // East Wing North Flank Truss
-  trussGroup.add(createTrussLattice(12.0, 3.5, 20.0, -11.0));
-  // East Wing South Flank Truss
-  trussGroup.add(createTrussLattice(12.0, 3.5, 20.0, 11.0));
-  // East Wing Front End Truss
-  trussGroup.add(createTrussLattice(3.5, 21.0, 26.0, 0));
+  // 6.3 Solid Grand Entrance Concourse / Stepped Terrace (Filled solid between ramp and foyer)
+  const concourse = new THREE.Mesh(new THREE.BoxGeometry(rampWidth + 2.0, 2.2, 7.5), concreteMat);
+  concourse.position.set(foyerX + 1.5, 1.1, 5.0);
+  concourse.receiveShadow = true;
+  concourse.castShadow = true;
+  group.add(concourse);
 
-  group.add(trussGroup);
-
-  // --- 6. White Ridge and Hip Caps (Sharp architectural edges) ---
-  const ridgeGroup = new THREE.Group();
-  function createRidgeBar(p1, p2) {
-    const v1 = new THREE.Vector3(...p1);
-    const v2 = new THREE.Vector3(...p2);
-    const dist = v1.distanceTo(v2);
-    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, dist, 6), ridgeMat);
-    const mid = new THREE.Vector3().addVectors(v1, v2).multiplyScalar(0.5);
-    cyl.position.copy(mid);
-    cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), v2.clone().sub(v1).normalize());
-    cyl.castShadow = true;
-    return cyl;
+  // 6.4 Direct Front Grand Staircase (Stepped approach from East ground 0 to concourse)
+  for (let s = 0; s < 5; s++) {
+    const stepH = 0.44;
+    const stepD = 18.0;
+    const stepW = 1.0;
+    const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(stepW, (s + 1) * stepH, stepD - s * 0.6), concreteMat);
+    stepMesh.position.set(foyerX + foyerW / 2 + 0.5 + (5 - s) * stepW, ((s + 1) * stepH) / 2, 0);
+    stepMesh.receiveShadow = true;
+    group.add(stepMesh);
   }
-
-  // Main central ridge
-  ridgeGroup.add(createRidgeBar([0, roofPeakH + 0.1, -7], [0, roofPeakH + 0.1, 7]));
-  // 4 Main Hip Rafters
-  ridgeGroup.add(createRidgeBar([0, roofPeakH + 0.1, -7], [-13, baseH + 0.1, -16]));
-  ridgeGroup.add(createRidgeBar([0, roofPeakH + 0.1, -7], [13, baseH + 0.1, -16]));
-  ridgeGroup.add(createRidgeBar([0, roofPeakH + 0.1, 7], [-13, baseH + 0.1, 16]));
-  ridgeGroup.add(createRidgeBar([0, roofPeakH + 0.1, 7], [13, baseH + 0.1, 16]));
-  // East wing ridge & hips
-  ridgeGroup.add(createRidgeBar([0, 14.5 + 0.1, 0], [20, 13.5 + 0.1, 0]));
-  ridgeGroup.add(createRidgeBar([20, 13.5 + 0.1, 0], [24, baseH + 0.1, -9]));
-  ridgeGroup.add(createRidgeBar([20, 13.5 + 0.1, 0], [24, baseH + 0.1, 9]));
-
-  group.add(ridgeGroup);
 
   return group;
 }
