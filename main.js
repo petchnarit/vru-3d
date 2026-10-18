@@ -61,7 +61,7 @@ const HOSPITAL_BUILDINGS = [
     code: '1',
     name: '1',
     shortName: '1',
-    sub: 'อาคาร 1',
+    sub: '1. หอประชุม 80 ปี วไลยอลงกรณ์',
     category: 'อาคาร 1',
     status: 'เปิดทำการปกติ',
     archType: 'landmark80',
@@ -82,7 +82,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 1'
+      note: '1. หอประชุม 80 ปี วไลยอลงกรณ์'
     }
   },
   {
@@ -91,7 +91,7 @@ const HOSPITAL_BUILDINGS = [
     code: '2',
     name: '2',
     shortName: '2',
-    sub: 'อาคาร 2',
+    sub: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)',
     category: 'อาคาร 2',
     status: 'เปิดทำการปกติ',
     archType: 'spb100',
@@ -115,7 +115,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 2'
+      note: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)'
     }
   },
   {
@@ -124,7 +124,7 @@ const HOSPITAL_BUILDINGS = [
     code: '3',
     name: '3',
     shortName: '3',
-    sub: 'อาคาร 3',
+    sub: '3. โรงแรม มรภ.วไลยอลงกรณ์',
     category: 'อาคาร 3',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -146,7 +146,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 3'
+      note: '3. โรงแรม มรภ.วไลยอลงกรณ์'
     }
   },
   {
@@ -155,7 +155,7 @@ const HOSPITAL_BUILDINGS = [
     code: '4',
     name: '4',
     shortName: '4',
-    sub: 'อาคาร 4',
+    sub: '4. VRU Green Community Mall',
     category: 'อาคาร 4',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -175,7 +175,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 4'
+      note: '4. VRU Green Community Mall'
     }
   },
   {
@@ -184,7 +184,7 @@ const HOSPITAL_BUILDINGS = [
     code: '5',
     name: '5',
     shortName: '5',
-    sub: 'อาคาร 5',
+    sub: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ',
     category: 'อาคาร 5',
     status: 'เปิดทำการปกติ',
     archType: 'pool',
@@ -203,7 +203,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 5'
+      note: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ'
     }
   },
   {
@@ -212,29 +212,26 @@ const HOSPITAL_BUILDINGS = [
     code: '6',
     name: '6',
     shortName: '6',
-    sub: 'อาคาร 6',
+    sub: '6. อาคารจัดการขยะชุมชน',
     category: 'อาคาร 6',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 115.0, y: 0, z: -21.6 },
+    pos: { x: 140.0, y: 0, z: -50.0 },
     rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 24.0, h: 10.0, d: 9.0 },
-    roofColor: 0x166534,
+    anchorHeight: 7.0,
+    dimensions: { w: 14.0, h: 5.0, d: 10.0 },
+    roofColor: 0x475569,
     accentColor: 0x0284c7,
     floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
+      { num: 1, desc: 'ชั้น 1' }
     ],
     stats: {
-      floors: '4 ชั้น',
+      floors: '1 ชั้น',
       capacity: 'พร้อมใช้งาน',
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 6'
+      note: '6. อาคารจัดการขยะชุมชน'
     }
   },
   {
@@ -243,7 +240,7 @@ const HOSPITAL_BUILDINGS = [
     code: '7',
     name: '7',
     shortName: '7',
-    sub: 'อาคาร 7',
+    sub: '7. อาคารธุรกิจบริการ',
     category: 'อาคาร 7',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -263,7 +260,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 7'
+      note: '7. อาคารธุรกิจบริการ'
     }
   },
   {
@@ -272,7 +269,7 @@ const HOSPITAL_BUILDINGS = [
     code: '8',
     name: '8',
     shortName: '8',
-    sub: 'อาคาร 8',
+    sub: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ',
     category: 'อาคาร 8',
     status: 'เปิดทำการปกติ',
     archType: 'monument',
@@ -291,7 +288,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 8'
+      note: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ'
     }
   },
   {
@@ -300,29 +297,28 @@ const HOSPITAL_BUILDINGS = [
     code: '9',
     name: '9',
     shortName: '9',
-    sub: 'อาคาร 9',
+    sub: '9. หอประชุมวไลยอลงกรณ์',
     category: 'อาคาร 9',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 117.9, y: 0, z: 51.6 },
+    pos: { x: 34.0, y: 0, z: -4.8 },
     rotY: 0,
     anchorHeight: 14.0,
-    dimensions: { w: 24.0, h: 12.0, d: 9.0 },
-    roofColor: 0x334155,
+    dimensions: { w: 22.0, h: 12.0, d: 15.0 },
+    roofColor: 0xe2e8f0,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
       { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
+      { num: 3, desc: 'ชั้น 3' }
     ],
     stats: {
-      floors: '4 ชั้น',
+      floors: '3 ชั้น',
       capacity: 'พร้อมใช้งาน',
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 9'
+      note: '9. หอประชุมวไลยอลงกรณ์'
     }
   },
   {
@@ -331,30 +327,27 @@ const HOSPITAL_BUILDINGS = [
     code: '10',
     name: '10',
     shortName: '10',
-    sub: 'อาคาร 10',
+    sub: '10. ศูนย์อาหารกลาง',
     category: 'อาคาร 10',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 145.6, y: 0, z: 53.4 },
+    pos: { x: 22.0, y: 0, z: -4.8 },
     rotY: 0,
-    anchorHeight: 16.0,
-    dimensions: { w: 23.0, h: 14.0, d: 13.0 },
-    roofColor: 0x166534,
+    anchorHeight: 8.0,
+    dimensions: { w: 18.0, h: 6.0, d: 12.0 },
+    roofColor: 0x047857,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' },
-      { num: 5, desc: 'ชั้น 5' }
+      { num: 2, desc: 'ชั้น 2' }
     ],
     stats: {
-      floors: '5 ชั้น',
+      floors: '2 ชั้น',
       capacity: 'พร้อมใช้งาน',
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 10'
+      note: '10. ศูนย์อาหารกลาง'
     }
   },
   {
@@ -363,7 +356,7 @@ const HOSPITAL_BUILDINGS = [
     code: '11',
     name: '11',
     shortName: '11',
-    sub: 'อาคาร 11',
+    sub: '11. ยิมเนเซียม 1 (โรงยิม 1)',
     category: 'อาคาร 11',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -371,7 +364,7 @@ const HOSPITAL_BUILDINGS = [
     rotY: 0,
     anchorHeight: 11.0,
     dimensions: { w: 19.5, h: 9.0, d: 15.0 },
-    roofColor: 0x334155,
+    roofColor: 0x38bdf8,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
@@ -383,7 +376,38 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 11'
+      note: '11. ยิมเนเซียม 1 (โรงยิม 1)'
+    }
+  },
+  {
+    id: 'bld-12',
+    num: '12',
+    code: '12',
+    name: '12',
+    shortName: '12',
+    sub: '12. อาคาร 75 ปี วไลยอลงกรณ์',
+    category: 'อาคาร 12',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 68.0, y: 0, z: 16.0 },
+    rotY: 0,
+    anchorHeight: 14.0,
+    dimensions: { w: 20.0, h: 12.0, d: 12.0 },
+    roofColor: 0x334155,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '12. อาคาร 75 ปี วไลยอลงกรณ์'
     }
   },
   {
@@ -392,27 +416,29 @@ const HOSPITAL_BUILDINGS = [
     code: '13',
     name: '13',
     shortName: '13',
-    sub: 'อาคาร 13',
+    sub: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)',
     category: 'อาคาร 13',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 58.1, y: 0, z: -18.6 },
+    pos: { x: 54.0, y: 0, z: 16.0 },
     rotY: 0,
-    anchorHeight: 9.0,
-    dimensions: { w: 22.5, h: 7.0, d: 8.0 },
-    roofColor: 0x64748b,
+    anchorHeight: 14.0,
+    dimensions: { w: 20.0, h: 12.0, d: 12.0 },
+    roofColor: 0x1e293b,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
     ],
     stats: {
-      floors: '2 ชั้น',
+      floors: '4 ชั้น',
       capacity: 'พร้อมใช้งาน',
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 13'
+      note: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)'
     }
   },
   {
@@ -421,15 +447,15 @@ const HOSPITAL_BUILDINGS = [
     code: '14',
     name: '14',
     shortName: '14',
-    sub: 'อาคาร 14',
+    sub: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร',
     category: 'อาคาร 14',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 70.5, y: 0, z: 17.5 },
+    pos: { x: 38.0, y: 0, z: 16.0 },
     rotY: 0,
-    anchorHeight: 10.0,
-    dimensions: { w: 18.0, h: 8.0, d: 6.0 },
-    roofColor: 0x475569,
+    anchorHeight: 12.0,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
+    roofColor: 0x15803d,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
@@ -442,7 +468,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 14'
+      note: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร'
     }
   },
   {
@@ -451,29 +477,28 @@ const HOSPITAL_BUILDINGS = [
     code: '15',
     name: '15',
     shortName: '15',
-    sub: 'อาคาร 15',
+    sub: '15. คณะเทคโนโลยีการเกษตร (FAT)',
     category: 'อาคาร 15',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 79.9, y: 0, z: 39.0 },
+    pos: { x: 22.0, y: 0, z: 16.0 },
     rotY: 0,
-    anchorHeight: 13.0,
-    dimensions: { w: 17.0, h: 11.0, d: 5.5 },
-    roofColor: 0x94a3b8,
+    anchorHeight: 12.0,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
+    roofColor: 0x166534,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
       { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
+      { num: 3, desc: 'ชั้น 3' }
     ],
     stats: {
-      floors: '4 ชั้น',
+      floors: '3 ชั้น',
       capacity: 'พร้อมใช้งาน',
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 15'
+      note: '15. คณะเทคโนโลยีการเกษตร (FAT)'
     }
   },
   {
@@ -482,163 +507,15 @@ const HOSPITAL_BUILDINGS = [
     code: '16',
     name: '16',
     shortName: '16',
-    sub: 'อาคาร 16',
+    sub: '16. อาคารเรียนคณะครุศาสตร์',
     category: 'อาคาร 16',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: 58.4, y: 0, z: 28.7 },
+    pos: { x: 46.2, y: 0, z: 24.0 },
     rotY: 0,
-    anchorHeight: 10.0,
-    dimensions: { w: 23.0, h: 8.0, d: 5.5 },
-    roofColor: 0x78350f,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 16'
-    }
-  },
-  {
-    id: 'bld-17',
-    num: '17',
-    code: '17',
-    name: '17',
-    shortName: '17',
-    sub: 'อาคาร 17',
-    category: 'อาคาร 17',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 22.0, y: 0, z: -21.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 24.0, h: 10.0, d: 11.0 },
-    roofColor: 0x334155,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 17'
-    }
-  },
-  {
-    id: 'bld-19',
-    num: '19',
-    code: '19',
-    name: '19',
-    shortName: '19',
-    sub: 'อาคาร 19',
-    category: 'อาคาร 19',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 22.0, y: 0, z: 22.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 22.0, h: 10.0, d: 11.0 },
-    roofColor: 0x78350f,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 19'
-    }
-  },
-  {
-    id: 'bld-18',
-    num: '18',
-    code: '18',
-    name: '18',
-    shortName: '18',
-    sub: 'อาคาร 18',
-    category: 'อาคาร 18',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -26.2, y: 0, z: -17.9 },
-    rotY: 0,
-    anchorHeight: 8.5,
-    dimensions: { w: 12.0, h: 6.5, d: 8.0 },
-    roofColor: 0xe2e8f0,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 18'
-    }
-  },
-  {
-    id: 'bld-21',
-    num: '21',
-    code: '21',
-    name: '21',
-    shortName: '21',
-    sub: 'อาคาร 21',
-    category: 'อาคาร 21',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -43.0, y: 0, z: 39.0 },
-    rotY: 0,
-    anchorHeight: 10.5,
-    dimensions: { w: 14.0, h: 8.5, d: 12.0 },
-    roofColor: 0xe2e8f0,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 21'
-    }
-  },
-  {
-    id: 'bld-22',
-    num: '22',
-    code: '22',
-    name: '22',
-    shortName: '22',
-    sub: 'อาคาร 22',
-    category: 'อาคาร 22',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -6.9, y: 0, z: 38.3 },
-    rotY: 0,
-    anchorHeight: 16.0,
-    dimensions: { w: 20.0, h: 14.0, d: 18.0 },
-    roofColor: 0xea580c,
+    anchorHeight: 14.0,
+    dimensions: { w: 24.0, h: 12.0, d: 16.0 },
+    roofColor: 0x991b1b,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
@@ -652,7 +529,128 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 22'
+      note: '16. อาคารเรียนคณะครุศาสตร์'
+    }
+  },
+  {
+    id: 'bld-17',
+    num: '17',
+    code: '17',
+    name: '17',
+    shortName: '17',
+    sub: '17. คณะครุศาสตร์ (FE)',
+    category: 'อาคาร 17',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 46.2, y: 0, z: 34.0 },
+    rotY: 0,
+    anchorHeight: 14.0,
+    dimensions: { w: 24.0, h: 12.0, d: 14.0 },
+    roofColor: 0x7f1d1d,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '17. คณะครุศาสตร์ (FE)'
+    }
+  },
+  {
+    id: 'bld-18',
+    num: '18',
+    code: '18',
+    name: '18',
+    shortName: '18',
+    sub: '18. อาคารกองพัฒนานักศึกษา',
+    category: 'อาคาร 18',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 68.0, y: 0, z: 30.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
+    roofColor: 0x047857,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '18. อาคารกองพัฒนานักศึกษา'
+    }
+  },
+  {
+    id: 'bld-19',
+    num: '19',
+    code: '19',
+    name: '19',
+    shortName: '19',
+    sub: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)',
+    category: 'อาคาร 19',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 45.5, y: 0, z: -21.0 },
+    rotY: 0,
+    anchorHeight: 14.0,
+    dimensions: { w: 36.0, h: 12.0, d: 11.0 },
+    roofColor: 0xd97706,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)'
+    }
+  },
+  {
+    id: 'bld-20',
+    num: '20',
+    code: '20',
+    name: '20',
+    shortName: '20',
+    sub: '20. อาคารพยาบาล และร้านค้า',
+    category: 'อาคาร 20',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 54.0, y: 0, z: -8.0 },
+    rotY: 0,
+    anchorHeight: 8.0,
+    dimensions: { w: 16.0, h: 6.0, d: 10.0 },
+    roofColor: 0x0284c7,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '20. อาคารพยาบาล และร้านค้า'
     }
   },
   {
@@ -661,8 +659,281 @@ const HOSPITAL_BUILDINGS = [
     code: '23',
     name: '23',
     shortName: '23',
-    sub: 'อาคาร 23',
+    sub: '23. อาคาร 60 ปี วไลยอลงกรณ์',
     category: 'อาคาร 23',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 22.0, y: 0, z: -21.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 22.0, h: 10.0, d: 12.0 },
+    roofColor: 0x15803d,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '23. อาคาร 60 ปี วไลยอลงกรณ์'
+    }
+  },
+  {
+    id: 'bld-28',
+    num: '28',
+    code: '28',
+    name: '28',
+    shortName: '28',
+    sub: '28. คณะวิทยาการจัดการ (FMS)',
+    category: 'อาคาร 28',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -43.5, y: 0, z: -9.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 22.5, h: 10.0, d: 13.5 },
+    roofColor: 0xea580c,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '28. คณะวิทยาการจัดการ (FMS)'
+    }
+  },
+  {
+    id: 'bld-29',
+    num: '29',
+    code: '29',
+    name: '29',
+    shortName: '29',
+    sub: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)',
+    category: 'อาคาร 29',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 4.0, y: 0, z: -21.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 },
+    roofColor: 0x334155,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)'
+    }
+  },
+  {
+    id: 'bld-30',
+    num: '30',
+    code: '30',
+    name: '30',
+    shortName: '30',
+    sub: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)',
+    category: 'อาคาร 30',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -93.4, y: 0, z: 4.0 },
+    rotY: 0,
+    anchorHeight: 13.0,
+    dimensions: { w: 26.0, h: 11.0, d: 16.0 },
+    roofColor: 0x166534,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)'
+    }
+  },
+  {
+    id: 'bld-31',
+    num: '31',
+    code: '31',
+    name: '31',
+    shortName: '31',
+    sub: '31. อาคารหอสมุดกลาง (ARIT)',
+    category: 'อาคาร 31',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -6.9, y: 0, z: 38.3 },
+    rotY: 0,
+    anchorHeight: 16.0,
+    dimensions: { w: 20.0, h: 14.0, d: 18.0 },
+    roofColor: 0x1e293b,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '31. อาคารหอสมุดกลาง (ARIT)'
+    }
+  },
+  {
+    id: 'bld-31b',
+    num: '31B',
+    code: '31B',
+    name: '31B',
+    shortName: '31B',
+    sub: '31B. อาคารวิทยบริการ',
+    category: 'อาคาร 31B',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -6.9, y: 0, z: 24.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
+    roofColor: 0x0284c7,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '31B. อาคารวิทยบริการ'
+    }
+  },
+  {
+    id: 'bld-32',
+    num: '32',
+    code: '32',
+    name: '32',
+    shortName: '32',
+    sub: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)',
+    category: 'อาคาร 32',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -6.0, y: 0, z: 18.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 },
+    roofColor: 0x581c87,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)'
+    }
+  },
+  {
+    id: 'bld-33',
+    num: '33',
+    code: '33',
+    name: '33',
+    shortName: '33',
+    sub: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)',
+    category: 'อาคาร 33',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -8.0, y: 0, z: 30.0 },
+    rotY: 0,
+    anchorHeight: 14.0,
+    dimensions: { w: 22.0, h: 12.0, d: 14.0 },
+    roofColor: 0x15803d,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)'
+    }
+  },
+  {
+    id: 'bld-35',
+    num: '35',
+    code: '35',
+    name: '35',
+    shortName: '35',
+    sub: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)',
+    category: 'อาคาร 35',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -28.0, y: 0, z: 30.0 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 22.0, h: 10.0, d: 14.0 },
+    roofColor: 0x3b82f6,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' }
+    ],
+    stats: {
+      floors: '3 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)'
+    }
+  },
+  {
+    id: 'bld-36',
+    num: '36',
+    code: '36',
+    name: '36',
+    shortName: '36',
+    sub: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)',
+    category: 'อาคาร 36',
     status: 'เปิดทำการปกติ',
     archType: 'thaiPavilion',
     pos: { x: -2.9, y: 0, z: 0.6 },
@@ -681,24 +952,82 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 23'
+      note: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)'
     }
   },
   {
-    id: 'bld-28',
-    num: '28',
-    code: '28',
-    name: '28',
-    shortName: '28',
-    sub: 'อาคาร 28',
-    category: 'อาคาร 28',
+    id: 'bld-37',
+    num: '37',
+    code: '37',
+    name: '37',
+    shortName: '37',
+    sub: '37. อาคารฝ่ายยานพาหนะ',
+    category: 'อาคาร 37',
     status: 'เปิดทำการปกติ',
     archType: 'box',
-    pos: { x: -43.5, y: 0, z: -9.0 },
+    pos: { x: -44.0, y: 0, z: 16.0 },
     rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 22.5, h: 10.0, d: 13.5 },
-    roofColor: 0x991b1b,
+    anchorHeight: 8.0,
+    dimensions: { w: 18.0, h: 6.0, d: 12.0 },
+    roofColor: 0x475569,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '37. อาคารฝ่ายยานพาหนะ'
+    }
+  },
+  {
+    id: 'bld-38',
+    num: '38',
+    code: '38',
+    name: '38',
+    shortName: '38',
+    sub: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม',
+    category: 'อาคาร 38',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -85.8, y: 0, z: 14.0 },
+    rotY: 0,
+    anchorHeight: 9.0,
+    dimensions: { w: 24.0, h: 7.0, d: 7.0 },
+    roofColor: 0x9a3412,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม'
+    }
+  },
+  {
+    id: 'bld-39',
+    num: '39',
+    code: '39',
+    name: '39',
+    shortName: '39',
+    sub: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)',
+    category: 'อาคาร 39',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -85.8, y: 0, z: 26.0 },
+    rotY: 0,
+    anchorHeight: 13.0,
+    dimensions: { w: 24.0, h: 11.0, d: 9.0 },
+    roofColor: 0x7c2d12,
     accentColor: 0x0284c7,
     floors: [
       { num: 1, desc: 'ชั้น 1' },
@@ -711,17 +1040,48 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 28'
+      note: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)'
     }
   },
   {
-    id: 'bld-30',
-    num: '30',
-    code: '30',
-    name: '30',
-    shortName: '30',
-    sub: 'อาคาร 30',
-    category: 'อาคาร 30',
+    id: 'bld-40',
+    num: '40',
+    code: '40',
+    name: '40',
+    shortName: '40',
+    sub: '40. หอพักโกเมน & หอพักเพทาย',
+    category: 'อาคาร 40',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -82.0, y: 0, z: -25.0 },
+    rotY: 0,
+    anchorHeight: 15.0,
+    dimensions: { w: 20.0, h: 13.0, d: 14.0 },
+    roofColor: 0xd97706,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '40. หอพักโกเมน & หอพักเพทาย'
+    }
+  },
+  {
+    id: 'bld-42',
+    num: '42',
+    code: '42',
+    name: '42',
+    shortName: '42',
+    sub: '42. ยิมเนเซียม 2',
+    category: 'อาคาร 42',
     status: 'เปิดทำการปกติ',
     archType: 'box',
     pos: { x: -106.0, y: 0, z: -5.0 },
@@ -740,36 +1100,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 30'
-    }
-  },
-  {
-    id: 'bld-31',
-    num: '31',
-    code: '31',
-    name: '31',
-    shortName: '31',
-    sub: 'อาคาร 31',
-    category: 'อาคาร 31',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -106.0, y: 0, z: -11.2 },
-    rotY: 0,
-    anchorHeight: 9.0,
-    dimensions: { w: 16.0, h: 7.0, d: 4.6 },
-    roofColor: 0xd97706,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคาร 31'
+      note: '42. ยิมเนเซียม 2'
     }
   },
   {
@@ -778,7 +1109,7 @@ const HOSPITAL_BUILDINGS = [
     code: '43',
     name: '43',
     shortName: '43',
-    sub: 'อาคาร 43',
+    sub: '43. หอพักนักศึกษา 1',
     category: 'อาคาร 43',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -800,7 +1131,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 43'
+      note: '43. หอพักนักศึกษา 1'
     }
   },
   {
@@ -809,7 +1140,7 @@ const HOSPITAL_BUILDINGS = [
     code: '44',
     name: '44',
     shortName: '44',
-    sub: 'อาคาร 44',
+    sub: '44. หอพักนักศึกษา 2',
     category: 'อาคาร 44',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -831,7 +1162,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 44'
+      note: '44. หอพักนักศึกษา 2'
     }
   },
   {
@@ -840,7 +1171,7 @@ const HOSPITAL_BUILDINGS = [
     code: '45',
     name: '45',
     shortName: '45',
-    sub: 'อาคาร 45',
+    sub: '45. หอพักนักศึกษา 3',
     category: 'อาคาร 45',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -862,7 +1193,7 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 45'
+      note: '45. หอพักนักศึกษา 3'
     }
   },
   {
@@ -871,7 +1202,7 @@ const HOSPITAL_BUILDINGS = [
     code: '46',
     name: '46',
     shortName: '46',
-    sub: 'อาคาร 46',
+    sub: '46. หอพักนักศึกษา 4',
     category: 'อาคาร 46',
     status: 'เปิดทำการปกติ',
     archType: 'box',
@@ -893,7 +1224,96 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 46'
+      note: '46. หอพักนักศึกษา 4'
+    }
+  },
+  {
+    id: 'bld-49',
+    num: '49',
+    code: '49',
+    name: '49',
+    shortName: '49',
+    sub: '49. หอพักนักศึกษานานาชาติ',
+    category: 'อาคาร 49',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -92.0, y: 0, z: 28.0 },
+    rotY: 0,
+    anchorHeight: 15.0,
+    dimensions: { w: 20.0, h: 13.0, d: 14.0 },
+    roofColor: 0x475569,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '49. หอพักนักศึกษานานาชาติ'
+    }
+  },
+  {
+    id: 'bld-53',
+    num: '53',
+    code: '53',
+    name: '53',
+    shortName: '53',
+    sub: '53. ศูนย์ อพ.สธ.',
+    category: 'อาคาร 53',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -140.0, y: 0, z: 34.0 },
+    rotY: 0,
+    anchorHeight: 9.0,
+    dimensions: { w: 18.0, h: 7.0, d: 12.0 },
+    roofColor: 0x15803d,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '53. ศูนย์ อพ.สธ.'
+    }
+  },
+  {
+    id: 'bld-55',
+    num: '55',
+    code: '55',
+    name: '55',
+    shortName: '55',
+    sub: '55. Valaya Hub',
+    category: 'อาคาร 55',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -155.0, y: 0, z: 34.0 },
+    rotY: 0,
+    anchorHeight: 8.5,
+    dimensions: { w: 18.0, h: 6.5, d: 12.0 },
+    roofColor: 0x92400e,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: '55. Valaya Hub'
     }
   },
   {
@@ -902,7 +1322,7 @@ const HOSPITAL_BUILDINGS = [
     code: '57',
     name: '57',
     shortName: '57',
-    sub: 'อาคาร 57',
+    sub: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ',
     category: 'อาคาร 57',
     status: 'เปิดทำการปกติ',
     archType: 'stadium',
@@ -921,10 +1341,163 @@ const HOSPITAL_BUILDINGS = [
       power: 'ระบบปกติ',
       security: '100%',
       load: 75,
-      note: 'อาคาร 57'
+      note: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ'
+    }
+  },
+  {
+    id: 'bld-n1',
+    num: 'N1',
+    code: 'N1',
+    name: 'N1',
+    shortName: 'N1',
+    sub: 'อาคารเรียนรวมเหนือ',
+    category: 'อาคาร N1',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 115.0, y: 0, z: -21.6 },
+    rotY: 0,
+    anchorHeight: 12.0,
+    dimensions: { w: 24.0, h: 10.0, d: 9.0 },
+    roofColor: 0x166534,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: 'อาคารเรียนรวมเหนือ'
+    }
+  },
+  {
+    id: 'bld-n2',
+    num: 'N2',
+    code: 'N2',
+    name: 'N2',
+    shortName: 'N2',
+    sub: 'หอประชุมเหนือ',
+    category: 'อาคาร N2',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 101.0, y: 0, z: -44.5 },
+    rotY: 0,
+    anchorHeight: 11.0,
+    dimensions: { w: 6.0, h: 9.0, d: 17.0 },
+    roofColor: 0xe2e8f0,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: 'หอประชุมเหนือ'
+    }
+  },
+  {
+    id: 'bld-s1',
+    num: 'S1',
+    code: 'S1',
+    name: 'S1',
+    shortName: 'S1',
+    sub: 'อาคารเรียนรวมใต้ 1',
+    category: 'อาคาร S1',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 117.9, y: 0, z: 51.6 },
+    rotY: 0,
+    anchorHeight: 14.0,
+    dimensions: { w: 24.0, h: 12.0, d: 9.0 },
+    roofColor: 0x334155,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' }
+    ],
+    stats: {
+      floors: '4 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: 'อาคารเรียนรวมใต้ 1'
+    }
+  },
+  {
+    id: 'bld-s2',
+    num: 'S2',
+    code: 'S2',
+    name: 'S2',
+    shortName: 'S2',
+    sub: 'อาคารเรียนรวมใต้ 2 (ทรงโค้ง)',
+    category: 'อาคาร S2',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: 145.6, y: 0, z: 53.4 },
+    rotY: 0,
+    anchorHeight: 16.0,
+    dimensions: { w: 23.0, h: 14.0, d: 13.0 },
+    roofColor: 0x166534,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' },
+      { num: 3, desc: 'ชั้น 3' },
+      { num: 4, desc: 'ชั้น 4' },
+      { num: 5, desc: 'ชั้น 5' }
+    ],
+    stats: {
+      floors: '5 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: 'อาคารเรียนรวมใต้ 2 (ทรงโค้ง)'
+    }
+  },
+  {
+    id: 'bld-w1',
+    num: 'W1',
+    code: 'W1',
+    name: 'W1',
+    shortName: 'W1',
+    sub: 'อาคารกีฬาในร่ม',
+    category: 'อาคาร W1',
+    status: 'เปิดทำการปกติ',
+    archType: 'box',
+    pos: { x: -43.0, y: 0, z: 39.0 },
+    rotY: 0,
+    anchorHeight: 10.5,
+    dimensions: { w: 14.0, h: 8.5, d: 12.0 },
+    roofColor: 0xe2e8f0,
+    accentColor: 0x0284c7,
+    floors: [
+      { num: 1, desc: 'ชั้น 1' },
+      { num: 2, desc: 'ชั้น 2' }
+    ],
+    stats: {
+      floors: '2 ชั้น',
+      capacity: 'พร้อมใช้งาน',
+      power: 'ระบบปกติ',
+      security: '100%',
+      load: 75,
+      note: 'อาคารกีฬาในร่ม'
     }
   }
 ];
+
 
 
 
@@ -2209,14 +2782,7 @@ function updateLabelPositions() {
   const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
-    if (isOverview && !element.classList.contains('selected')) {
-      if (!MAJOR_LANDMARK_IDS.has(data.id)) {
-        element.style.display = 'none';
-        return;
-      }
-    }
-
-    const anchorY = data.anchorHeight || (data.dimensions.h + 3.0);
+    const anchorY = data.anchorHeight || (data.dimensions.h + 2.0);
     toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
     if (toAnchor.dot(camDir) <= 0.2) {
