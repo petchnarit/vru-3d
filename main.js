@@ -9,8 +9,8 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1',
     sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย',
     category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ',
-    archType: 'auditorium80', pos: { x: 160.4, y: 0, z: 16.8 }, rotY: 0, anchorHeight: 16,
-    dimensions: { w: 39.7, h: 12.0, d: 25.4 }, roofColor: 0xf8fafc, accentColor: 0x047857,
+    archType: 'auditorium80', pos: { x: 159.8, y: 0, z: 16.3 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 41.9, h: 14.0, d: 30.1 }, roofColor: 0xf8fafc, accentColor: 0x047857,
     floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการ' }]
   },
   {
@@ -411,7 +411,7 @@ function initScene() {
   const canvas = document.getElementById('world');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdce7f2);
-  scene.fog = new THREE.FogExp2(0xdce7f2, 0.0014);
+  // scene.fog removed for maximum texture clarity
 
   const initPreset = getOverviewPreset();
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 1200);
@@ -493,10 +493,8 @@ function setupLighting() {
 function buildGround() {
   // Aerial Drone Orthophoto Masterplane (416.6 x 120.0 m)
   const droneGeo = new THREE.PlaneGeometry(416.6, 120.0);
-  const droneMat = new THREE.MeshStandardMaterial({
-    map: sharedTextures.droneMap,
-    roughness: 0.85,
-    metalness: 0.05
+  const droneMat = new THREE.MeshBasicMaterial({
+    map: sharedTextures.droneMap
   });
   const droneMesh = new THREE.Mesh(droneGeo, droneMat);
   droneMesh.rotation.x = -Math.PI / 2;
@@ -512,239 +510,82 @@ function buildGround() {
   outerMesh.position.set(0, -0.05, 0);
   outerMesh.receiveShadow = true;
   groundGroup.add(outerMesh);
-
-  // Overpass Bridge on East front
-  const overpass = new THREE.Group();
-  overpass.position.set(195, 0, -22);
-  const opDeck = new THREE.Mesh(new THREE.BoxGeometry(26, 0.6, 3.2), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
-  opDeck.position.y = 6.2;
-  opDeck.castShadow = true;
-  overpass.add(opDeck);
-  const opRoof = new THREE.Mesh(new THREE.BoxGeometry(26, 0.25, 3.6), new THREE.MeshStandardMaterial({ color: 0x047857 }));
-  opRoof.position.y = 8.6;
-  overpass.add(opRoof);
-  for (let px of [-11, 0, 11]) {
-    const pier = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 6.2, 10), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
-    pier.position.set(px, 3.1, 0);
-    overpass.add(pier);
-  }
-  groundGroup.add(overpass);
-
-  // Grand Entrance Signboard at Front Gate
-  const gateSignGroup = new THREE.Group();
-  gateSignGroup.position.set(184, 0, 14.5);
-  const signBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.2, 11.5), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
-  signBase.position.y = 0.6;
-  gateSignGroup.add(signBase);
-  const signBoard = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.7, 10.8), new THREE.MeshStandardMaterial({ color: 0x064e3b }));
-  signBoard.position.y = 2.55;
-  signBoard.castShadow = true;
-  gateSignGroup.add(signBoard);
-  const signFace = new THREE.Mesh(new THREE.PlaneGeometry(10.4, 2.5), new THREE.MeshBasicMaterial({ map: sharedTextures.vruMainSign }));
-  signFace.position.set(0.27, 2.55, 0);
-  signFace.rotation.y = Math.PI / 2;
-  gateSignGroup.add(signFace);
-  groundGroup.add(gateSignGroup);
 }
 
-// 3D Building Geometries
+// 3D Building Geometries: Building 1 (Auditorium 80 Yr) built brand new first; others cleared!
 function buildBuildings() {
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.55, metalness: 0.05 });
-  const windowMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.15,
-    metalness: 0.75,
-    emissive: new THREE.Color(0xffbf69),
-    emissiveIntensity: 0.0
-  });
-  emissiveMaterials.push(windowMat);
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.45, metalness: 0.1 });
+  const concreteMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7, metalness: 0.05 });
+  const trussMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.2 });
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.8, transparent: true, opacity: 0.75 });
 
   HOSPITAL_BUILDINGS.forEach(bld => {
     const bGroup = new THREE.Group();
     bGroup.position.set(bld.pos.x, 0, bld.pos.z);
-    bGroup.rotation.y = bld.rotY || 0;
     bGroup.userData = bld;
 
-    const { w, h, d } = bld.dimensions;
-    const type = bld.archType;
-
-    if (type === 'auditorium80') {
-      const podium = new THREE.Mesh(new THREE.BoxGeometry(w, 1.2, d), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+    if (bld.id === 'bld-1') {
+      // === 1. หอประชุม 80 ปี วไลยอลงกรณ์ (Multi-Tier Architectural Reconstruction) ===
+      // Relative dimensions centered at (159.8, 16.3)
+      // 1.1 Base Podium
+      const podium = new THREE.Mesh(new THREE.BoxGeometry(41.9, 1.2, 30.1), concreteMat);
       podium.position.y = 0.6;
       podium.receiveShadow = true;
       bGroup.add(podium);
 
-      const mainHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, h * 0.75, d * 0.88), wallMat);
-      mainHall.position.y = 1.2 + (h * 0.75) / 2;
-      mainHall.castShadow = true;
-      bGroup.add(mainHall);
+      // 1.2 High-bay Central Hall Core (X offset: -2.6, Z offset: -0.7)
+      const coreHall = new THREE.Mesh(new THREE.BoxGeometry(22.0, 11.5, 18.2), wallMat);
+      coreHall.position.set(-2.6, 1.2 + 5.75, -0.7);
+      coreHall.castShadow = true;
+      bGroup.add(coreHall);
 
-      const frameMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 });
-      const canopy = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), frameMat);
-      canopy.position.y = h * 0.82;
-      canopy.castShadow = true;
-      bGroup.add(canopy);
+      // 1.3 Lower Perimeter Wings (North, West, South)
+      const westWing = new THREE.Mesh(new THREE.BoxGeometry(10.0, 7.5, 26.0), wallMat);
+      westWing.position.set(-15.0, 1.2 + 3.75, -0.7);
+      westWing.castShadow = true;
+      bGroup.add(westWing);
 
-      const r1 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, 1.5, d * 0.75), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-      r1.position.y = h * 0.85 + 0.75;
-      r1.castShadow = true;
-      bGroup.add(r1);
+      // 1.4 Steel Truss Roof Structure
+      const mainTrussRoof = new THREE.Mesh(new THREE.BoxGeometry(24.5, 1.4, 20.5), trussMat);
+      mainTrussRoof.position.set(-2.6, 1.2 + 11.5 + 0.7, -0.7);
+      mainTrussRoof.castShadow = true;
+      bGroup.add(mainTrussRoof);
 
-      const r2 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.45, 1.8, d * 0.45), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-      r2.position.y = h * 0.85 + 2.4;
-      r2.castShadow = true;
-      bGroup.add(r2);
+      // 1.5 Upper Roof Tier / Lantern
+      const topLantern = new THREE.Mesh(new THREE.BoxGeometry(14.0, 1.6, 12.0), trussMat);
+      topLantern.position.set(-2.6, 1.2 + 11.5 + 1.4 + 0.8, -0.7);
+      topLantern.castShadow = true;
+      bGroup.add(topLantern);
 
-    } else if (type === 'spb100') {
-      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
-      body.position.y = h / 2;
-      body.castShadow = true;
-      bGroup.add(body);
+      // 1.6 Front Foyer / Facade (East entrance, X offset: +17.1, Z offset: -0.5)
+      const foyer = new THREE.Mesh(new THREE.BoxGeometry(7.6, 8.5, 19.3), wallMat);
+      foyer.position.set(17.1, 1.2 + 4.25, -0.5);
+      foyer.castShadow = true;
+      bGroup.add(foyer);
 
-      for (let f = 1; f < 6; f++) {
-        const win = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 1.2, d * 0.85), windowMat);
-        win.position.y = f * (h / 6);
-        bGroup.add(win);
-      }
+      // Foyer Glass Front
+      const foyerGlass = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 7.0), glassMat);
+      foyerGlass.position.set(17.1 + 3.85, 1.2 + 4.0, -0.5);
+      foyerGlass.rotation.y = Math.PI / 2;
+      bGroup.add(foyerGlass);
 
-      const vault = new THREE.Mesh(
-        new THREE.CylinderGeometry(w * 0.35, w * 0.35, d * 0.9, 16, 1, false, -Math.PI / 2, Math.PI),
-        new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.5, roughness: 0.3 })
-      );
-      vault.position.set(0, h + 0.2, 0);
-      vault.rotation.z = Math.PI / 2;
-      vault.castShadow = true;
-      bGroup.add(vault);
-
-    } else if (type === 'pool') {
-      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-      deck.position.y = 0.25;
-      deck.receiveShadow = true;
-      bGroup.add(deck);
-
-      const waterMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(w * 0.6, d * 0.8),
-        new THREE.MeshStandardMaterial({ map: sharedTextures.poolWater, roughness: 0.1, metalness: 0.2 })
-      );
-      waterMesh.rotation.x = -Math.PI / 2;
-      waterMesh.position.y = 0.52;
-      bGroup.add(waterMesh);
-
-      const pav = new THREE.Mesh(new THREE.BoxGeometry(w * 0.3, h, d * 0.85), wallMat);
-      pav.position.set(-w * 0.32, h / 2, 0);
-      pav.castShadow = true;
-      bGroup.add(pav);
-
-    } else if (type === 'thaiPavilion') {
-      const teakMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.65 });
-      const thaiRoofMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.45 });
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.7, roughness: 0.25 });
-
-      for (let sx of [-w * 0.35, 0, w * 0.35]) {
-        for (let sz of [-d * 0.35, 0, d * 0.35]) {
-          const st = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.4, 6), teakMat);
-          st.position.set(sx, 1.2, sz);
-          st.castShadow = true;
-          bGroup.add(st);
-        }
-      }
-
-      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d), teakMat);
-      deck.position.y = 2.4;
-      bGroup.add(deck);
-
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, 2.6, d * 0.75), teakMat);
-      cabin.position.y = 2.4 + 1.3;
-      cabin.castShadow = true;
-      bGroup.add(cabin);
-
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(w * 0.85, 1.8, d * 0.85), thaiRoofMat);
-      roof.position.y = 2.4 + 2.6 + 0.9;
-      roof.castShadow = true;
-      bGroup.add(roof);
-
-      const finial = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1.2, 6), goldMat);
-      finial.position.y = 2.4 + 2.6 + 1.8 + 0.6;
-      bGroup.add(finial);
-
-    } else if (type === 'stadium') {
-      const trackMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.55 });
-      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w, 0.3, d * 0.52), trackMat);
-      trackCenter.position.y = 0.2;
-      bGroup.add(trackCenter);
-
-      for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.5, w * 0.5, 0.3, 32), trackMat);
-        cap.position.set(0, 0.2, side * (d * 0.26));
-        bGroup.add(cap);
-      }
-
-      const pitchMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
-      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.62, 0.36, d * 0.52), pitchMat);
-      pitch.position.y = 0.25;
-      pitch.receiveShadow = true;
-      bGroup.add(pitch);
-
-      const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.3, d * 0.52), lineMat);
-      midLine.rotation.x = -Math.PI / 2;
-      midLine.position.y = 0.39;
-      bGroup.add(midLine);
-
-      const centerRing = new THREE.Mesh(new THREE.RingGeometry(2.0, 2.3, 32), lineMat);
-      centerRing.rotation.x = -Math.PI / 2;
-      centerRing.position.y = 0.39;
-      bGroup.add(centerRing);
-
-      const stand = new THREE.Mesh(new THREE.BoxGeometry(3.5, 4.5, d * 0.45), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
-      stand.position.set(-w * 0.5 - 2.0, 2.25, 0);
-      stand.castShadow = true;
-      bGroup.add(stand);
-
-      const sRoof = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.3, d * 0.48), new THREE.MeshStandardMaterial({ color: 0x047857 }));
-      sRoof.position.set(-w * 0.5 - 2.0, 6.0, 0);
-      sRoof.rotation.z = -0.15;
-      sRoof.castShadow = true;
-      bGroup.add(sRoof);
-
-    } else if (type === 'monument') {
-      const base = new THREE.Mesh(new THREE.BoxGeometry(w, 0.8, d), new THREE.MeshStandardMaterial({ color: 0xfef3c7 }));
-      base.position.y = 0.4;
-      bGroup.add(base);
-
-      const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.5, 2.5, 16), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-      ped.position.set(0, 1.6, 0);
-      ped.castShadow = true;
-      bGroup.add(ped);
-
-      const statue = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 2.0, 10), new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8 }));
-      statue.position.set(0, 3.8, 0);
-      bGroup.add(statue);
+      // 1.7 Sloped Pedestrian Ramp (South-East, X offset: +18.7, Z offset: +13.2)
+      const rampGeo = new THREE.BoxGeometry(4.6, 0.6, 14.2);
+      const rampMesh = new THREE.Mesh(rampGeo, concreteMat);
+      rampMesh.position.set(18.7, 2.2, 13.2);
+      rampMesh.rotation.x = 0.14; // gentle slope towards south
+      rampMesh.castShadow = true;
+      bGroup.add(rampMesh);
 
     } else {
-      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
-      body.position.y = h / 2;
-      body.castShadow = true;
-      body.receiveShadow = true;
-      bGroup.add(body);
-
-      const winCount = Math.max(1, Math.floor(h / 3.5));
-      for (let f = 1; f <= winCount; f++) {
-        const win = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 1.0, d + 0.1), windowMat);
-        win.position.y = f * (h / (winCount + 1));
-        bGroup.add(win);
-      }
-
-      const rMat = new THREE.MeshStandardMaterial({ color: bld.roofColor || 0x334155, roughness: 0.6 });
-      const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), rMat);
-      slab.position.y = h + 0.18;
-      slab.castShadow = true;
-      bGroup.add(slab);
-
-      const parapet = new THREE.Mesh(new THREE.BoxGeometry(w * 0.78, 0.6, d * 0.78), rMat);
-      parapet.position.y = h + 0.65;
-      parapet.castShadow = true;
-      bGroup.add(parapet);
+      // Invisible flat hitbox on ground for raycast clicking (no 3D mesh rendered yet)
+      const hitGeo = new THREE.PlaneGeometry(bld.dimensions.w, bld.dimensions.d);
+      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.rotation.x = -Math.PI / 2;
+      hitMesh.position.y = 0.05;
+      hitMesh.userData = bld;
+      bGroup.add(hitMesh);
     }
 
     buildingsGroup.add(bGroup);
@@ -803,7 +644,7 @@ function updateLabelPositions() {
   const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
-    const anchorY = data.anchorHeight || (data.dimensions.h + 2.0);
+    const anchorY = 1.8;
     toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
     if (toAnchor.dot(camDir) <= 0.2) {
