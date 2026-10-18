@@ -901,7 +901,7 @@ const HOSPITAL_BUILDINGS = [
     category: 'อาคารอนุรักษ์ศิลปวัฒนธรรม',
     status: 'เปิดทำการ 08:30 - 16:30 น.',
     archType: 'thaiPavilion',
-    pos: { x: -18, y: 0, z: -16 },
+    pos: { x: -2, y: 0, z: 1 },
     rotY: 0,
     anchorHeight: 13,
     dimensions: { w: 16, h: 6.5, d: 14 },
@@ -1191,10 +1191,10 @@ const HOSPITAL_BUILDINGS = [
     category: 'สนามกีฬาและนันทนาการ',
     status: 'เปิดบริการ 06:00 - 21:00 น.',
     archType: 'stadium',
-    pos: { x: -158, y: 0, z: 4 },
+    pos: { x: -138, y: 0, z: 12 },
     rotY: 0,
     anchorHeight: 16,
-    dimensions: { w: 55, h: 11.5, d: 90 },
+    dimensions: { w: 44, h: 11.5, d: 58 },
     roofColor: 0xdc2626,
     accentColor: 0x16a34a,
     floors: [
@@ -1579,8 +1579,8 @@ const VIEW_PRESETS = {
   overview: { pos: { x: 0, y: 220, z: 180 }, target: { x: 0, y: 0, z: -10 } },
   front: { pos: { x: 210, y: 55, z: 35 }, target: { x: 112, y: 6, z: 0 } },
   academic: { pos: { x: 45, y: 75, z: 50 }, target: { x: 25, y: 5, z: -5 } },
-  thaiLake: { pos: { x: -18, y: 55, z: 35 }, target: { x: -18, y: 4, z: -16 } },
-  stadium: { pos: { x: -155, y: 70, z: 75 }, target: { x: -158, y: 4, z: 2 } }
+  thaiLake: { pos: { x: -2, y: 55, z: 45 }, target: { x: -2, y: 4, z: 1 } },
+  stadium: { pos: { x: -138, y: 65, z: 80 }, target: { x: -138, y: 4, z: 12 } }
 };
 
 let scene, camera, renderer, controls;
@@ -1600,6 +1600,14 @@ const sharedTextures = {};
 // ============================================================================
 
 function initProceduralTextures() {
+  const texLoader = new THREE.TextureLoader();
+  sharedTextures.droneMap = texLoader.load('img/vru-drone-map-4k.jpg', (tex) => {
+    tex.encoding = THREE.sRGBEncoding;
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+  });
   sharedTextures.roofCorrugated = createCorrugatedTexture('#334155', '#1e293b');
   sharedTextures.roofTile = createTileTexture('#475569', '#334155');
   sharedTextures.roofGreenTile = createTileTexture('#166534', '#14532d');
@@ -1998,7 +2006,7 @@ function buildPure3DMasterplanTerrain() {
   });
   const droneMesh = new THREE.Mesh(droneGeo, droneMat);
   droneMesh.rotation.x = -Math.PI / 2;
-  droneMesh.position.set(0, -0.05, 0);
+  droneMesh.position.set(0, 0.01, 0);
   droneMesh.receiveShadow = true;
   groundGroup.add(droneMesh);
 
@@ -2169,7 +2177,7 @@ function buildPure3DMasterplanTerrain() {
   addWaterBasin(groundGroup, 40, -6, 15, 14);
 
   // 6.3 สระน้ำใหญ่กลางมหาวิทยาลัย & เกาะเรือนไทยเจ้าฟ้า (#36)
-  addWaterBasin(groundGroup, -18, -16, 54, 38, 0, true);
+  addWaterBasin(groundGroup, -2, 1, 54, 38, 0, true);
 
   // 6.4 กลุ่มสระน้ำฝั่งทิศใต้ (3 สระใหญ่ริมถนนสายใต้)
   addWaterBasin(groundGroup, 68, 48, 32, 22);
@@ -2200,7 +2208,7 @@ function buildPure3DMasterplanTerrain() {
   addWaterBasin(groundGroup, -118, 36, 24, 16);
 
   // 6.8 สระเก็บน้ำขนาดใหญ่หลังสนามกีฬากลาง (#57)
-  addWaterBasin(groundGroup, -185, 5, 22, 82);
+  addWaterBasin(groundGroup, -168, 12, 18, 65);
 
   // 6.9 สระน้ำด้านทิศเหนือเหนือสนามกีฬากลาง
   addWaterBasin(groundGroup, -158, -45, 48, 26);
@@ -3070,6 +3078,21 @@ function create3DLabels() {
   });
 }
 
+const MAJOR_LANDMARK_IDS = new Set([
+  'bld-80yr',
+  'bld-100yr',
+  'bld-hotel',
+  'bld-mall',
+  'bld-hall-vru',
+  'bld-sci1',
+  'bld-edu2',
+  'bld-fms',
+  'bld-arit',
+  'bld-thai-pavilion',
+  'bld-dorms-main',
+  'bld-stadium'
+]);
+
 function updateLabelPositions() {
   const container = document.getElementById('labelsContainer');
   const svg = document.getElementById('labelLeaders');
@@ -3091,7 +3114,18 @@ function updateLabelPositions() {
   camera.getWorldDirection(camDir);
   const toAnchor = new THREE.Vector3();
 
+  const camDist = controls ? camera.position.distanceTo(controls.target) : 200;
+  const isOverview = camDist > 165;
+  const placedBoxes = [];
+
   labelElements.forEach(({ element, data }) => {
+    if (isOverview && !element.classList.contains('selected')) {
+      if (!MAJOR_LANDMARK_IDS.has(data.id)) {
+        element.style.display = 'none';
+        return;
+      }
+    }
+
     const anchorY = data.anchorHeight || (data.dimensions.h + 3.0);
     toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
@@ -3116,11 +3150,30 @@ function updateLabelPositions() {
       return;
     }
 
+    // 2D Collision Culling so labels never overlap on screen
+    let adjustedY = screenY - 30;
+    const boxW = 180;
+    const boxH = 30;
+    let collides = false;
+    for (const pb of placedBoxes) {
+      if (Math.abs(screenX - pb.x) < boxW && Math.abs(adjustedY - pb.y) < boxH) {
+        collides = true;
+        break;
+      }
+    }
+
+    if (collides && !element.classList.contains('selected')) {
+      element.style.display = 'none';
+      return;
+    }
+
+    placedBoxes.push({ x: screenX, y: adjustedY });
+
     element.style.display = 'flex';
     element.style.left = `${screenX}px`;
-    element.style.top = `${screenY - 30}px`;
+    element.style.top = `${adjustedY}px`;
 
-    svgPaths += `<line x1="${screenX}" y1="${screenY}" x2="${screenX}" y2="${screenY - 22}" stroke="rgba(4, 120, 87, 0.65)" stroke-width="1.2" stroke-dasharray="2,2"/>`;
+    svgPaths += `<line x1="${screenX}" y1="${screenY}" x2="${screenX}" y2="${adjustedY + 8}" stroke="rgba(4, 120, 87, 0.65)" stroke-width="1.2" stroke-dasharray="2,2"/>`;
   });
 
   svg.innerHTML = svgPaths;
@@ -3417,20 +3470,20 @@ function setupMapModal() {
     state.activeMapTab = type;
     if (!mapImg || !modalTitle) return;
     if (type === 'floor') {
-      mapImg.src = 'img/floor.png';
+      mapImg.src = 'Artboard-6.png';
       modalTitle.textContent = '★ แผนผัง 3 มิติ 57 อาคาร · มรภ.วไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (Artboard-6.png)';
       if (btnFloor) { btnFloor.style.background = 'var(--accent)'; btnFloor.style.color = '#ffffff'; }
       if (btnMap2) { btnMap2.style.background = 'rgba(0,0,0,0.06)'; btnMap2.style.color = 'inherit'; }
       if (btnMap1) { btnMap1.style.background = 'rgba(0,0,0,0.06)'; btnMap1.style.color = 'inherit'; }
     } else if (type === 'maps2') {
-      mapImg.src = 'img/maps2.png';
+      mapImg.src = 'MapVRU-2016.jpg';
       modalTitle.textContent = 'แผนผังอาคาร 2 มิติ · มรภ.วไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (MapVRU-2016.jpg)';
       if (btnFloor) { btnFloor.style.background = 'rgba(0,0,0,0.06)'; btnFloor.style.color = 'inherit'; }
       if (btnMap2) { btnMap2.style.background = 'var(--accent)'; btnMap2.style.color = '#ffffff'; }
       if (btnMap1) { btnMap1.style.background = 'rgba(0,0,0,0.06)'; btnMap1.style.color = 'inherit'; }
     } else {
-      mapImg.src = 'img/maps.png';
-      modalTitle.textContent = 'ภาพถ่ายดาวเทียม 3D ปัจจุบัน · มรภ.วไลยอลงกรณ์ฯ จ.ปทุมธานี (vru)';
+      mapImg.src = 'img/vru-drone-map-4k.jpg';
+      modalTitle.textContent = 'ภาพถ่ายโดรน / ดาวเทียม 4K ปัจจุบัน · มรภ.วไลยอลงกรณ์ฯ จ.ปทุมธานี';
       if (btnFloor) { btnFloor.style.background = 'rgba(0,0,0,0.06)'; btnFloor.style.color = 'inherit'; }
       if (btnMap2) { btnMap2.style.background = 'rgba(0,0,0,0.06)'; btnMap2.style.color = 'inherit'; }
       if (btnMap1) { btnMap1.style.background = 'var(--accent)'; btnMap1.style.color = '#ffffff'; }
