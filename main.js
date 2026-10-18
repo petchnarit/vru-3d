@@ -1,1603 +1,387 @@
 /**
- * Valaya Alongkorn Rajabhat University under the Royal Patronage (VRU) - 3D Smart Campus Digital Twin
- * ระบบผังอาคารและศูนย์ควบคุม 3 มิติอัจฉริยะ มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ จ.ปทุมธานี
- *
- * อ้างอิงแผนผังจริง 100%:
- * 1. ภาพถ่ายดาวเทียมและโมเดล 3D ปัจจุบัน (/vru/Screenshot *.png)
- * 2. แผนผัง 3 มิติ มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ ครบ 57 อาคาร (Artboard-6.png)
- * 3. แผนผังอาคาร 2 มิติ มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ฯ (MapVRU-2016.jpg)
- *
- * ที่ตั้ง: เลขที่ 1 หมู่ 20 ถนนพหลโยธิน กม.48 ต.คลองหนึ่ง อ.คลองหลวง จ.ปทุมธานี 13180
+ * Valaya Alongkorn Rajabhat University under the Royal Patronage (VRU) - 3D Smart Campus
+ * Built 100% 1:1 calibrated to vru-drone-map.jpg
  */
 
-const CAMPUS_ROT = 0.0;
-
-// Defensive patch for Three.js to guarantee 100% crash-free rendering
-if (typeof THREE !== 'undefined') {
-  if (THREE.Object3D) {
-    const origAdd = THREE.Object3D.prototype.add;
-    THREE.Object3D.prototype.add = function (...args) {
-      const filtered = args.filter(a => a != null);
-      if (filtered.length > 0) {
-        return origAdd.apply(this, filtered);
-      }
-      return this;
-    };
-  }
-  if (THREE.Mesh) {
-    const origMesh = THREE.Mesh;
-    THREE.Mesh = function (geometry, material) {
-      if (!material) {
-        material = new THREE.MeshStandardMaterial({ color: 0x94a3b8 });
-      }
-      return new origMesh(geometry, material);
-    };
-    THREE.Mesh.prototype = origMesh.prototype;
-  }
-}
-
-function campusToWorld(x, z) {
-  return {
-    x: x * Math.cos(CAMPUS_ROT) + z * Math.sin(CAMPUS_ROT),
-    z: -x * Math.sin(CAMPUS_ROT) + z * Math.cos(CAMPUS_ROT)
-  };
-}
-
-// ============================================================================
-// 1. VRU Masterplan Building Inventory (ครบ 57 หมายเลขตาม Artboard-6.png & Google Maps Ground Truth)
-//    แกนพิกัดมาตรฐาน 3D World (Ground Truth: Screenshot 2569-10-17 at 21.07.04.png):
-//    - ทิศตะวันออก (+X, ขวามือ): ถนนพหลโยธิน (ทล.1), ซุ้มประตูใหญ่, พระอนุสาวรีย์, หอประชุม 80 ปี (x = +112 ถึง +188)
-//    - ทิศตะวันตก (-X, ซ้ายมือ): สนามกีฬากลาง, ลู่วิ่ง 400ม., แฟลต/หมู่บ้านพักบุคลากร (x = -158 ถึง -220)
-//    - ทิศเหนือ (-Z, ด้านบน): โรงแรม VRU, สระว่ายน้ำ, รร.สาธิตมัธยม, ศูนย์วิทย์, สมาคมศิษย์เก่า (z = -20 ถึง -60)
-//    - ทิศใต้ (+Z, ด้านล่าง): คณะครุศาสตร์, รร.สาธิตประถม, คณะวิทยาการจัดการ, Community Mall (z = +15 ถึง +60)
-//    - ระบบ Solar Rooftop: ผูก lid: 8..19 เข้ากับอาคารจริง 12 หลัง และจำลองแผงโซลาร์บนหลังคา
-//    - ทางเชื่อมอาคาร: ปิด/ยกเลิกการสร้างทางเชื่อมทั้งหมดตามคำสั่งผู้ใช้งาน
-// ============================================================================
-
+// 1. Definitive Campus Buildings Inventory (Every real building measured directly from drone orthophoto)
 const HOSPITAL_BUILDINGS = [
   {
-    id: 'bld-1',
-    num: '1',
-    code: '1',
-    name: '1',
-    shortName: '1',
-    sub: '1. หอประชุม 80 ปี วไลยอลงกรณ์',
-    category: 'อาคาร 1',
-    status: 'เปิดทำการปกติ',
-    archType: 'landmark80',
-    pos: { x: 159.7, y: 0, z: 8.4 },
-    rotY: 0,
-    anchorHeight: 16.0,
-    dimensions: { w: 38.0, h: 14.0, d: 30.0 },
-    roofColor: 0xf8fafc,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '1. หอประชุม 80 ปี วไลยอลงกรณ์'
-    }
+    id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1',
+    sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย',
+    category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ',
+    archType: 'auditorium80', pos: { x: 159.8, y: 0, z: 14.6 }, rotY: 0, anchorHeight: 17,
+    dimensions: { w: 42.0, h: 14.0, d: 32.0 }, roofColor: 0xf8fafc, accentColor: 0x047857,
+    floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการ' }]
   },
   {
-    id: 'bld-2',
-    num: '2',
-    code: '2',
-    name: '2',
-    shortName: '2',
-    sub: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)',
-    category: 'อาคาร 2',
-    status: 'เปิดทำการปกติ',
-    archType: 'spb100',
-    pos: { x: 123.1, y: 0, z: 16.5 },
-    rotY: 0,
-    anchorHeight: 18.0,
-    dimensions: { w: 22.0, h: 16.0, d: 12.0 },
-    roofColor: 0x94a3b8,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' },
-      { num: 5, desc: 'ชั้น 5' },
-      { num: 6, desc: 'ชั้น 6' }
-    ],
-    stats: {
-      floors: '6 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)'
-    }
+    id: 'bld-2', num: '2', name: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)', shortName: '2',
+    sub: 'สำนักงานอธิการบดี, ห้องประชุมสภามหาวิทยาลัย, สำนักส่งเสริมวิชาการและงานทะเบียน',
+    category: 'อาคารบริหารและสำนักงานกลาง', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'spb100', pos: { x: 124.2, y: 0, z: 15.7 }, rotY: 0, anchorHeight: 21,
+    dimensions: { w: 22.0, h: 18.0, d: 14.0 }, roofColor: 0x94a3b8, accentColor: 0x047857,
+    floors: [{ num: 6, desc: 'สำนักงานอธิการบดี' }, { num: 5, desc: 'กองนโยบายและแผน' }, { num: 4, desc: 'ศูนย์เทคโนโลยีดิจิทัล' }, { num: 3, desc: 'กองกลาง' }, { num: 2, desc: 'กองคลัง' }, { num: 1, desc: 'One Stop Service' }]
   },
   {
-    id: 'bld-3',
-    num: '3',
-    code: '3',
-    name: '3',
-    shortName: '3',
-    sub: '3. โรงแรม มรภ.วไลยอลงกรณ์',
-    category: 'อาคาร 3',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 181.4, y: 0, z: -22.3 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 24.0, h: 12.0, d: 13.0 },
-    roofColor: 0x334155,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '3. โรงแรม มรภ.วไลยอลงกรณ์'
-    }
+    id: 'bld-3', num: '3', name: '3. โรงแรม มรภ.วไลยอลงกรณ์', shortName: '3',
+    sub: 'ศูนย์ฝึกประสบการณ์วิชาชีพ โรงแรม มรภ.วไลยอลงกรณ์ฯ มาตรฐาน 78 ห้องพัก',
+    category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'hotel', pos: { x: 181.5, y: 0, z: -22.2 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 24.0, h: 12.0, d: 14.0 }, roofColor: 0x334155, accentColor: 0x059669,
+    floors: [{ num: 4, desc: 'ห้องพักรับรองพิเศษ' }, { num: 3, desc: 'ห้องพักสัมมนา' }, { num: 2, desc: 'ห้องจัดเลี้ยง' }, { num: 1, desc: 'ล็อบบี้ต้อนรับ' }]
   },
   {
-    id: 'bld-4',
-    num: '4',
-    code: '4',
-    name: '4',
-    shortName: '4',
-    sub: '4. VRU Green Community Mall',
-    category: 'อาคาร 4',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 172.0, y: 0, z: -43.4 },
-    rotY: 0,
-    anchorHeight: 8.0,
-    dimensions: { w: 36.0, h: 6.0, d: 16.0 },
-    roofColor: 0x475569,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '4. VRU Green Community Mall'
-    }
+    id: 'bld-4', num: '4', name: '4. VRU Green Community Mall', shortName: '4',
+    sub: 'ศูนย์รวมร้านค้า ร้านอาหาร สหกรณ์ และพื้นที่บริการชุมชนริมถนนพหลโยธิน',
+    category: 'อาคารบริการและสวัสดิการ', status: 'เปิดบริการ 07:00 - 20:00 น.',
+    archType: 'mall', pos: { x: 180.7, y: 0, z: -42.2 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 36.0, h: 6.0, d: 18.0 }, roofColor: 0x475569, accentColor: 0x10b981,
+    floors: [{ num: 2, desc: 'Co-Working Space' }, { num: 1, desc: 'ศูนย์อาหารและร้านค้า' }]
   },
   {
-    id: 'bld-5',
-    num: '5',
-    code: '5',
-    name: '5',
-    shortName: '5',
-    sub: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ',
-    category: 'อาคาร 5',
-    status: 'เปิดทำการปกติ',
-    archType: 'pool',
-    pos: { x: 157.4, y: 0, z: -22.0 },
-    rotY: 0,
-    anchorHeight: 6.5,
-    dimensions: { w: 16.0, h: 4.5, d: 14.0 },
-    roofColor: 0x0284c7,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' }
-    ],
-    stats: {
-      floors: '1 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ'
-    }
+    id: 'bld-5', num: '5', name: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ', shortName: '5',
+    sub: 'สระว่ายน้ำอวยพร เปล่งวานิช ขนาด 50 เมตร และศูนย์ฟิตเนสออกกำลังกาย',
+    category: 'ศูนย์กีฬาและสุขภาพ', status: 'เปิดบริการ 06:00 - 20:00 น.',
+    archType: 'pool', pos: { x: 157.2, y: 0, z: -22.2 }, rotY: 0, anchorHeight: 7,
+    dimensions: { w: 16.0, h: 4.5, d: 14.0 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
+    floors: [{ num: 1, desc: 'สระว่ายน้ำและศูนย์ฟิตเนส' }]
   },
   {
-    id: 'bld-6',
-    num: '6',
-    code: '6',
-    name: '6',
-    shortName: '6',
-    sub: '6. อาคารจัดการขยะชุมชน',
-    category: 'อาคาร 6',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 140.0, y: 0, z: -50.0 },
-    rotY: 0,
-    anchorHeight: 7.0,
-    dimensions: { w: 14.0, h: 5.0, d: 10.0 },
-    roofColor: 0x475569,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' }
-    ],
-    stats: {
-      floors: '1 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '6. อาคารจัดการขยะชุมชน'
-    }
+    id: 'bld-6', num: '6', name: '6. อาคารจัดการขยะชุมชน', shortName: '6',
+    sub: 'ศูนย์คัดแยกและแปรรูปขยะรีไซเคิลเพื่อความยั่งยืน Smart Green Campus',
+    category: 'อาคารบริการสาธารณูปโภค', status: 'เปิดทำการปกติ',
+    archType: 'box', pos: { x: 140.0, y: 0, z: -50.0 }, rotY: 0, anchorHeight: 8,
+    dimensions: { w: 14.0, h: 5.0, d: 10.0 }, roofColor: 0x475569, accentColor: 0x10b981,
+    floors: [{ num: 1, desc: 'ศูนย์จัดการขยะ' }]
   },
   {
-    id: 'bld-7',
-    num: '7',
-    code: '7',
-    name: '7',
-    shortName: '7',
-    sub: '7. อาคารธุรกิจบริการ',
-    category: 'อาคาร 7',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 136.4, y: 0, z: -21.2 },
-    rotY: 0,
-    anchorHeight: 8.0,
-    dimensions: { w: 19.0, h: 6.0, d: 8.0 },
-    roofColor: 0x94a3b8,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '7. อาคารธุรกิจบริการ'
-    }
+    id: 'bld-7', num: '7', name: '7. อาคารธุรกิจบริการ', shortName: '7',
+    sub: 'อาคารปฏิบัติการด้านธุรกิจบริการและการจัดการทรัพย์สิน',
+    category: 'อาคารฝึกปฏิบัติการ', status: 'เปิดทำการปกติ',
+    archType: 'box', pos: { x: 136.4, y: 0, z: -21.2 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 19.0, h: 6.0, d: 8.0 }, roofColor: 0x94a3b8, accentColor: 0x059669,
+    floors: [{ num: 2, desc: 'ห้องปฏิบัติการ' }, { num: 1, desc: 'สำนักงานบริการ' }]
   },
   {
-    id: 'bld-8',
-    num: '8',
-    code: '8',
-    name: '8',
-    shortName: '8',
-    sub: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ',
-    category: 'อาคาร 8',
-    status: 'เปิดทำการปกติ',
-    archType: 'monument',
-    pos: { x: 184.0, y: 0, z: 13.9 },
-    rotY: 0,
-    anchorHeight: 7.0,
-    dimensions: { w: 5.0, h: 5.0, d: 5.0 },
-    roofColor: 0xfbbf24,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' }
-    ],
-    stats: {
-      floors: '1 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ'
-    }
+    id: 'bld-8', num: '8', name: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ', shortName: '8',
+    sub: 'พระอนุสาวรีย์สมเด็จพระราชปิตุจฉา เจ้าฟ้าวไลยอลงกรณ์ กรมหลวงเพชรบุรีราชสิรินธร',
+    category: 'อนุสาวรีย์และสิ่งศักดิ์สิทธิ์', status: 'เปิดสักการะตลอดวัน',
+    archType: 'monument', pos: { x: 184.0, y: 0, z: 14.5 }, rotY: 0, anchorHeight: 8,
+    dimensions: { w: 5.0, h: 5.0, d: 5.0 }, roofColor: 0xfbbf24, accentColor: 0xf59e0b,
+    floors: [{ num: 1, desc: 'ลานพระอนุสาวรีย์' }]
   },
   {
-    id: 'bld-9',
-    num: '9',
-    code: '9',
-    name: '9',
-    shortName: '9',
-    sub: '9. หอประชุมวไลยอลงกรณ์',
-    category: 'อาคาร 9',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 34.0, y: 0, z: -4.8 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 22.0, h: 12.0, d: 15.0 },
-    roofColor: 0xe2e8f0,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '9. หอประชุมวไลยอลงกรณ์'
-    }
+    id: 'bld-9', num: '9', name: '9. อาคารเรียนรวมทิศใต้ 1', shortName: '9',
+    sub: 'อาคารเรียนรวมและห้องบรรยายขนาดใหญ่ฝั่งทิศใต้',
+    category: 'อาคารเรียนและห้องบรรยาย', status: 'เปิดทำการ 08:00 - 18:00 น.',
+    archType: 'box', pos: { x: 118.0, y: 0, z: 51.5 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 24.0, h: 12.0, d: 9.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องบรรยาย 4' }, { num: 3, desc: 'ห้องบรรยาย 3' }, { num: 2, desc: 'ห้องบรรยาย 2' }, { num: 1, desc: 'โถงชั้นล่าง' }]
   },
   {
-    id: 'bld-10',
-    num: '10',
-    code: '10',
-    name: '10',
-    shortName: '10',
-    sub: '10. ศูนย์อาหารกลาง',
-    category: 'อาคาร 10',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 22.0, y: 0, z: -4.8 },
-    rotY: 0,
-    anchorHeight: 8.0,
-    dimensions: { w: 18.0, h: 6.0, d: 12.0 },
-    roofColor: 0x047857,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '10. ศูนย์อาหารกลาง'
-    }
+    id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ 2 (ทรงโค้ง)', shortName: '10',
+    sub: 'อาคารเรียนรวมสถาปัตยกรรมทรงโค้งโมเดิร์น ฝั่งทิศใต้',
+    category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
+    archType: 'box', pos: { x: 145.5, y: 0, z: 53.5 }, rotY: 0, anchorHeight: 17,
+    dimensions: { w: 23.0, h: 14.0, d: 13.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
+    floors: [{ num: 5, desc: 'ห้องสัมมนา' }, { num: 4, desc: 'ห้องเรียนรวม' }, { num: 3, desc: 'ห้องเรียน' }, { num: 2, desc: 'ห้องพักอาจารย์' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
-    id: 'bld-11',
-    num: '11',
-    code: '11',
-    name: '11',
-    shortName: '11',
-    sub: '11. ยิมเนเซียม 1 (โรงยิม 1)',
-    category: 'อาคาร 11',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 96.9, y: 0, z: 6.9 },
-    rotY: 0,
-    anchorHeight: 11.0,
-    dimensions: { w: 19.5, h: 9.0, d: 15.0 },
-    roofColor: 0x38bdf8,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '11. ยิมเนเซียม 1 (โรงยิม 1)'
-    }
+    id: 'bld-11', num: '11', name: '11. ยิมเนเซียม 1 (โรงยิม 1)', shortName: '11',
+    sub: 'อาคารพลศึกษา สนามบาสเกตบอล วอลเลย์บอล และแบดมินตันในร่ม',
+    category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
+    archType: 'box', pos: { x: 96.9, y: 0, z: 6.9 }, rotY: 0, anchorHeight: 12,
+    dimensions: { w: 19.5, h: 9.0, d: 15.0 }, roofColor: 0x334155, accentColor: 0x38bdf8,
+    floors: [{ num: 2, desc: 'อัฒจันทร์ในร่ม' }, { num: 1, desc: 'สนามแข่งขันในร่ม' }]
   },
   {
-    id: 'bld-12',
-    num: '12',
-    code: '12',
-    name: '12',
-    shortName: '12',
-    sub: '12. อาคาร 75 ปี วไลยอลงกรณ์',
-    category: 'อาคาร 12',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 68.0, y: 0, z: 16.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 20.0, h: 12.0, d: 12.0 },
-    roofColor: 0x334155,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '12. อาคาร 75 ปี วไลยอลงกรณ์'
-    }
+    id: 'bld-12', num: '12', name: '12. อาคาร 75 ปี วไลยอลงกรณ์ (ศูนย์ภาษา)', shortName: '12',
+    sub: 'สถาบันภาษา ศูนย์การเรียนรู้ภาษาต่างประเทศและห้องปฏิบัติการคอมพิวเตอร์',
+    category: 'อาคารเรียนและภาษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 68.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 20.0, h: 12.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ศูนย์ภาษา' }, { num: 3, desc: 'ห้อง Lab ภาษา' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'ประชาสัมพันธ์' }]
   },
   {
-    id: 'bld-13',
-    num: '13',
-    code: '13',
-    name: '13',
-    shortName: '13',
-    sub: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)',
-    category: 'อาคาร 13',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 54.0, y: 0, z: 16.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 20.0, h: 12.0, d: 12.0 },
-    roofColor: 0x1e293b,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)'
-    }
+    id: 'bld-13', num: '13', name: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)', shortName: '13',
+    sub: 'ศูนย์ปฏิบัติการวิทยาศาสตร์ เครื่องมือวิเคราะห์ขั้นสูง และห้องแล็บวิจัย',
+    category: 'อาคารวิทยาศาสตร์และวิจัย', status: 'เปิดทำการ 08:30 - 17:00 น.',
+    archType: 'box', pos: { x: 54.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 20.0, h: 12.0, d: 12.0 }, roofColor: 0x1e293b, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องปฏิบัติการเคมี' }, { num: 3, desc: 'ห้องปฏิบัติการฟิสิกส์' }, { num: 2, desc: 'ห้องชีววิทยา' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
-    id: 'bld-14',
-    num: '14',
-    code: '14',
-    name: '14',
-    shortName: '14',
-    sub: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร',
-    category: 'อาคาร 14',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 38.0, y: 0, z: 16.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
-    roofColor: 0x15803d,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร'
-    }
+    id: 'bld-14', num: '14', name: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร', shortName: '14',
+    sub: 'อาคารเรียนและห้องปฏิบัติการเทคโนโลยีการผลิตพืชและสัตว์',
+    category: 'อาคารเรียนและเกษตร', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 38.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    floors: [{ num: 3, desc: 'ห้องเรียน' }, { num: 2, desc: 'ห้องพักอาจารย์' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
-    id: 'bld-15',
-    num: '15',
-    code: '15',
-    name: '15',
-    shortName: '15',
-    sub: '15. คณะเทคโนโลยีการเกษตร (FAT)',
-    category: 'อาคาร 15',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 22.0, y: 0, z: 16.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
-    roofColor: 0x166534,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '15. คณะเทคโนโลยีการเกษตร (FAT)'
-    }
+    id: 'bld-15', num: '15', name: '15. คณะเทคโนโลยีการเกษตร (FAT)', shortName: '15',
+    sub: 'สำนักงานคณบดีคณะเทคโนโลยีการเกษตร และศูนย์วิจัยแปรรูปผลผลิตทางการเกษตร',
+    category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 22.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
+    floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องประชุมคณะ' }, { num: 1, desc: 'บริการวิชาการ' }]
   },
   {
-    id: 'bld-16',
-    num: '16',
-    code: '16',
-    name: '16',
-    shortName: '16',
-    sub: '16. อาคารเรียนคณะครุศาสตร์',
-    category: 'อาคาร 16',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 46.2, y: 0, z: 24.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 24.0, h: 12.0, d: 16.0 },
-    roofColor: 0x991b1b,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '16. อาคารเรียนคณะครุศาสตร์'
-    }
+    id: 'bld-16', num: '16', name: '16. อาคารเรียนคณะครุศาสตร์', shortName: '16',
+    sub: 'อาคารเรียนรวมคณะครุศาสตร์ ศูนย์พัฒนาวิชาชีพครู',
+    category: 'อาคารเรียนและฝึกอบรม', status: 'เปิดทำการ 08:00 - 17:00 น.',
+    archType: 'box', pos: { x: 46.2, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 24.0, h: 12.0, d: 16.0 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
+    floors: [{ num: 4, desc: 'ห้องเรียนรวม' }, { num: 3, desc: 'ห้องบรรยาย' }, { num: 2, desc: 'ห้องปฏิบัติการสอน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
-    id: 'bld-17',
-    num: '17',
-    code: '17',
-    name: '17',
-    shortName: '17',
-    sub: '17. คณะครุศาสตร์ (FE)',
-    category: 'อาคาร 17',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 46.2, y: 0, z: 34.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 24.0, h: 12.0, d: 14.0 },
-    roofColor: 0x7f1d1d,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '17. คณะครุศาสตร์ (FE)'
-    }
+    id: 'bld-17', num: '17', name: '17. คณะครุศาสตร์ (FE)', shortName: '17',
+    sub: 'สำนักงานคณบดีคณะครุศาสตร์ คณะแห่งแรกและประวัติศาสตร์ของมหาวิทยาลัย',
+    category: 'สำนักงานคณะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 46.2, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 24.0, h: 12.0, d: 14.0 }, roofColor: 0x7f1d1d, accentColor: 0xdc2626,
+    floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องประชุมครุศาสตร์' }, { num: 2, desc: 'ฝ่ายวิชาการ' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
-    id: 'bld-18',
-    num: '18',
-    code: '18',
-    name: '18',
-    shortName: '18',
-    sub: '18. อาคารกองพัฒนานักศึกษา',
-    category: 'อาคาร 18',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 68.0, y: 0, z: 30.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
-    roofColor: 0x047857,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '18. อาคารกองพัฒนานักศึกษา'
-    }
+    id: 'bld-18', num: '18', name: '18. อาคารกองพัฒนานักศึกษา', shortName: '18',
+    sub: 'กองพัฒนานักศึกษา, องค์การบริหารนักศึกษา, กองทุน กยศ., และงานแนะแนว',
+    category: 'อาคารบริการนักศึกษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 68.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x047857, accentColor: 0x059669,
+    floors: [{ num: 3, desc: 'งานกองทุน กยศ.' }, { num: 2, desc: 'องค์การนักศึกษา' }, { num: 1, desc: 'จุดบริการนักศึกษา' }]
   },
   {
-    id: 'bld-19',
-    num: '19',
-    code: '19',
-    name: '19',
-    shortName: '19',
-    sub: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)',
-    category: 'อาคาร 19',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 45.5, y: 0, z: -21.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 36.0, h: 12.0, d: 11.0 },
-    roofColor: 0xd97706,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)'
-    }
+    id: 'bld-19', num: '19', name: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)', shortName: '19',
+    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาศาสตร์และเทคโนโลยี',
+    category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 45.5, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 36.0, h: 12.0, d: 11.0 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
+    floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องปฏิบัติการคอมพิวเตอร์' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
-    id: 'bld-20',
-    num: '20',
-    code: '20',
-    name: '20',
-    shortName: '20',
-    sub: '20. อาคารพยาบาล และร้านค้า',
-    category: 'อาคาร 20',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 54.0, y: 0, z: -8.0 },
-    rotY: 0,
-    anchorHeight: 8.0,
-    dimensions: { w: 16.0, h: 6.0, d: 10.0 },
-    roofColor: 0x0284c7,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '20. อาคารพยาบาล และร้านค้า'
-    }
+    id: 'bld-20', num: '20', name: '20. อาคารพยาบาล และร้านค้า', shortName: '20',
+    sub: 'ศูนย์บริการสาธารณสุขและพยาบาลปฐมพยาบาล ร้านสะดวกซื้อ และตู้บริการอัตโนมัติ',
+    category: 'อาคารบริการสุขภาพและชุมชน', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 54.0, y: 0, z: -8.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 16.0, h: 6.0, d: 10.0 }, roofColor: 0x0284c7, accentColor: 0x0ea5e9,
+    floors: [{ num: 2, desc: 'ห้องพักฟื้นและปฐมพยาบาล' }, { num: 1, desc: 'ร้านค้าสะดวกซื้อ' }]
   },
   {
-    id: 'bld-23',
-    num: '23',
-    code: '23',
-    name: '23',
-    shortName: '23',
-    sub: '23. อาคาร 60 ปี วไลยอลงกรณ์',
-    category: 'อาคาร 23',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 22.0, y: 0, z: -21.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 22.0, h: 10.0, d: 12.0 },
-    roofColor: 0x15803d,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '23. อาคาร 60 ปี วไลยอลงกรณ์'
-    }
+    id: 'bld-22', num: '22', name: '22. สำนักวิทยบริการ / หอสมุดกลาง (ARIT)', shortName: '22',
+    sub: 'สำนักวิทยบริการและเทคโนโลยีสารสนเทศ หอสมุดกลาง Co-Working Space',
+    category: 'อาคารหอสมุดและวิทยบริการ', status: 'เปิดบริการ 08:00 - 20:00 น.',
+    archType: 'box', pos: { x: -4.2, y: 0, z: 38.3 }, rotY: 0, anchorHeight: 17,
+    dimensions: { w: 20.5, h: 14.0, d: 14.0 }, roofColor: 0xea580c, accentColor: 0xf97316,
+    floors: [{ num: 4, desc: 'ห้องศึกษาค้นคว้าเดี่ยว' }, { num: 3, desc: 'คลังหนังสือวิชาการ' }, { num: 2, desc: 'ห้องบริการมัลติมีเดีย' }, { num: 1, desc: 'โถงยืม-คืนหนังสือ' }]
   },
   {
-    id: 'bld-28',
-    num: '28',
-    code: '28',
-    name: '28',
-    shortName: '28',
-    sub: '28. คณะวิทยาการจัดการ (FMS)',
-    category: 'อาคาร 28',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -43.5, y: 0, z: -9.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 22.5, h: 10.0, d: 13.5 },
-    roofColor: 0xea580c,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '28. คณะวิทยาการจัดการ (FMS)'
-    }
+    id: 'bld-23', num: '23', name: '23. อาคาร 60 ปี วไลยอลงกรณ์', shortName: '23',
+    sub: 'อาคาร 60 ปี วไลยอลงกรณ์ และศูนย์ฝึกปฏิบัติการคหกรรมศาสตร์',
+    category: 'อาคารเรียนและปฏิบัติการ', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: 22.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 22.0, h: 10.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    floors: [{ num: 3, desc: 'ห้องปฏิบัติการคหกรรม' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
-    id: 'bld-29',
-    num: '29',
-    code: '29',
-    name: '29',
-    shortName: '29',
-    sub: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)',
-    category: 'อาคาร 29',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 4.0, y: 0, z: -21.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 20.0, h: 10.0, d: 12.0 },
-    roofColor: 0x334155,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)'
-    }
+    id: 'bld-28', num: '28', name: '28. คณะวิทยาการจัดการ (FMS)', shortName: '28',
+    sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาการจัดการ ตึกทรง H หลังคาสีแดง',
+    category: 'สำนักงานคณะและเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
+    archType: 'box', pos: { x: -43.5, y: 0, z: -9.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 22.5, h: 10.0, d: 13.5 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
+    floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องเรียน MBA' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
-    id: 'bld-30',
-    num: '30',
-    code: '30',
-    name: '30',
-    shortName: '30',
-    sub: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)',
-    category: 'อาคาร 30',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -93.4, y: 0, z: 4.0 },
-    rotY: 0,
-    anchorHeight: 13.0,
-    dimensions: { w: 26.0, h: 11.0, d: 16.0 },
-    roofColor: 0x166534,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)'
-    }
+    id: 'bld-29', num: '29', name: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)', shortName: '29',
+    sub: 'อาคารเรียนรวมวิทยาศาสตร์ SCC2 และห้องปฏิบัติการพื้นฐาน',
+    category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 17:00 น.',
+    archType: 'box', pos: { x: 4.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องบรรยาย' }, { num: 3, desc: 'ห้องปฏิบัติการ' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงอาคาร' }]
   },
   {
-    id: 'bld-31',
-    num: '31',
-    code: '31',
-    name: '31',
-    shortName: '31',
-    sub: '31. อาคารหอสมุดกลาง (ARIT)',
-    category: 'อาคาร 31',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -6.9, y: 0, z: 38.3 },
-    rotY: 0,
-    anchorHeight: 16.0,
-    dimensions: { w: 20.0, h: 14.0, d: 18.0 },
-    roofColor: 0x1e293b,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '31. อาคารหอสมุดกลาง (ARIT)'
-    }
+    id: 'bld-30', num: '30', name: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)', shortName: '30',
+    sub: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (ฝ่ายมัธยม)',
+    category: 'โรงเรียนสาธิต', status: 'เปิดทำการ 07:30 - 16:30 น.',
+    archType: 'box', pos: { x: -93.4, y: 0, z: 4.0 }, rotY: 0, anchorHeight: 14,
+    dimensions: { w: 26.0, h: 11.0, d: 16.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
+    floors: [{ num: 3, desc: 'ห้องเรียนมัธยมปลาย' }, { num: 2, desc: 'ห้องเรียนมัธยมต้น' }, { num: 1, desc: 'สำนักงานโรงเรียน' }]
   },
   {
-    id: 'bld-31b',
-    num: '31B',
-    code: '31B',
-    name: '31B',
-    shortName: '31B',
-    sub: '31B. อาคารวิทยบริการ',
-    category: 'อาคาร 31B',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -6.9, y: 0, z: 24.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 18.0, h: 10.0, d: 12.0 },
-    roofColor: 0x0284c7,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '31B. อาคารวิทยบริการ'
-    }
+    id: 'bld-31', num: '31', name: '31. อาคารวิทยบริการเสริม', shortName: '31',
+    sub: 'อาคารวิทยบริการและศูนย์ฝึกอบรมวิชาการคอมพิวเตอร์',
+    category: 'อาคารวิชาการ', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: -6.9, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 18.0, h: 10.0, d: 12.0 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
+    floors: [{ num: 3, desc: 'ห้องอบรม' }, { num: 2, desc: 'ห้องสัมมนา' }, { num: 1, desc: 'จุดลงทะเบียน' }]
   },
   {
-    id: 'bld-32',
-    num: '32',
-    code: '32',
-    name: '32',
-    shortName: '32',
-    sub: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)',
-    category: 'อาคาร 32',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -6.0, y: 0, z: 18.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 20.0, h: 10.0, d: 12.0 },
-    roofColor: 0x581c87,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)'
-    }
+    id: 'bld-32', num: '32', name: '32. คณะมนุษยศาสตร์และสังคมศาสตร์ (FHS)', shortName: '32',
+    sub: 'สำนักงานคณบดีและอาคารเรียนคณะมนุษยศาสตร์และสังคมศาสตร์',
+    category: 'สำนักงานคณะและเรียนรวม', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: -6.0, y: 0, z: 18.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x581c87, accentColor: 0x7c3aed,
+    floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
   {
-    id: 'bld-33',
-    num: '33',
-    code: '33',
-    name: '33',
-    shortName: '33',
-    sub: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)',
-    category: 'อาคาร 33',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -8.0, y: 0, z: 30.0 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 22.0, h: 12.0, d: 14.0 },
-    roofColor: 0x15803d,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)'
-    }
+    id: 'bld-33', num: '33', name: '33. อาคารเรียนรวมสังคมศาสตร์ (SLB)', shortName: '33',
+    sub: 'อาคารเรียนรวมสังคมศาสตร์และห้องบรรยายขนาดใหญ่',
+    category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
+    archType: 'box', pos: { x: -8.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 15,
+    dimensions: { w: 22.0, h: 12.0, d: 14.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    floors: [{ num: 4, desc: 'ห้องบรรยาย 4' }, { num: 3, desc: 'ห้องบรรยาย 3' }, { num: 2, desc: 'ห้องเรียนรวม' }, { num: 1, desc: 'โถงพักผ่อน' }]
   },
   {
-    id: 'bld-35',
-    num: '35',
-    code: '35',
-    name: '35',
-    shortName: '35',
-    sub: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)',
-    category: 'อาคาร 35',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -28.0, y: 0, z: 30.0 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 22.0, h: 10.0, d: 14.0 },
-    roofColor: 0x3b82f6,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)'
-    }
+    id: 'bld-35', num: '35', name: '35. โรงเรียนสาธิตฯ (ฝ่ายประถม)', shortName: '35',
+    sub: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (ฝ่ายประถม)',
+    category: 'โรงเรียนสาธิต', status: 'เปิดทำการ 07:30 - 16:30 น.',
+    archType: 'box', pos: { x: -28.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 13,
+    dimensions: { w: 22.0, h: 10.0, d: 14.0 }, roofColor: 0x3b82f6, accentColor: 0x2563eb,
+    floors: [{ num: 3, desc: 'ห้องเรียนประถมปลาย' }, { num: 2, desc: 'ห้องเรียนประถมต้น' }, { num: 1, desc: 'ลานกิจกรรมและโรงอาหาร' }]
   },
   {
-    id: 'bld-36',
-    num: '36',
-    code: '36',
-    name: '36',
-    shortName: '36',
-    sub: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)',
-    category: 'อาคาร 36',
-    status: 'เปิดทำการปกติ',
-    archType: 'thaiPavilion',
-    pos: { x: -2.9, y: 0, z: 0.6 },
-    rotY: 0,
-    anchorHeight: 8.5,
-    dimensions: { w: 7.3, h: 6.5, d: 7.2 },
-    roofColor: 0xb45309,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)'
-    }
+    id: 'bld-36', num: '36', name: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)', shortName: '36',
+    sub: 'เรือนไทยไม้สักประยุกต์ ศูนย์อนุรักษ์ศิลปวัฒนธรรม ตั้งตระหง่านกลางสระน้ำใหญ่',
+    category: 'อาคารอนุรักษ์ศิลปวัฒนธรรม', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'thaiPavilion', pos: { x: -0.7, y: 0, z: -0.6 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 8.5, h: 6.5, d: 8.0 }, roofColor: 0xb45309, accentColor: 0xd97706,
+    floors: [{ num: 2, desc: 'ชานเรือนและหอจัดแสดงพระราชประวัติ' }, { num: 1, desc: 'ใต้ถุนเรือนไทยริมสระบัว' }]
   },
   {
-    id: 'bld-37',
-    num: '37',
-    code: '37',
-    name: '37',
-    shortName: '37',
-    sub: '37. อาคารฝ่ายยานพาหนะ',
-    category: 'อาคาร 37',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -44.0, y: 0, z: 16.0 },
-    rotY: 0,
-    anchorHeight: 8.0,
-    dimensions: { w: 18.0, h: 6.0, d: 12.0 },
-    roofColor: 0x475569,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '37. อาคารฝ่ายยานพาหนะ'
-    }
+    id: 'bld-37', num: '37', name: '37. อาคารฝ่ายยานพาหนะ', shortName: '37',
+    sub: 'ฝ่ายยานพาหนะ โรงจอดรถรางไฟฟ้า และศูนย์ซ่อมบำรุงรถส่วนกลาง',
+    category: 'อาคารบริการและยานพาหนะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: -44.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 18.0, h: 6.0, d: 12.0 }, roofColor: 0x475569, accentColor: 0x64748b,
+    floors: [{ num: 2, desc: 'สำนักงานฝ่ายยานพาหนะ' }, { num: 1, desc: 'โรงจอดรถและสถานีชาร์จ EV' }]
   },
   {
-    id: 'bld-38',
-    num: '38',
-    code: '38',
-    name: '38',
-    shortName: '38',
-    sub: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม',
-    category: 'อาคาร 38',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -85.8, y: 0, z: 14.0 },
-    rotY: 0,
-    anchorHeight: 9.0,
-    dimensions: { w: 24.0, h: 7.0, d: 7.0 },
-    roofColor: 0x9a3412,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม'
-    }
+    id: 'bld-38', num: '38', name: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม', shortName: '38',
+    sub: 'อาคารปฏิบัติการทางวิศวกรรม โรงประลองเครื่องกล ไฟฟ้า และยานยนต์',
+    category: 'โรงประลองและปฏิบัติการ', status: 'เปิดทำการ 08:30 - 17:00 น.',
+    archType: 'box', pos: { x: -85.8, y: 0, z: 14.0 }, rotY: 0, anchorHeight: 10,
+    dimensions: { w: 24.0, h: 7.0, d: 7.0 }, roofColor: 0x9a3412, accentColor: 0xc2410c,
+    floors: [{ num: 2, desc: 'ห้องปฏิบัติการ CAD/CAM' }, { num: 1, desc: 'โรงประลองเครื่องกล' }]
   },
   {
-    id: 'bld-39',
-    num: '39',
-    code: '39',
-    name: '39',
-    shortName: '39',
-    sub: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)',
-    category: 'อาคาร 39',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -85.8, y: 0, z: 26.0 },
-    rotY: 0,
-    anchorHeight: 13.0,
-    dimensions: { w: 24.0, h: 11.0, d: 9.0 },
-    roofColor: 0x7c2d12,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' }
-    ],
-    stats: {
-      floors: '3 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)'
-    }
+    id: 'bld-39', num: '39', name: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)', shortName: '39',
+    sub: 'สำนักงานคณบดีคณะเทคโนโลยีอุตสาหกรรม และห้องปฏิบัติการวิศวกรรม',
+    category: 'สำนักงานคณะและวิศวกรรม', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: -85.8, y: 0, z: 26.0 }, rotY: 0, anchorHeight: 14,
+    dimensions: { w: 24.0, h: 11.0, d: 9.0 }, roofColor: 0x7c2d12, accentColor: 0xc2410c,
+    floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องปฏิบัติการไฟฟ้า' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
   {
-    id: 'bld-40',
-    num: '40',
-    code: '40',
-    name: '40',
-    shortName: '40',
-    sub: '40. หอพักโกเมน & หอพักเพทาย',
-    category: 'อาคาร 40',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -82.0, y: 0, z: -25.0 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 20.0, h: 13.0, d: 14.0 },
-    roofColor: 0xd97706,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '40. หอพักโกเมน & หอพักเพทาย'
-    }
+    id: 'bld-40', num: '40', name: '40. หอพักโกเมน & หอพักเพทาย', shortName: '40',
+    sub: 'หอพักนักศึกษาหญิงในกำกับมหาวิทยาลัย สิ่งอำนวยความสะดวกครบครัน',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -82.0, y: 0, z: -25.0 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 20.0, h: 13.0, d: 14.0 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับและร้านสะดวกซื้อ' }]
   },
   {
-    id: 'bld-42',
-    num: '42',
-    code: '42',
-    name: '42',
-    shortName: '42',
-    sub: '42. ยิมเนเซียม 2',
-    category: 'อาคาร 42',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -106.0, y: 0, z: -5.0 },
-    rotY: 0,
-    anchorHeight: 10.5,
-    dimensions: { w: 16.5, h: 8.5, d: 5.5 },
-    roofColor: 0x0284c7,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '42. ยิมเนเซียม 2'
-    }
+    id: 'bld-42', num: '42', name: '42. ยิมเนเซียม 2', shortName: '42',
+    sub: 'อาคารพลศึกษาและสนามกีฬาในร่ม 2 ศูนย์ฝึกซ้อมนักกีฬา',
+    category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
+    archType: 'box', pos: { x: -106.0, y: 0, z: -5.0 }, rotY: 0, anchorHeight: 11,
+    dimensions: { w: 16.5, h: 8.5, d: 5.5 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
+    floors: [{ num: 2, desc: 'อัฒจันทร์' }, { num: 1, desc: 'สนามฝึกซ้อม' }]
   },
   {
-    id: 'bld-43',
-    num: '43',
-    code: '43',
-    name: '43',
-    shortName: '43',
-    sub: '43. หอพักนักศึกษา 1',
-    category: 'อาคาร 43',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -120.6, y: 0, z: -1.8 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 10.5, h: 13.0, d: 5.5 },
-    roofColor: 0xf8fafc,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '43. หอพักนักศึกษา 1'
-    }
+    id: 'bld-43', num: '43', name: '43. หอพักนักศึกษา 1', shortName: '43',
+    sub: 'หอพักนักศึกษา อาคาร 1 (ด้านทิศเหนือ ใกล้สระน้ำ)',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -119.6, y: 0, z: -1.8 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
-    id: 'bld-44',
-    num: '44',
-    code: '44',
-    name: '44',
-    shortName: '44',
-    sub: '44. หอพักนักศึกษา 2',
-    category: 'อาคาร 44',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -120.6, y: 0, z: 9.3 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 10.5, h: 13.0, d: 5.5 },
-    roofColor: 0xf8fafc,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '44. หอพักนักศึกษา 2'
-    }
+    id: 'bld-44', num: '44', name: '44. หอพักนักศึกษา 2', shortName: '44',
+    sub: 'หอพักนักศึกษา อาคาร 2 ติดถนนเมนหน้าสนามฟุตบอล',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -119.6, y: 0, z: 7.0 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
-    id: 'bld-45',
-    num: '45',
-    code: '45',
-    name: '45',
-    shortName: '45',
-    sub: '45. หอพักนักศึกษา 3',
-    category: 'อาคาร 45',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -120.6, y: 0, z: 20.4 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 10.5, h: 13.0, d: 5.5 },
-    roofColor: 0xf8fafc,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '45. หอพักนักศึกษา 3'
-    }
+    id: 'bld-45', num: '45', name: '45. หอพักนักศึกษา 3', shortName: '45',
+    sub: 'หอพักนักศึกษา อาคาร 3 ขนานกับสนามกีฬากลาง',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -119.6, y: 0, z: 15.5 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
-    id: 'bld-46',
-    num: '46',
-    code: '46',
-    name: '46',
-    shortName: '46',
-    sub: '46. หอพักนักศึกษา 4',
-    category: 'อาคาร 46',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -120.6, y: 0, z: 31.4 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 10.5, h: 13.0, d: 5.5 },
-    roofColor: 0xf8fafc,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '46. หอพักนักศึกษา 4'
-    }
+    id: 'bld-46', num: '46', name: '46. หอพักนักศึกษา 4', shortName: '46',
+    sub: 'หอพักนักศึกษา อาคาร 4 โซนทิศใต้',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -119.6, y: 0, z: 24.0 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 10.5, h: 13.0, d: 6.0 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
   {
-    id: 'bld-49',
-    num: '49',
-    code: '49',
-    name: '49',
-    shortName: '49',
-    sub: '49. หอพักนักศึกษานานาชาติ',
-    category: 'อาคาร 49',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -92.0, y: 0, z: 28.0 },
-    rotY: 0,
-    anchorHeight: 15.0,
-    dimensions: { w: 20.0, h: 13.0, d: 14.0 },
-    roofColor: 0x475569,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '49. หอพักนักศึกษานานาชาติ'
-    }
+    id: 'bld-49', num: '49', name: '49. หอพักนักศึกษานานาชาติ', shortName: '49',
+    sub: 'หอพักนักศึกษานานาชาติและนักศึกษาโครงการพิเศษ',
+    category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -92.0, y: 0, z: 28.0 }, rotY: 0, anchorHeight: 16,
+    dimensions: { w: 20.0, h: 13.0, d: 14.0 }, roofColor: 0x475569, accentColor: 0x0ea5e9,
+    floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
   {
-    id: 'bld-53',
-    num: '53',
-    code: '53',
-    name: '53',
-    shortName: '53',
-    sub: '53. ศูนย์ อพ.สธ.',
-    category: 'อาคาร 53',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -140.0, y: 0, z: 34.0 },
-    rotY: 0,
-    anchorHeight: 9.0,
-    dimensions: { w: 18.0, h: 7.0, d: 12.0 },
-    roofColor: 0x15803d,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '53. ศูนย์ อพ.สธ.'
-    }
+    id: 'bld-53', num: '53', name: '53. ศูนย์ อพ.สธ.', shortName: '53',
+    sub: 'ศูนย์ประสานงานโครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริ (อพ.สธ.)',
+    category: 'ศูนย์อนุรักษ์และวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
+    archType: 'box', pos: { x: -140.0, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 18.0, h: 7.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    floors: [{ num: 2, desc: 'ห้องปฏิบัติการเพาะเลี้ยงเนื้อเยื่อ' }, { num: 1, desc: 'ศูนย์เรียนรู้พันธุ์พืช' }]
   },
   {
-    id: 'bld-55',
-    num: '55',
-    code: '55',
-    name: '55',
-    shortName: '55',
-    sub: '55. Valaya Hub',
-    category: 'อาคาร 55',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -155.0, y: 0, z: 34.0 },
-    rotY: 0,
-    anchorHeight: 8.5,
-    dimensions: { w: 18.0, h: 6.5, d: 12.0 },
-    roofColor: 0x92400e,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '55. Valaya Hub'
-    }
+    id: 'bld-55', num: '55', name: '55. Valaya Hub & Resort', shortName: '55',
+    sub: 'Valaya Hub ศูนย์นวัตกรรมการเรียนรู้และที่พักรีสอร์ทเพื่อการศึกษา',
+    category: 'ศูนย์การเรียนรู้และที่พัก', status: 'เปิดบริการ 24 ชั่วโมง',
+    archType: 'box', pos: { x: -155.0, y: 0, z: 34.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 18.0, h: 6.5, d: 12.0 }, roofColor: 0x92400e, accentColor: 0xd97706,
+    floors: [{ num: 2, desc: 'ห้องพักรับรอง' }, { num: 1, desc: 'Co-Working Space & Cafe' }]
   },
   {
-    id: 'bld-57',
-    num: '57',
-    code: '57',
-    name: '57',
-    shortName: '57',
-    sub: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ',
-    category: 'อาคาร 57',
-    status: 'เปิดทำการปกติ',
-    archType: 'stadium',
-    pos: { x: -144.2, y: 0, z: 12.3 },
-    rotY: 0,
-    anchorHeight: 6.0,
-    dimensions: { w: 22.0, h: 4.0, d: 48.0 },
-    roofColor: 0xdc2626,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' }
-    ],
-    stats: {
-      floors: '1 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ'
-    }
-  },
-  {
-    id: 'bld-n1',
-    num: 'N1',
-    code: 'N1',
-    name: 'N1',
-    shortName: 'N1',
-    sub: 'อาคารเรียนรวมเหนือ',
-    category: 'อาคาร N1',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 115.0, y: 0, z: -21.6 },
-    rotY: 0,
-    anchorHeight: 12.0,
-    dimensions: { w: 24.0, h: 10.0, d: 9.0 },
-    roofColor: 0x166534,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคารเรียนรวมเหนือ'
-    }
-  },
-  {
-    id: 'bld-n2',
-    num: 'N2',
-    code: 'N2',
-    name: 'N2',
-    shortName: 'N2',
-    sub: 'หอประชุมเหนือ',
-    category: 'อาคาร N2',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 101.0, y: 0, z: -44.5 },
-    rotY: 0,
-    anchorHeight: 11.0,
-    dimensions: { w: 6.0, h: 9.0, d: 17.0 },
-    roofColor: 0xe2e8f0,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'หอประชุมเหนือ'
-    }
-  },
-  {
-    id: 'bld-s1',
-    num: 'S1',
-    code: 'S1',
-    name: 'S1',
-    shortName: 'S1',
-    sub: 'อาคารเรียนรวมใต้ 1',
-    category: 'อาคาร S1',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 117.9, y: 0, z: 51.6 },
-    rotY: 0,
-    anchorHeight: 14.0,
-    dimensions: { w: 24.0, h: 12.0, d: 9.0 },
-    roofColor: 0x334155,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' }
-    ],
-    stats: {
-      floors: '4 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคารเรียนรวมใต้ 1'
-    }
-  },
-  {
-    id: 'bld-s2',
-    num: 'S2',
-    code: 'S2',
-    name: 'S2',
-    shortName: 'S2',
-    sub: 'อาคารเรียนรวมใต้ 2 (ทรงโค้ง)',
-    category: 'อาคาร S2',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: 145.6, y: 0, z: 53.4 },
-    rotY: 0,
-    anchorHeight: 16.0,
-    dimensions: { w: 23.0, h: 14.0, d: 13.0 },
-    roofColor: 0x166534,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' },
-      { num: 3, desc: 'ชั้น 3' },
-      { num: 4, desc: 'ชั้น 4' },
-      { num: 5, desc: 'ชั้น 5' }
-    ],
-    stats: {
-      floors: '5 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคารเรียนรวมใต้ 2 (ทรงโค้ง)'
-    }
-  },
-  {
-    id: 'bld-w1',
-    num: 'W1',
-    code: 'W1',
-    name: 'W1',
-    shortName: 'W1',
-    sub: 'อาคารกีฬาในร่ม',
-    category: 'อาคาร W1',
-    status: 'เปิดทำการปกติ',
-    archType: 'box',
-    pos: { x: -43.0, y: 0, z: 39.0 },
-    rotY: 0,
-    anchorHeight: 10.5,
-    dimensions: { w: 14.0, h: 8.5, d: 12.0 },
-    roofColor: 0xe2e8f0,
-    accentColor: 0x0284c7,
-    floors: [
-      { num: 1, desc: 'ชั้น 1' },
-      { num: 2, desc: 'ชั้น 2' }
-    ],
-    stats: {
-      floors: '2 ชั้น',
-      capacity: 'พร้อมใช้งาน',
-      power: 'ระบบปกติ',
-      security: '100%',
-      load: 75,
-      note: 'อาคารกีฬาในร่ม'
-    }
+    id: 'bld-57', num: '57', name: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ', shortName: '57',
+    sub: 'สนามฟุตบอลหญ้าจริง ลู่วิ่งสังเคราะห์มาตรฐาน 400 เมตร 8 ลู่ และอัฒจันทร์ประธาน',
+    category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 06:00 - 21:00 น.',
+    archType: 'stadium', pos: { x: -142.1, y: 0, z: 11.5 }, rotY: 0, anchorHeight: 7,
+    dimensions: { w: 27.3, h: 4.0, d: 49.0 }, roofColor: 0xdc2626, accentColor: 0x16a34a,
+    floors: [{ num: 1, desc: 'สนามฟุตบอล ลู่วิ่ง 400 เมตร และอัฒจันทร์ประธาน' }]
   }
 ];
-
-
-
 
 const BUILDINGS_MAP = {};
 HOSPITAL_BUILDINGS.forEach(b => { BUILDINGS_MAP[b.id] = b; });
 
-const WARDS_DATA = [
-  { code: 'FAC-EDU', name: 'คณะครุศาสตร์ (Faculty of Education - FE)', bld: 'VRU-16 / VRU-17', status: 'เปิดทำการสอน' },
-  { code: 'FAC-FST', name: 'คณะวิทยาศาสตร์และเทคโนโลยี (Faculty of Science and Technology - FST)', bld: 'VRU-19 / VRU-13', status: 'เปิดทำการสอน' },
-  { code: 'FAC-FHS', name: 'คณะมนุษยศาสตร์และสังคมศาสตร์ (Faculty of Humanities and Social Sciences - FHS)', bld: 'VRU-32 / VRU-33', status: 'เปิดทำการสอน' },
-  { code: 'FAC-FMS', name: 'คณะวิทยาการจัดการ (Faculty of Management Science - FMS)', bld: 'VRU-28', status: 'เปิดทำการสอน' },
-  { code: 'FAC-FAT', name: 'คณะเทคโนโลยีการเกษตร (Faculty of Agricultural Technology - FAT)', bld: 'VRU-14 / VRU-15', status: 'เปิดทำการสอน' },
-  { code: 'FAC-FIT', name: 'คณะเทคโนโลยีอุตสาหกรรม (Faculty of Industrial Technology - FIT)', bld: 'VRU-38 / VRU-39', status: 'เปิดทำการสอน' },
-  { code: 'FAC-PH', name: 'คณะสาธารณสุขศาสตร์ (Faculty of Public Health)', bld: 'VRU-29', status: 'เปิดทำการสอน' },
-  { code: 'COL-RCIM', name: 'วิทยาลัยนวัตกรรมการจัดการ (College of Innovative Management)', bld: 'VRU-33-34', status: 'เปิดทำการสอน' },
-  { code: 'GRAD-SCH', name: 'บัณฑิตวิทยาลัย (Graduate School - ป.โท / ป.เอก)', bld: 'VRU-33-34', status: 'เปิดทำการสอน' },
-  { code: 'SATIT-SEC', name: 'โรงเรียนสาธิต มรภ.วไลยอลงกรณ์ฯ (ฝ่ายมัธยม)', bld: 'VRU-30', status: 'เปิดทำการสอน' },
-  { code: 'SATIT-PRI', name: 'โรงเรียนสาธิต มรภ.วไลยอลงกรณ์ฯ (ฝ่ายประถมและปฐมวัย)', bld: 'VRU-35', status: 'เปิดทำการสอน' },
-  { code: 'OFF-PRES', name: 'สำนักงานอธิการบดี (Office of the President)', bld: 'VRU-02', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-REG', name: 'สำนักส่งเสริมวิชาการและงานทะเบียน (One Stop Service)', bld: 'VRU-02', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-ARIT', name: 'สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (หอสมุดกลาง)', bld: 'VRU-31', status: 'เปิดบริการ 08:00-20:00' },
-  { code: 'OFF-RDI', name: 'สถาบันวิจัยและพัฒนา (Research and Development Institute)', bld: 'VRU-33-34', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-VAB', name: 'ศูนย์ภาษาและวิเทศสัมพันธ์ (อาคาร 75 ปี วไลยอลงกรณ์)', bld: 'VRU-12', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-SCB', name: 'ศูนย์วิทยาศาสตร์และเครื่องมือวิเคราะห์ขั้นสูง (SCB)', bld: 'VRU-13', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-STD', name: 'กองพัฒนานักศึกษา และงานทุนการศึกษา กยศ.', bld: 'VRU-18', status: 'เปิดบริการ 08:30-17:30' },
-  { code: 'OFF-CULT', name: 'สำนักศิลปะและวัฒนธรรม (เรือนเจ้าฟ้า / เรือนไทยวไลยอลงกรณ์)', bld: 'VRU-36', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-RSPG', name: 'ศูนย์ประสานงานโครงการอนุรักษ์พันธุกรรมพืชฯ (อพ.สธ.)', bld: 'VRU-53-54', status: 'เปิดบริการ 08:30-16:30' },
-  { code: 'OFF-HOTEL', name: 'ศูนย์ฝึกประสบการณ์วิชาชีพ โรงแรม มรภ.วไลยอลงกรณ์', bld: 'VRU-03', status: 'เปิดบริการ 24 ชม.' },
-  { code: 'OFF-MALL', name: 'VRU Green Community Mall & ศูนย์การค้าชุมชน', bld: 'VRU-04', status: 'เปิดบริการ 07:00-20:00' },
-  { code: 'OFF-POOL', name: 'ศูนย์ส่งเสริมสุขภาพ และสระว่ายน้ำอวยพร เปล่งวานิช', bld: 'VRU-05', status: 'เปิดบริการ 08:30-19:30' },
-  { code: 'OFF-MED', name: 'อาคารพยาบาล และหน่วยปฐมพยาบาลมหาวิทยาลัย', bld: 'VRU-20-22', status: 'เปิดบริการ 08:00-18:00' },
-  { code: 'OFF-BANK', name: 'ธนาคารกรุงไทย และร้านสะดวกซื้อภายในมหาวิทยาลัย', bld: 'VRU-20-22', status: 'เปิดบริการทุกวัน' },
-  { code: 'OFF-DORM', name: 'สำนักงานหอพักนักศึกษา และหอพักนักศึกษานานาชาติ (อาคาร 40-52)', bld: 'VRU-43-48', status: 'เปิดบริการ 24 ชม.' },
-  { code: 'OFF-SPORT', name: 'ศูนย์กีฬามหาวิทยาลัย ยิมเนเซียม 1-2 และสนามกีฬากลาง', bld: 'VRU-57', status: 'เปิดบริการ 06:00-21:00' }
-];
-
-const INFRASTRUCTURE_DATA = [
-  { code: 'POND-FRONT', name: 'สระน้ำสะท้อนเงาหน้าหอประชุม 80 ปี วไลยอลงกรณ์', bld: 'VRU-01', status: 'ระบบน้ำพุหมุนเวียนปกติ' },
-  { code: 'POND-THAI', name: 'สระน้ำใหญ่กลางมหาวิทยาลัย & เกาะเรือนไทยเจ้าฟ้า', bld: 'VRU-36', status: 'ระดับน้ำและนิเวศสมบูรณ์' },
-  { code: 'CANAL-DIAG', name: 'คลองซอยตัดเฉียง (แนวแบ่งเขต จ.ปทุมธานี - จ.พระนครศรีอยุธยา)', bld: 'VRU-37 / VRU-53', status: 'การระบายน้ำคล่องตัว 100%' },
-  { code: 'POND-SOUTH', name: 'กลุ่มสระเก็บน้ำฝั่งทิศใต้ (3 สระเรียงตามแนวถนนสายใต้)', bld: 'VRU-28 / VRU-29', status: 'กักเก็บน้ำเพื่อการเกษตร 100%' },
-  { code: 'POND-DORM', name: 'สระน้ำคู่ขนาบกลุ่มหอพักนักศึกษา (ฝั่งเหนือ-ใต้ของหอพัก 43-48)', bld: 'VRU-43-48', status: 'ภูมิทัศน์ริมน้ำสมบูรณ์' },
-  { code: 'POND-STAD', name: 'สระเก็บน้ำขนาดใหญ่หลังสนามกีฬากลาง', bld: 'VRU-57', status: 'ความจุน้ำสำรอง 100%' },
-  { code: 'POOL-50M', name: 'สระว่ายน้ำมาตรฐาน 50 เมตร (สระว่ายน้ำอวยพร เปล่งวานิช)', bld: 'VRU-05', status: 'ค่าคลอรีนและ pH มาตรฐาน' },
-  { code: 'SOLAR-GRID', name: 'ระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์บนหลังคาอาคารเรียน (Solar Rooftop)', bld: 'VRU-12 / VRU-13 / VRU-29', status: 'ผลิตไฟฟ้าสะอาด 1.45 MWp' },
-  { code: 'EV-TRAM', name: 'ระบบรถรางไฟฟ้าแคมปัส (VRU EV Shuttle Tram)', bld: 'VRU-37', status: 'เดินรถปกติทุก 10 นาที' },
-  { code: 'ROAD-MAIN', name: 'โครงข่ายถนนคอนกรีตภายในมหาวิทยาลัยและสะพานข้ามคลอง 4 จุด', bld: 'VRU-01 ถึง VRU-57', status: 'การจราจรคล่องตัว 100%' },
-  { code: 'PARK-SPB', name: 'ลานจอดรถคู่หน้าอาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB Parking)', bld: 'VRU-02', status: 'รองรับรถยนต์ 450 คัน' },
-  { code: 'AGRI-PLOT', name: 'แปลงเกษตรสาธิตอินทรีย์ และสวนอนุรักษ์พันธุกรรมพืช อพ.สธ.', bld: 'VRU-53-54', status: 'พื้นที่สีเขียว UI GreenMetric' },
-  { code: 'TRACK-400', name: 'ลู่วิ่งสังเคราะห์มาตรฐาน 400 เมตร และสนามฟุตบอลกลาง', bld: 'VRU-57', status: 'พร้อมจัดการแข่งขัน 100%' },
-  { code: 'FUTSAL-CT', name: 'สนามฟุตซอล สนามบาสเกตบอล และสนามเทนนิสกลางแจ้ง', bld: 'VRU-42', status: 'เปิดไฟส่องสว่างถึง 21:00 น.' },
-  { code: 'FIBER-NET', name: 'โครงข่ายใยแก้วนำแสงและ VRU Smart Wi-Fi 6 ทั่วมหาวิทยาลัย', bld: 'VRU-31', status: 'ออนไลน์ 10 Gbps 100%' }
-];
-
-// ============================================================================
-// 2. State Management & Camera Presets (Calibrated to VRU Elongated Masterplan)
-// ============================================================================
-
-const state = {
-  selectedBuilding: null,
-  isNight: false,
-  nightTarget: 0,
-  nightLerp: 0,
-  isTurntable: false,
-  isTouring: false,
-  showLabels: true,
-  showWalkways: false, // คำสั่งผู้ใช้งาน: ทางเชื่อม ไม่ต้องมี
-  isExploded: false,
-  uiHidden: false,
-  tourIndex: 0,
-  tourTimer: null,
-  activeTab: 'buildings',
-  activeMapTab: 'floor'
-};
-
-// Camera overview calibrated to Google Maps Ground Truth (North is UP: -Z, East is RIGHT: +X)
+// View presets
 const VIEW_PRESETS = {
   overview: { pos: { x: 160, y: 185, z: 130 }, target: { x: -20, y: 0, z: 0 } },
   front: { pos: { x: 235, y: 70, z: 25 }, target: { x: 160, y: 8, z: 15 } },
   academic: { pos: { x: 65, y: 75, z: 55 }, target: { x: 45, y: 5, z: 5 } },
-  thaiLake: { pos: { x: 25, y: 55, z: 35 }, target: { x: -3, y: 4, z: 0.5 } },
-  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -144, y: 4, z: 12.3 } }
+  thaiLake: { pos: { x: 25, y: 55, z: 35 }, target: { x: -1, y: 4, z: 0 } },
+  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -142, y: 4, z: 12 } }
 };
 
 let scene, camera, renderer, controls;
-let buildingsGroup, walkwaysGroup, groundGroup, foliageGroup, propsGroup;
+let buildingsGroup, groundGroup, propsGroup;
 let ambientLight, sunLight, hemiLight;
 let sunTargetObj;
 let raycaster, mouse;
 const labelElements = new Map();
 const buildingMeshes = new Map();
 const emissiveMaterials = [];
-const ambulanceStrobes = [];
-const helipadBeacons = [];
 const sharedTextures = {};
 
-// ============================================================================
-// 3. Procedural Canvas Texture Generators
-// ============================================================================
+const state = {
+  dayMode: true,
+  showLabels: true,
+  isOrbiting: false,
+  selectedBuilding: null,
+  activeMapTab: 'floor'
+};
 
+// Procedural texture generators
 function initProceduralTextures() {
   const texLoader = new THREE.TextureLoader();
   sharedTextures.droneMap = texLoader.load('img/vru-drone-map-4k.jpg', (tex) => {
@@ -1607,118 +391,28 @@ function initProceduralTextures() {
     tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
   });
-  sharedTextures.roofCorrugated = createCorrugatedTexture('#334155', '#1e293b');
-  sharedTextures.roofTile = createTileTexture('#475569', '#334155');
-  sharedTextures.roofGreenTile = createTileTexture('#166534', '#14532d');
-  sharedTextures.roofOrangeTile = createTileTexture('#c2410c', '#9a3412');
-  sharedTextures.roofMaroonTile = createTileTexture('#991b1b', '#7f1d1d');
-  sharedTextures.roofBlueTile = createTileTexture('#1d4ed8', '#1e3a8a');
-  sharedTextures.corrugatedSilver = createCorrugatedTexture('#e2e8f0', '#94a3b8');
-  sharedTextures.solar = createSolarTexture();
-  sharedTextures.asphalt = createAsphaltTexture();
-  sharedTextures.grass = createGrassTexture();
-  sharedTextures.water = createWaterTexture();
+
   sharedTextures.poolWater = createPoolTexture();
+  sharedTextures.water = createWaterTexture();
+  sharedTextures.solar = createSolarTexture();
   sharedTextures.vruMainSign = createVruMainSignTexture();
-  sharedTextures.spbSign = createBannerSignTexture('อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)', 'สำนักงานอธิการบดี · มรภ.วไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', '#065f46', '#fbbf24');
-  sharedTextures.hall80Sign = createBannerSignTexture('หอประชุม 80 ปี วไลยอลงกรณ์', 'VALAYA ALONGKORN 80th ANNIVERSARY AUDITORIUM', '#047857', '#fde047');
-  sharedTextures.hotelSign = createBannerSignTexture('โรงแรมมหาวิทยาลัยราชภัฏวไลยอลงกรณ์', 'VALAYA ALONGKORN UNIVERSITY HOTEL · ศูนย์ฝึกประสบการณ์วิชาชีพ', '#1e293b', '#38bdf8');
-  sharedTextures.thaiPavilionSign = createBannerSignTexture('เรือนเจ้าฟ้า · เรือนไทยวไลยอลงกรณ์', 'สำนักศิลปะและวัฒนธรรม มรภ.วไลยอลงกรณ์ฯ', '#78350f', '#fcd34d');
-  sharedTextures.stadiumSign = createBannerSignTexture('สนามกีฬากลาง มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', 'VALAYA ALONGKORN RAJABHAT UNIVERSITY MAIN STADIUM', '#991b1b', '#fef08a');
 }
 
-function createCorrugatedTexture(baseHex, ridgeHex) {
-  const c = document.createElement('canvas');
-  c.width = 64; c.height = 64;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = baseHex;
-  ctx.fillRect(0, 0, 64, 64);
-  for (let x = 0; x < 64; x += 4) {
-    ctx.fillStyle = ridgeHex;
-    ctx.fillRect(x, 0, 1.5, 64);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(8, 8);
-  return tex;
-}
-
-function createTileTexture(baseHex, shadowHex) {
-  const c = document.createElement('canvas');
-  c.width = 64; c.height = 64;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = baseHex;
-  ctx.fillRect(0, 0, 64, 64);
-  ctx.strokeStyle = shadowHex;
-  ctx.lineWidth = 2;
-  for (let y = 0; y < 64; y += 8) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(64, y);
-    ctx.stroke();
-  }
-  for (let x = 0; x < 64; x += 8) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, 64);
-    ctx.stroke();
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(6, 6);
-  return tex;
-}
-
-function createSolarTexture() {
+function createPoolTexture() {
   const c = document.createElement('canvas');
   c.width = 128; c.height = 128;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#0f172a';
+  ctx.fillStyle = '#0284c7';
   ctx.fillRect(0, 0, 128, 128);
-  ctx.fillStyle = '#1e3a8a';
-  for (let y = 4; y < 128; y += 16) {
-    for (let x = 4; x < 128; x += 32) {
-      ctx.fillRect(x, y, 28, 12);
-    }
-  }
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, 126, 126);
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(3, 2);
-  return tex;
-}
-
-function createAsphaltTexture() {
-  const c = document.createElement('canvas');
-  c.width = 128; c.height = 128;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#334155';
-  ctx.fillRect(0, 0, 128, 128);
-  for (let i = 0; i < 600; i++) {
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)';
-    ctx.fillRect(Math.random() * 128, Math.random() * 128, 2, 2);
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i <= 128; i += 16) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 128); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(128, i); ctx.stroke();
   }
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(16, 16);
-  return tex;
-}
-
-function createGrassTexture() {
-  const c = document.createElement('canvas');
-  c.width = 128; c.height = 128;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#4d7c43';
-  ctx.fillRect(0, 0, 128, 128);
-  for (let i = 0; i < 800; i++) {
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(20, 83, 45, 0.08)';
-    ctx.fillRect(Math.random() * 128, Math.random() * 128, 3, 3);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(30, 30);
+  tex.repeat.set(2, 4);
   return tex;
 }
 
@@ -1726,112 +420,64 @@ function createWaterTexture() {
   const c = document.createElement('canvas');
   c.width = 128; c.height = 128;
   const ctx = c.getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 128, 128);
-  grad.addColorStop(0, '#0d9488');
-  grad.addColorStop(0.5, '#0f766e');
-  grad.addColorStop(1, '#115e59');
-  ctx.fillStyle = grad;
+  ctx.fillStyle = '#0d9488';
   ctx.fillRect(0, 0, 128, 128);
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.lineWidth = 1.5;
-  for (let y = 8; y < 128; y += 16) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.bezierCurveTo(40, y - 4, 80, y + 4, 128, y);
-    ctx.stroke();
+  ctx.fillStyle = '#14b8a6';
+  for (let i = 0; i < 40; i++) {
+    ctx.fillRect(Math.random() * 128, Math.random() * 128, 4, 2);
   }
+  return new THREE.CanvasTexture(c);
+}
+
+function createSolarTexture() {
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#1e3a8a';
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.strokeStyle = '#60a5fa';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(2, 2, 60, 60);
+  ctx.strokeRect(16, 2, 32, 60);
+  ctx.strokeRect(2, 16, 60, 32);
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(4, 4);
   return tex;
 }
 
-function createPoolTexture() {
-  const c = document.createElement('canvas');
-  c.width = 256; c.height = 128;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#06b6d4';
-  ctx.fillRect(0, 0, 256, 128);
-  ctx.strokeStyle = '#0e7490';
-  ctx.lineWidth = 3;
-  for (let y = 16; y < 128; y += 16) {
-    ctx.beginPath();
-    ctx.moveTo(12, y);
-    ctx.lineTo(244, y);
-    ctx.stroke();
-  }
-  const tex = new THREE.CanvasTexture(c);
-  return tex;
-}
-
 function createVruMainSignTexture() {
   const c = document.createElement('canvas');
-  c.width = 1024; c.height = 256;
+  c.width = 512; c.height = 128;
   const ctx = c.getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, '#064e3b');
-  grad.addColorStop(1, '#022c22');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 1024, 256);
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 10;
-  ctx.strokeRect(8, 8, 1008, 240);
-  ctx.fillStyle = '#fde047';
-  ctx.font = 'bold 48px Prompt, sans-serif';
+  ctx.fillStyle = '#064e3b';
+  ctx.fillRect(0, 0, 512, 128);
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 28px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', 512, 110);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 28px Prompt, sans-serif';
-  ctx.fillText('VALAYA ALONGKORN RAJABHAT UNIVERSITY UNDER THE ROYAL PATRONAGE', 512, 170);
-  ctx.fillStyle = '#6ee7b7';
-  ctx.font = '500 24px Prompt, sans-serif';
-  ctx.fillText('เลขที่ 1 หมู่ 20 ถนนพหลโยธิน ต.คลองหนึ่ง อ.คลองหลวง จ.ปทุมธานี', 512, 215);
+  ctx.fillText('มหาวิทยาลัยราชภัฏวไลยอลงกรณ์', 256, 52);
+  ctx.font = '20px sans-serif';
+  ctx.fillText('ในพระบรมราชูปถัมภ์', 256, 88);
   return new THREE.CanvasTexture(c);
 }
 
-function createBannerSignTexture(title, sub, bgHex, accentHex) {
-  const c = document.createElement('canvas');
-  c.width = 1024; c.height = 192;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = bgHex;
-  ctx.fillRect(0, 0, 1024, 192);
-  ctx.strokeStyle = accentHex;
-  ctx.lineWidth = 8;
-  ctx.strokeRect(6, 6, 1012, 180);
-  ctx.fillStyle = accentHex;
-  ctx.font = 'bold 46px Prompt, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(title, 512, 92);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '500 28px Prompt, sans-serif';
-  ctx.fillText(sub, 512, 148);
-  return new THREE.CanvasTexture(c);
-}
-
-// ============================================================================
-// 4. Scene & Renderer Initialization
-// ============================================================================
-
+// Scene setup
 function initScene() {
   const canvas = document.getElementById('world');
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdce7f2);
-  scene.fog = new THREE.Fog(0xdce7f2, 420, 1800);
+  scene.fog = new THREE.FogExp2(0xdce7f2, 0.0014);
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 1200);
   camera.position.set(VIEW_PRESETS.overview.pos.x, VIEW_PRESETS.overview.pos.y, VIEW_PRESETS.overview.pos.z);
 
-  renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    powerPreference: 'high-performance'
-  });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.90;
+  renderer.toneMappingExposure = 0.95;
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1855,36 +501,37 @@ function initScene() {
 
   groundGroup = new THREE.Group();
   buildingsGroup = new THREE.Group();
-  walkwaysGroup = new THREE.Group();
-  foliageGroup = new THREE.Group();
   propsGroup = new THREE.Group();
-
   scene.add(groundGroup);
-  scene.add(walkwaysGroup);
   scene.add(buildingsGroup);
-  scene.add(foliageGroup);
   scene.add(propsGroup);
+
+  setupLighting();
+  buildGround();
+  buildBuildings();
+  create3DLabels();
+  setupUI();
+
+  window.addEventListener('resize', onWindowResize);
+  canvas.addEventListener('click', onCanvasClick);
 }
 
-function initLights() {
-  ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+function setupLighting() {
+  ambientLight = new THREE.AmbientLight(0xfff7ed, 0.72);
   scene.add(ambientLight);
 
-  hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x334155, 0.35);
-  hemiLight.position.set(0, 140, 0);
+  hemiLight = new THREE.HemisphereLight(0xdce7f2, 0x475569, 0.45);
   scene.add(hemiLight);
 
-  sunLight = new THREE.DirectionalLight(0xfff7ed, 1.65);
-  sunLight.position.set(-60, 160, 110);
+  sunLight = new THREE.DirectionalLight(0xffedd5, 1.35);
+  sunLight.position.set(140, 240, 160);
   sunLight.castShadow = true;
-  sunLight.shadow.mapSize.width = 4096;
-  sunLight.shadow.mapSize.height = 4096;
+  sunLight.shadow.mapSize.width = 2048;
+  sunLight.shadow.mapSize.height = 2048;
+  sunLight.shadow.bias = -0.00035;
   sunLight.shadow.camera.near = 10;
-  sunLight.shadow.camera.far = 520;
-  sunLight.shadow.bias = -0.0003;
-  sunLight.shadow.normalBias = 0.04;
-
-  const shadowDist = 240;
+  sunLight.shadow.camera.far = 600;
+  const shadowDist = 220;
   sunLight.shadow.camera.left = -shadowDist;
   sunLight.shadow.camera.right = shadowDist;
   sunLight.shadow.camera.top = shadowDist;
@@ -1897,112 +544,9 @@ function initLights() {
   scene.add(sunLight);
 }
 
-// ============================================================================
-// 5. VRU Masterplan Terrain, Phahonyothin Highway, Canals, Lakes & Roads
-// ============================================================================
-
-function addWaterBasin(parent, cx, cz, w, d, rotY = 0, withIsland = false) {
-  const basin = new THREE.Group();
-  basin.position.set(cx, 0, cz);
-  basin.rotation.y = rotY;
-
-  // Concrete embankment rim
-  const rim = new THREE.Mesh(
-    new THREE.BoxGeometry(w + 1.4, 0.24, d + 1.4),
-    new THREE.MeshStandardMaterial({ color: 0x86efac, roughness: 0.8 })
-  );
-  rim.position.y = 0.04;
-  rim.receiveShadow = true;
-  basin.add(rim);
-
-  // Water surface
-  const water = new THREE.Mesh(
-    new THREE.PlaneGeometry(w, d),
-    new THREE.MeshStandardMaterial({
-      color: 0x0d9488,
-      map: sharedTextures.water,
-      roughness: 0.18,
-      metalness: 0.35
-    })
-  );
-  water.rotation.x = -Math.PI / 2;
-  water.position.y = 0.18;
-  water.receiveShadow = true;
-  basin.add(water);
-
-  if (withIsland) {
-    // Landscaped peninsula/island for Реือนเจ้าฟ้า (#36)
-    const isl = new THREE.Mesh(
-      new THREE.BoxGeometry(w * 0.56, 0.45, d * 0.65),
-      new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.85 })
-    );
-    isl.position.set(-2, 0.22, 0);
-    isl.receiveShadow = true;
-    basin.add(isl);
-
-    // Causeway bridge to the island
-    const bridge = new THREE.Mesh(
-      new THREE.BoxGeometry(5.5, 0.48, d * 0.35),
-      new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.6 })
-    );
-    bridge.position.set(-2, 0.24, -d * 0.36);
-    basin.add(bridge);
-  }
-
-  parent.add(basin);
-}
-
-function addRoadStrip(parent, cx, cz, w, d, rotY = 0) {
-  const g = new THREE.Group();
-  g.position.set(cx, 0, cz);
-  g.rotation.y = rotY;
-
-  const sidewalk = new THREE.Mesh(
-    new THREE.BoxGeometry(w + 1.4, 0.14, d + 1.4),
-    new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.7 })
-  );
-  sidewalk.position.y = 0.05;
-  sidewalk.receiveShadow = true;
-  g.add(sidewalk);
-
-  const road = new THREE.Mesh(
-    new THREE.PlaneGeometry(w, d),
-    new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      map: sharedTextures.asphalt,
-      roughness: 0.82
-    })
-  );
-  road.rotation.x = -Math.PI / 2;
-  road.position.y = 0.13;
-  road.receiveShadow = true;
-  g.add(road);
-
-  // Dashed center line
-  const dashMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
-  if (d >= w) {
-    for (let z = -d / 2 + 3; z < d / 2 - 3; z += 7) {
-      const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 3.2), dashMat);
-      dash.rotation.x = -Math.PI / 2;
-      dash.position.set(0, 0.14, z);
-      g.add(dash);
-    }
-  } else {
-    for (let x = -w / 2 + 3; x < w / 2 - 3; x += 7) {
-      const dash = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 0.16), dashMat);
-      dash.rotation.x = -Math.PI / 2;
-      dash.position.set(x, 0.14, 0);
-      g.add(dash);
-    }
-  }
-
-  parent.add(g);
-}
-
-function buildPure3DMasterplanTerrain() {
-  // 1. Aerial Drone Orthophoto Masterplan Base Plane (Aspect Ratio 3.472:1, X: 416.6, Z: 120)
-  // Calibrated 1:1 to Google Maps Ground Truth (North is -Z, East is +X)
-  const droneGeo = new THREE.PlaneGeometry(416.6, 120);
+function buildGround() {
+  // Aerial Drone Orthophoto Masterplane (416.6 x 120.0 m)
+  const droneGeo = new THREE.PlaneGeometry(416.6, 120.0);
   const droneMat = new THREE.MeshStandardMaterial({
     map: sharedTextures.droneMap,
     roughness: 0.85,
@@ -2014,705 +558,255 @@ function buildPure3DMasterplanTerrain() {
   droneMesh.receiveShadow = true;
   groundGroup.add(droneMesh);
 
-  // Main Campus Ground Base Underlay (X: 440, Z: 150)
-  const baseGeo = new THREE.PlaneGeometry(440, 150);
-  const baseMat = new THREE.MeshStandardMaterial({
-    color: 0x3d6339,
-    map: sharedTextures.grass,
-    roughness: 0.9,
-    metalness: 0.02
-  });
-  const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-  baseMesh.rotation.x = -Math.PI / 2;
-  baseMesh.position.set(0, -0.1, 0);
-  baseMesh.receiveShadow = true;
-  groundGroup.add(baseMesh);
-
-  // Outer Surrounding Ground Plane for seamless horizon
-  const outerGeo = new THREE.PlaneGeometry(800, 800);
-  const outerMat = new THREE.MeshStandardMaterial({
-    color: 0x355431,
-    roughness: 0.95
-  });
+  // Outer Surrounding Horizon Plane
+  const outerGeo = new THREE.PlaneGeometry(900, 900);
+  const outerMat = new THREE.MeshStandardMaterial({ color: 0x3d6339, roughness: 0.95 });
   const outerMesh = new THREE.Mesh(outerGeo, outerMat);
   outerMesh.rotation.x = -Math.PI / 2;
-  outerMesh.position.set(0, -0.22, 0);
+  outerMesh.position.set(0, -0.05, 0);
   outerMesh.receiveShadow = true;
   groundGroup.add(outerMesh);
 
-  // 2. Pedestrian Overpass Bridge across Phahonyothin Road (สะพานลอยหน้า มรภ.วไลยอลงกรณ์ฯ) at Z = -22
-  const hwWidth = 26;
-  const hwX = 195;
+  // Overpass Bridge on East front
   const overpass = new THREE.Group();
-  overpass.position.set(hwX, 0, -22);
-  const opDeck = new THREE.Mesh(
-    new THREE.BoxGeometry(hwWidth + 8, 0.6, 3.2),
-    new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
-  );
+  overpass.position.set(195, 0, -22);
+  const opDeck = new THREE.Mesh(new THREE.BoxGeometry(26, 0.6, 3.2), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
   opDeck.position.y = 6.2;
   opDeck.castShadow = true;
   overpass.add(opDeck);
-  const opRoof = new THREE.Mesh(
-    new THREE.BoxGeometry(hwWidth + 8, 0.25, 3.6),
-    new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.4 })
-  );
+  const opRoof = new THREE.Mesh(new THREE.BoxGeometry(26, 0.25, 3.6), new THREE.MeshStandardMaterial({ color: 0x047857 }));
   opRoof.position.y = 8.6;
   overpass.add(opRoof);
-  for (let px of [-hwWidth / 2 - 2.5, 0, hwWidth / 2 + 2.5]) {
-    const pier = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.45, 0.5, 6.2, 12),
-      new THREE.MeshStandardMaterial({ color: 0x94a3b8 })
-    );
+  for (let px of [-11, 0, 11]) {
+    const pier = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 6.2, 10), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
     pier.position.set(px, 3.1, 0);
-    pier.castShadow = true;
     overpass.add(pier);
   }
   groundGroup.add(overpass);
 
-  // 3. Main University Entrance Gate Signboard & Overpass
+  // Grand Entrance Signboard at Front Gate
   const gateSignGroup = new THREE.Group();
-  gateSignGroup.position.set(184, 0, 14);
-  const signBase = new THREE.Mesh(
-    new THREE.BoxGeometry(1.4, 1.2, 11.5),
-    new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 })
-  );
+  gateSignGroup.position.set(184, 0, 14.5);
+  const signBase = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.2, 11.5), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
   signBase.position.y = 0.6;
   gateSignGroup.add(signBase);
-
-  const signBoard = new THREE.Mesh(
-    new THREE.BoxGeometry(0.5, 2.7, 10.8),
-    new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.3 })
-  );
+  const signBoard = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.7, 10.8), new THREE.MeshStandardMaterial({ color: 0x064e3b }));
   signBoard.position.y = 2.55;
   signBoard.castShadow = true;
   gateSignGroup.add(signBoard);
-
-  const signFace = new THREE.Mesh(
-    new THREE.PlaneGeometry(10.4, 2.5),
-    new THREE.MeshBasicMaterial({ map: sharedTextures.vruMainSign })
-  );
+  const signFace = new THREE.Mesh(new THREE.PlaneGeometry(10.4, 2.5), new THREE.MeshBasicMaterial({ map: sharedTextures.vruMainSign }));
   signFace.position.set(0.27, 2.55, 0);
   signFace.rotation.y = Math.PI / 2;
   gateSignGroup.add(signFace);
   groundGroup.add(gateSignGroup);
-
-  // 4. Natural Central Lake & Island for เรือนไทยเจ้าฟ้า (#23)
-  addWaterBasin(groundGroup, -2.9, 0.6, 22.0, 48.0, 0, true);
 }
 
-function buildCoveredWalkways() {
-  // ทางเชื่อมปิดตามคำสั่ง
-}
+// 3D Building Geometries
+function buildBuildings() {
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.55, metalness: 0.05 });
+  const windowMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.15,
+    metalness: 0.75,
+    emissive: new THREE.Color(0xffbf69),
+    emissiveIntensity: 0.0
+  });
+  emissiveMaterials.push(windowMat);
 
-// ============================================================================
-// 6. VRU 3D Architectural Builders (Supporting Multi-Floor Explode View)
-// ============================================================================
-
-function createHippedRoof(w, d, ridgeH, roofMat) {
-  const g = new THREE.Group();
-  // Clean rectangular roof slab matching building walls
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), roofMat);
-  slab.position.y = 0.18;
-  slab.castShadow = true;
-  g.add(slab);
-
-  // Stepped upper tier aligned with building axes (no 45-degree diamond distortion)
-  const ridge = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, ridgeH, d * 0.75), roofMat);
-  ridge.position.y = 0.35 + ridgeH / 2;
-  ridge.castShadow = true;
-  g.add(ridge);
-  return g;
-}
-
-function buildMultiFloorBox(group, numFloors, w, totalH, d, wallMat, windowMat, roofColor, withSolar = false) {
-  const floorMeshes = [];
-  const fh = totalH / numFloors;
-
-  for (let f = 0; f < numFloors; f++) {
-    const fg = new THREE.Group();
-    const y0 = f * fh;
-
-    const body = new THREE.Mesh(new THREE.BoxGeometry(w, fh - 0.15, d), wallMat);
-    body.position.y = y0 + fh / 2;
-    body.castShadow = true;
-    body.receiveShadow = true;
-    fg.add(body);
-
-    const slab = new THREE.Mesh(
-      new THREE.BoxGeometry(w + 0.4, 0.2, d + 0.4),
-      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
-    );
-    slab.position.y = y0 + fh;
-    fg.add(slab);
-
-    // Windows along Front (-Z), Back (+Z), Left (-X), Right (+X)
-    const winH = fh * 0.52;
-    const bandFB = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, winH, d + 0.16), windowMat);
-    bandFB.position.y = y0 + fh * 0.55;
-    fg.add(bandFB);
-
-    const bandLR = new THREE.Mesh(new THREE.BoxGeometry(w + 0.16, winH, d * 0.86), windowMat);
-    bandLR.position.y = y0 + fh * 0.55;
-    fg.add(bandLR);
-
-    if (f === numFloors - 1) {
-      const rMat = new THREE.MeshStandardMaterial({ color: roofColor || 0x334155, roughness: 0.55 });
-      const roof = createHippedRoof(w, d, 2.4, rMat);
-      roof.position.y = y0 + fh;
-      fg.add(roof);
-
-      if (withSolar) {
-        const solar = new THREE.Mesh(
-          new THREE.BoxGeometry(w * 0.72, 0.25, d * 0.65),
-          new THREE.MeshStandardMaterial({ map: sharedTextures.solar, roughness: 0.25, metalness: 0.5 })
-        );
-        solar.position.y = y0 + fh + 1.5;
-        fg.add(solar);
-      }
-    }
-
-    group.add(fg);
-    floorMeshes.push(fg);
-  }
-  group.userData.floorMeshes = floorMeshes;
-}
-
-function buildHospitalBuildings() {
   HOSPITAL_BUILDINGS.forEach(bld => {
-    const bldGroup = new THREE.Group();
-    bldGroup.position.set(bld.pos.x, 0, bld.pos.z);
-    bldGroup.rotation.y = bld.rotY || 0;
-    bldGroup.userData = bld;
+    const bGroup = new THREE.Group();
+    bGroup.position.set(bld.pos.x, 0, bld.pos.z);
+    bGroup.rotation.y = bld.rotY || 0;
+    bGroup.userData = bld;
 
     const { w, h, d } = bld.dimensions;
-    const numFloors = Math.max(1, (bld.floors && bld.floors.length) || 3);
-
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.55, metalness: 0.05 });
-    const windowMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.15,
-      metalness: 0.75,
-      emissive: new THREE.Color(0xffbf69),
-      emissiveIntensity: 0.0
-    });
-    emissiveMaterials.push(windowMat);
-
     const type = bld.archType;
 
-    if (type === 'landmark80') {
-      // 1. หอประชุม 80 ปี วไลยอลงกรณ์ (Massive white square/cruciform convention hall over reflecting pool)
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-      const f3 = new THREE.Group();
-
-      // Podium matching footprint
-      const podium = new THREE.Mesh(
-        new THREE.BoxGeometry(w, 1.2, d),
-        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.45 })
-      );
+    if (type === 'auditorium80') {
+      const podium = new THREE.Mesh(new THREE.BoxGeometry(w, 1.2, d), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
       podium.position.y = 0.6;
       podium.receiveShadow = true;
-      f1.add(podium);
+      bGroup.add(podium);
 
-      const bridgeRamp = new THREE.Mesh(
-        new THREE.BoxGeometry(8, 1.0, 8),
-        new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.5 })
-      );
-      bridgeRamp.position.set(0, 0.5, -d / 2 - 4);
-      f1.add(bridgeRamp);
+      const mainHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, h * 0.75, d * 0.88), wallMat);
+      mainHall.position.y = 1.2 + (h * 0.75) / 2;
+      mainHall.castShadow = true;
+      bGroup.add(mainHall);
 
-      const baseHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, 4.8, d * 0.88), wallMat);
-      baseHall.position.y = 1.2 + 2.4;
-      baseHall.castShadow = true;
-      f1.add(baseHall);
+      const frameMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 });
+      const canopy = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), frameMat);
+      canopy.position.y = h * 0.82;
+      canopy.castShadow = true;
+      bGroup.add(canopy);
 
-      // Middle Grand Foyer + Open White Space-Frame Wings (โครงถักสีขาวตามภาพถ่ายจริง)
-      const midHall = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 5.2, d * 0.92), wallMat);
-      midHall.position.y = 6.0 + 2.6;
-      midHall.castShadow = true;
-      f2.add(midHall);
+      const r1 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, 1.5, d * 0.75), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+      r1.position.y = h * 0.85 + 0.75;
+      r1.castShadow = true;
+      bGroup.add(r1);
 
-      const glassMid = new THREE.Mesh(new THREE.BoxGeometry(w * 0.94, 3.8, d * 0.94), windowMat);
-      glassMid.position.y = 6.0 + 2.6;
-      f2.add(glassMid);
-
-      const frameMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, wireframe: false });
-      const wingCanopy = new THREE.Mesh(new THREE.BoxGeometry(w, 0.55, d), frameMat);
-      wingCanopy.position.y = 11.2;
-      wingCanopy.castShadow = true;
-      f2.add(wingCanopy);
-
-      // Perimeter white columns supporting space-frame wings
-      for (let cx of [-w / 2 + 1, -w / 3, w / 3, w / 2 - 1]) {
-        for (let cz of [-d / 2 + 1, 0, d / 2 - 1]) {
-          const col = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 9.5, 10), frameMat);
-          col.position.set(cx, 6.0, cz);
-          col.castShadow = true;
-          f2.add(col);
-        }
-      }
-
-      // Iconic Giant White Stepped Pyramid Roof
-      const roof1 = createHippedRoof(w * 0.92, d * 0.92, 4.2, new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 }));
-      roof1.position.y = 11.8;
-      f3.add(roof1);
-
-      const roof2 = createHippedRoof(w * 0.52, d * 0.52, 3.5, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
-      roof2.position.y = 14.8;
-      f3.add(roof2);
-
-      // Signboard on Front Portico
-      const sign = new THREE.Mesh(
-        new THREE.PlaneGeometry(14, 2.2),
-        new THREE.MeshBasicMaterial({ map: sharedTextures.hall80Sign })
-      );
-      sign.position.set(0, 12.2, -d / 2 - 1.1);
-      sign.rotation.y = Math.PI;
-      f2.add(sign);
-
-      bldGroup.add(f1, f2, f3);
-      bldGroup.userData.floorMeshes = [f1, f2, f3];
-
-    } else if (type === 'monument') {
-      // พระอนุสาวรีย์ สมเด็จพระราชปิตุจฉา เจ้าฟ้าวไลยอลงกรณ์ฯ (#1) และ หอพระ (#2)
-      const fg = new THREE.Group();
-      const base = new THREE.Mesh(
-        new THREE.BoxGeometry(w, 0.8, d),
-        new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.5 })
-      );
-      base.position.y = 0.4;
-      fg.add(base);
-
-      // Royal Monument Pedestal & Statue
-      const ped = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.4, 1.8, 3.2, 16),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 })
-      );
-      ped.position.set(0, 2.4, 0);
-      ped.castShadow = true;
-      fg.add(ped);
-
-      const statue = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.55, 0.7, 2.4, 12),
-        new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.25 })
-      );
-      statue.position.set(0, 5.2, 0);
-      fg.add(statue);
-
-      // หอพระประจำมหาวิทยาลัย (ฝั่งซ้ายของลานหน้าสระน้ำ ตามแผนที่ปี 2016 #2)
-      const shrine = new THREE.Group();
-      shrine.position.set(-14, 0, 2);
-      const sBase = new THREE.Mesh(
-        new THREE.BoxGeometry(5.5, 1.2, 5.5),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
-      );
-      sBase.position.y = 0.6;
-      shrine.add(sBase);
-      const sRoof = createHippedRoof(5.0, 5.0, 3.2, new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.4, roughness: 0.3 }));
-      sRoof.position.y = 3.2;
-      shrine.add(sRoof);
-      fg.add(shrine);
-
-      bldGroup.add(fg);
-      bldGroup.userData.floorMeshes = [fg];
+      const r2 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.45, 1.8, d * 0.45), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+      r2.position.y = h * 0.85 + 2.4;
+      r2.castShadow = true;
+      bGroup.add(r2);
 
     } else if (type === 'spb100') {
-      // 2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB) - 6 ชั้น ดีไซน์เฉียง/หลังคาโค้งโมเดิร์น
-      buildMultiFloorBox(bldGroup, 6, w, h, d, wallMat, windowMat, 0x047857, true);
-      const topFloor = bldGroup.userData.floorMeshes[5];
-      // Curved Silver Architectural Roof Vault
+      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+      body.position.y = h / 2;
+      body.castShadow = true;
+      bGroup.add(body);
+
+      for (let f = 1; f < 6; f++) {
+        const win = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 1.2, d * 0.85), windowMat);
+        win.position.y = f * (h / 6);
+        bGroup.add(win);
+      }
+
       const vault = new THREE.Mesh(
-        new THREE.CylinderGeometry(w * 0.42, w * 0.42, d * 0.95, 20, 1, false, -Math.PI / 2, Math.PI),
-        new THREE.MeshStandardMaterial({ map: sharedTextures.corrugatedSilver, metalness: 0.5, roughness: 0.3 })
+        new THREE.CylinderGeometry(w * 0.35, w * 0.35, d * 0.9, 16, 1, false, -Math.PI / 2, Math.PI),
+        new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.5, roughness: 0.3 })
       );
-      vault.rotation.x = Math.PI / 2;
-      vault.scale.set(1, 0.35, 1);
-      vault.position.y = h + 1.2;
-      topFloor.add(vault);
-
-      const sign = new THREE.Mesh(
-        new THREE.PlaneGeometry(14, 2.2),
-        new THREE.MeshBasicMaterial({ map: sharedTextures.spbSign })
-      );
-      sign.position.set(0, h + 2.8, -d / 2 - 0.3);
-      sign.rotation.y = Math.PI;
-      topFloor.add(sign);
-
-    } else if (type === 'hotel') {
-      // 3. โรงแรมมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ (ศูนย์ฝึกประสบการณ์วิชาชีพ)
-      const hotelWall = new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.5 });
-      buildMultiFloorBox(bldGroup, 5, w, h, d, hotelWall, windowMat, 0x0f766e, true);
-      const topF = bldGroup.userData.floorMeshes[4];
-      const sign = new THREE.Mesh(
-        new THREE.PlaneGeometry(13, 2.0),
-        new THREE.MeshBasicMaterial({ map: sharedTextures.hotelSign })
-      );
-      sign.position.set(0, h + 2.5, -d / 2 - 0.2);
-      sign.rotation.y = Math.PI;
-      topF.add(sign);
+      vault.position.set(0, h + 0.2, 0);
+      vault.rotation.z = Math.PI / 2;
+      vault.castShadow = true;
+      bGroup.add(vault);
 
     } else if (type === 'pool') {
-      // 5. อาคารศูนย์ส่งเสริมสุขภาพ & สระว่ายน้ำอวยพร เปล่งวานิช
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-
-      // White Pool Deck
-      const deck = new THREE.Mesh(
-        new THREE.BoxGeometry(w, 0.6, d),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 })
-      );
-      deck.position.y = 0.3;
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+      deck.position.y = 0.25;
       deck.receiveShadow = true;
-      f1.add(deck);
+      bGroup.add(deck);
 
-      // 50m Turquoise Swimming Pool Basin
-      const poolMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(w * 0.52, d * 0.82),
+      const waterMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(w * 0.6, d * 0.8),
         new THREE.MeshStandardMaterial({ map: sharedTextures.poolWater, roughness: 0.1, metalness: 0.2 })
       );
-      poolMesh.rotation.x = -Math.PI / 2;
-      poolMesh.position.y = 0.63;
-      f1.add(poolMesh);
+      waterMesh.rotation.x = -Math.PI / 2;
+      waterMesh.position.y = 0.52;
+      bGroup.add(waterMesh);
 
-      // Twin Spectator & Fitness Pavilions with Solar Roofs on Left & Right of Pool (ตามภาพดาวเทียมจริง)
-      for (let side of [-1, 1]) {
-        const pav = new THREE.Mesh(new THREE.BoxGeometry(4.2, 4.2, d * 0.86), wallMat);
-        pav.position.set(side * (w * 0.38), 2.4, 0);
-        pav.castShadow = true;
-        f1.add(pav);
-
-        const sRoof = new THREE.Mesh(
-          new THREE.BoxGeometry(4.8, 0.3, d * 0.9),
-          new THREE.MeshStandardMaterial({ map: sharedTextures.solar, roughness: 0.25 })
-        );
-        sRoof.position.set(side * (w * 0.38), 4.7, 0);
-        sRoof.rotation.z = side * -0.15;
-        sRoof.castShadow = true;
-        f2.add(sRoof);
-      }
-
-      bldGroup.add(f1, f2);
-      bldGroup.userData.floorMeshes = [f1, f2];
-
-    } else if (type === 'fmsLong') {
-      // 28. คณะวิทยาการจัดการ (FMS) - อาคารเรียนแนวยาวพิเศษ 52m หลังคาส้มอิฐ + โซลาร์เซลล์
-      const fmsWall = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.55 });
-      buildMultiFloorBox(bldGroup, 4, w, h, d, fmsWall, windowMat, 0xc2410c, true);
-
-    } else if (type === 'eduMaroon') {
-      // 16-17. คณะครุศาสตร์ (FE) - อาคารเรียนหลังคาสีแดงเลือดหมูเอกลักษณ์
-      const eduWall = new THREE.MeshStandardMaterial({ color: 0xfff1f2, roughness: 0.55 });
-      buildMultiFloorBox(bldGroup, 4, w, h, d, eduWall, windowMat, 0x991b1b, true);
-
-    } else if (type === 'uCourtyard') {
-      // อาคารล้อมลานกลางรูปตัวยู (รร.สาธิตมัธยม #30, คณะมนุษยศาสตร์ฯ #32, รร.สาธิตประถม #35)
-      const floors = [];
-      const fh = h / numFloors;
-      const rMat = new THREE.MeshStandardMaterial({ color: bld.roofColor || 0x1d4ed8, roughness: 0.5 });
-
-      for (let f = 0; f < numFloors; f++) {
-        const fg = new THREE.Group();
-        const y0 = f * fh;
-        // Left, Right, and Back wings forming a U-Courtyard
-        const wingW = 5.2;
-        for (let sx of [-w / 2 + wingW / 2, w / 2 - wingW / 2]) {
-          const wing = new THREE.Mesh(new THREE.BoxGeometry(wingW, fh - 0.15, d), wallMat);
-          wing.position.set(sx, y0 + fh / 2, 0);
-          wing.castShadow = true;
-          fg.add(wing);
-
-          const win = new THREE.Mesh(new THREE.BoxGeometry(wingW + 0.15, fh * 0.5, d * 0.85), windowMat);
-          win.position.set(sx, y0 + fh * 0.55, 0);
-          fg.add(win);
-        }
-        const backWing = new THREE.Mesh(new THREE.BoxGeometry(w, fh - 0.15, wingW), wallMat);
-        backWing.position.set(0, y0 + fh / 2, d / 2 - wingW / 2);
-        backWing.castShadow = true;
-        fg.add(backWing);
-
-        if (f === numFloors - 1) {
-          for (let sx of [-w / 2 + wingW / 2, w / 2 - wingW / 2]) {
-            const rf = createHippedRoof(wingW, d, 1.8, rMat);
-            rf.position.set(sx, y0 + fh, 0);
-            fg.add(rf);
-          }
-          const rfBack = createHippedRoof(w, wingW, 1.8, rMat);
-          rfBack.position.set(0, y0 + fh, d / 2 - wingW / 2);
-          fg.add(rfBack);
-        }
-        bldGroup.add(fg);
-        floors.push(fg);
-      }
-      bldGroup.userData.floorMeshes = floors;
+      const pav = new THREE.Mesh(new THREE.BoxGeometry(w * 0.3, h, d * 0.85), wallMat);
+      pav.position.set(-w * 0.32, h / 2, 0);
+      pav.castShadow = true;
+      bGroup.add(pav);
 
     } else if (type === 'thaiPavilion') {
-      // 36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์) - หมู่เรือนไทยไม้สักหลังคาจั่วสูงบนเกาะกลางสระน้ำใหญ่
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-
       const teakMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.65 });
-      const thaiRoofMat = new THREE.MeshStandardMaterial({ map: sharedTextures.roofOrangeTile, roughness: 0.5 });
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.6, roughness: 0.3 });
+      const thaiRoofMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.45 });
+      const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.7, roughness: 0.25 });
 
-      // Raised Wooden Terrace Deck (ชานเรือนไม้สักยกเสาสูง)
-      const deck = new THREE.Mesh(new THREE.BoxGeometry(w * 0.85, 0.35, d * 0.8), teakMat);
-      deck.position.y = 2.6;
-      deck.castShadow = true;
-      f1.add(deck);
-
-      // Teakwood stilts (เสาเรือนไทย)
-      for (let sx = -w * 0.36; sx <= w * 0.36; sx += 4.2) {
-        for (let sz = -d * 0.32; sz <= d * 0.32; sz += 3.8) {
-          const stilt = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 2.6, 8), teakMat);
-          stilt.position.set(sx, 1.3, sz);
-          stilt.castShadow = true;
-          f1.add(stilt);
+      for (let sx of [-w * 0.35, 0, w * 0.35]) {
+        for (let sz of [-d * 0.35, 0, d * 0.35]) {
+          const st = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.4, 6), teakMat);
+          st.position.set(sx, 1.2, sz);
+          st.castShadow = true;
+          bGroup.add(st);
         }
       }
 
-      // Main Central Thai House (เรือนประธาน) + 2 Side Houses (เรือนลูก)
-      const houses = [
-        { x: 0, z: 1.5, hw: 8.5, hd: 5.2, hh: 3.2, rh: 3.8 },
-        { x: -6.2, z: -1.8, hw: 4.8, hd: 6.5, hh: 2.8, rh: 3.0 },
-        { x: 6.2, z: -1.8, hw: 4.8, hd: 6.5, hh: 2.8, rh: 3.0 }
-      ];
-      houses.forEach(hs => {
-        const cabin = new THREE.Mesh(new THREE.BoxGeometry(hs.hw, hs.hh, hs.hd), teakMat);
-        cabin.position.set(hs.x, 2.75 + hs.hh / 2, hs.z);
-        cabin.castShadow = true;
-        f2.add(cabin);
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d), teakMat);
+      deck.position.y = 2.4;
+      bGroup.add(deck);
 
-        // Steep Thai Gable Roof with Golden Bargeboards (ปั้นลม & ช่อฟ้าสีทอง)
-        const roof = new THREE.Mesh(
-          new THREE.ConeGeometry(Math.hypot(hs.hw, hs.hd) * 0.54, hs.rh, 4),
-          thaiRoofMat
-        );
-        roof.rotation.y = Math.PI / 4;
-        roof.scale.set(hs.hw / Math.max(hs.hw, hs.hd), 1, hs.hd / Math.max(hs.hw, hs.hd));
-        roof.position.set(hs.x, 2.75 + hs.hh + hs.rh / 2, hs.z);
-        roof.castShadow = true;
-        f2.add(roof);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(w * 0.75, 2.6, d * 0.75), teakMat);
+      cabin.position.y = 2.4 + 1.3;
+      cabin.castShadow = true;
+      bGroup.add(cabin);
 
-        const finial = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1.1, 6), goldMat);
-        finial.position.set(hs.x, 2.75 + hs.hh + hs.rh + 0.3, hs.z);
-        f2.add(finial);
-      });
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(w * 0.85, 1.8, d * 0.85), thaiRoofMat);
+      roof.position.y = 2.4 + 2.6 + 0.9;
+      roof.castShadow = true;
+      bGroup.add(roof);
 
-      const sign = new THREE.Mesh(
-        new THREE.PlaneGeometry(9.5, 1.6),
-        new THREE.MeshBasicMaterial({ map: sharedTextures.thaiPavilionSign })
-      );
-      sign.position.set(0, 8.8, -d * 0.35);
-      sign.rotation.y = Math.PI;
-      f2.add(sign);
-
-      bldGroup.add(f1, f2);
-      bldGroup.userData.floorMeshes = [f1, f2];
-
-    } else if (type === 'dormCluster6') {
-      // 43-48. กลุ่มหอพักนักศึกษา 4 อาคารหลักตามแนวภาพถ่ายโดรนจริง (aligned along N-S axis East of stadium)
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-      const dormWall = new THREE.MeshStandardMaterial({ color: 0xfef3c7, roughness: 0.55 });
-      const dormRoof = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5 });
-
-      const offsets = [
-        { x: 0, z: -16, bw: 7.5, bd: 11 },
-        { x: 0, z: -5, bw: 7.5, bd: 11 },
-        { x: 0, z: 6, bw: 7.5, bd: 11 },
-        { x: 0, z: 17, bw: 7.5, bd: 11 }
-      ];
-      offsets.forEach(o => {
-        const lower = new THREE.Mesh(new THREE.BoxGeometry(o.bw, 6.5, o.bd), dormWall);
-        lower.position.set(o.x, 3.25, o.z);
-        lower.castShadow = true;
-        f1.add(lower);
-
-        const win1 = new THREE.Mesh(new THREE.BoxGeometry(o.bw + 0.14, 4.2, o.bd * 0.85), windowMat);
-        win1.position.set(o.x, 3.4, o.z);
-        f1.add(win1);
-
-        const upper = new THREE.Mesh(new THREE.BoxGeometry(o.bw, 6.5, o.bd), dormWall);
-        upper.position.set(o.x, 9.75, o.z);
-        upper.castShadow = true;
-        f2.add(upper);
-
-        const win2 = new THREE.Mesh(new THREE.BoxGeometry(o.bw + 0.14, 4.2, o.bd * 0.85), windowMat);
-        win2.position.set(o.x, 9.9, o.z);
-        f2.add(win2);
-
-        const rf = createHippedRoof(o.bw, o.bd, 2.0, dormRoof);
-        rf.position.set(o.x, 13.0, o.z);
-        f2.add(rf);
-      });
-      bldGroup.add(f1, f2);
-      bldGroup.userData.floorMeshes = [f1, f2];
-
-    } else if (type === 'dormRow4') {
-      // 49-52. หอพักนักศึกษานานาชาติ 4 อาคารเรียงแถวหน้าสนามกีฬากลาง
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-      const rMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.5 });
-
-      [-13.5, -4.5, 4.5, 13.5].forEach(ox => {
-        const b1 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 6.5, 10.5), wallMat);
-        b1.position.set(ox, 3.25, 0);
-        b1.castShadow = true;
-        f1.add(b1);
-
-        const w1 = new THREE.Mesh(new THREE.BoxGeometry(6.0, 4.2, 10.65), windowMat);
-        w1.position.set(ox, 3.4, 0);
-        f1.add(w1);
-
-        const b2 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 6.5, 10.5), wallMat);
-        b2.position.set(ox, 9.75, 0);
-        b2.castShadow = true;
-        f2.add(b2);
-
-        const w2 = new THREE.Mesh(new THREE.BoxGeometry(6.0, 4.2, 10.65), windowMat);
-        w2.position.set(ox, 9.9, 0);
-        f2.add(w2);
-
-        const rf = createHippedRoof(7.0, 10.5, 1.8, rMat);
-        rf.position.set(ox, 13.0, 0);
-        f2.add(rf);
-      });
-      bldGroup.add(f1, f2);
-      bldGroup.userData.floorMeshes = [f1, f2];
-
-    } else if (type === 'gymCourts') {
-      // 42. ยิมเนเซียม 2 & สนามฟุตซอล/บาสเกตบอลกลางแจ้ง
-      const fg = new THREE.Group();
-      const gym = new THREE.Mesh(new THREE.BoxGeometry(14, 8.5, 14), wallMat);
-      gym.position.set(0, 4.25, -6);
-      gym.castShadow = true;
-      fg.add(gym);
-      const gRoof = createHippedRoof(14, 14, 2.5, new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-      gRoof.position.set(0, 8.5, -6);
-      fg.add(gRoof);
-
-      // Outdoor Green/Blue Futsal & Basketball Courts
-      for (let cz of [5, 12]) {
-        const court = new THREE.Mesh(
-          new THREE.BoxGeometry(16, 0.18, 5.8),
-          new THREE.MeshStandardMaterial({ color: cz === 5 ? 0x16a34a : 0x0284c7, roughness: 0.6 })
-        );
-        court.position.set(0, 0.09, cz);
-        fg.add(court);
-      }
-      bldGroup.add(fg);
-      bldGroup.userData.floorMeshes = [fg];
+      const finial = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1.2, 6), goldMat);
+      finial.position.y = 2.4 + 2.6 + 1.8 + 0.6;
+      bGroup.add(finial);
 
     } else if (type === 'stadium') {
-      // 57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ (400m Red Oval Running Track + Soccer Pitch + Covered Grandstand)
-      const f1 = new THREE.Group();
-      const f2 = new THREE.Group();
-
-      // Bright Scarlet Red Running Track Oval (ลู่วิ่งยางสังเคราะห์สีแดงมาตรฐาน)
       const trackMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.55 });
-      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d * 0.52), trackMat);
-      trackCenter.position.y = 0.35;
-      f1.add(trackCenter);
+      const trackCenter = new THREE.Mesh(new THREE.BoxGeometry(w, 0.3, d * 0.52), trackMat);
+      trackCenter.position.y = 0.2;
+      bGroup.add(trackCenter);
 
       for (let side of [-1, 1]) {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.5, w * 0.5, 0.35, 32), trackMat);
-        cap.position.set(0, 0.35, side * (d * 0.26));
-        f1.add(cap);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(w * 0.5, w * 0.5, 0.3, 32), trackMat);
+        cap.position.set(0, 0.2, side * (d * 0.26));
+        bGroup.add(cap);
       }
 
-      // Lush Green Football Pitch Inside the Track
       const pitchMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
-      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.65, 0.42, d * 0.52), pitchMat);
-      pitch.position.y = 0.42;
+      const pitch = new THREE.Mesh(new THREE.BoxGeometry(w * 0.62, 0.36, d * 0.52), pitchMat);
+      pitch.position.y = 0.25;
       pitch.receiveShadow = true;
-      f1.add(pitch);
+      bGroup.add(pitch);
 
-      // White Center Line & Center Circle
       const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const midLine = new THREE.Mesh(new THREE.PlaneGeometry(0.3, d * 0.52), lineMat);
       midLine.rotation.x = -Math.PI / 2;
-      midLine.position.y = 0.46;
-      f1.add(midLine);
+      midLine.position.y = 0.39;
+      bGroup.add(midLine);
 
-      const centerRing = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.5, 32), lineMat);
+      const centerRing = new THREE.Mesh(new THREE.RingGeometry(2.0, 2.3, 32), lineMat);
       centerRing.rotation.x = -Math.PI / 2;
-      centerRing.position.y = 0.46;
-      f1.add(centerRing);
+      centerRing.position.y = 0.39;
+      bGroup.add(centerRing);
 
-      // Covered Main Grandstand on the West side (-X facing East towards football pitch)
-      const stand = new THREE.Mesh(
-        new THREE.BoxGeometry(4.0, 5.0, d * 0.45),
-        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.5 })
-      );
-      stand.position.set(-w * 0.5 - 2.2, 2.5, 0);
+      const stand = new THREE.Mesh(new THREE.BoxGeometry(3.5, 4.5, d * 0.45), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+      stand.position.set(-w * 0.5 - 2.0, 2.25, 0);
       stand.castShadow = true;
-      f2.add(stand);
+      bGroup.add(stand);
 
-      const standRoof = new THREE.Mesh(
-        new THREE.BoxGeometry(6.0, 0.35, d * 0.48),
-        new THREE.MeshStandardMaterial({ color: 0x047857, roughness: 0.4 })
-      );
-      standRoof.position.set(-w * 0.5 - 2.2, 7.2, 0);
-      standRoof.rotation.z = -0.15;
-      standRoof.castShadow = true;
-      f2.add(standRoof);
+      const sRoof = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.3, d * 0.48), new THREE.MeshStandardMaterial({ color: 0x047857 }));
+      sRoof.position.set(-w * 0.5 - 2.0, 6.0, 0);
+      sRoof.rotation.z = -0.15;
+      sRoof.castShadow = true;
+      bGroup.add(sRoof);
 
-      const stSign = new THREE.Mesh(
-        new THREE.PlaneGeometry(18, 2.2),
-        new THREE.MeshBasicMaterial({ map: sharedTextures.stadiumSign })
-      );
-      stSign.position.set(0, 9.6, -d * 0.48);
-      stSign.rotation.y = Math.PI;
-      f2.add(stSign);
+    } else if (type === 'monument') {
+      const base = new THREE.Mesh(new THREE.BoxGeometry(w, 0.8, d), new THREE.MeshStandardMaterial({ color: 0xfef3c7 }));
+      base.position.y = 0.4;
+      bGroup.add(base);
 
-      // 4 Tall Stadium Floodlight Towers
-      const poleMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.7 });
-      for (let sx of [-w * 0.42, w * 0.42]) {
-        for (let sz of [-d * 0.42, d * 0.42]) {
-          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.35, 16, 8), poleMat);
-          pole.position.set(sx, 8, sz);
-          pole.castShadow = true;
-          f2.add(pole);
+      const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.5, 2.5, 16), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+      ped.position.set(0, 1.6, 0);
+      ped.castShadow = true;
+      bGroup.add(ped);
 
-          const lampHead = new THREE.Mesh(
-            new THREE.BoxGeometry(2.6, 1.2, 0.5),
-            new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfef08a, emissiveIntensity: 0.8 })
-          );
-          lampHead.position.set(sx, 16.2, sz);
-          f2.add(lampHead);
-        }
+      const statue = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 2.0, 10), new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8 }));
+      statue.position.set(0, 3.8, 0);
+      bGroup.add(statue);
+
+    } else {
+      const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+      body.position.y = h / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+      bGroup.add(body);
+
+      const winCount = Math.max(1, Math.floor(h / 3.5));
+      for (let f = 1; f <= winCount; f++) {
+        const win = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 1.0, d + 0.1), windowMat);
+        win.position.y = f * (h / (winCount + 1));
+        bGroup.add(win);
       }
 
-      bldGroup.add(f1, f2);
-      bldGroup.userData.floorMeshes = [f1, f2];
+      const rMat = new THREE.MeshStandardMaterial({ color: bld.roofColor || 0x334155, roughness: 0.6 });
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), rMat);
+      slab.position.y = h + 0.18;
+      slab.castShadow = true;
+      bGroup.add(slab);
 
-    } else if (type === 'staffVillage') {
-      buildMultiFloorBox(bldGroup, 2, w, h, d, wallMat, windowMat, bld.roofColor, false);
-    } else {
-      buildMultiFloorBox(bldGroup, numFloors, w, h, d, wallMat, windowMat, bld.roofColor, false);
+      const parapet = new THREE.Mesh(new THREE.BoxGeometry(w * 0.78, 0.6, d * 0.78), rMat);
+      parapet.position.y = h + 0.65;
+      parapet.castShadow = true;
+      bGroup.add(parapet);
     }
 
-    buildingsGroup.add(bldGroup);
-    buildingMeshes.set(bld.id, bldGroup);
+    buildingsGroup.add(bGroup);
+    buildingMeshes.set(bld.id, bGroup);
   });
 }
 
-// ============================================================================
-// 7. Props and Clean Environment
-// ============================================================================
-
-function buildStreetLightingAndProps() {
-  // Pure 4K drone photography displays real roads, trees, and paths naturally.
-}
-
-function buildLandscapingTrees() {
-  // Trees are already captured in 4K resolution on vru-drone-map.jpg.
-}
-
-// ============================================================================
-// 8. 3D Floating Pin Labels, Selection, Exploded Floor View & UI Controls
-// ============================================================================
-
+// 3D Floating Pin Number Badges
 function create3DLabels() {
   const container = document.getElementById('labelsContainer');
   if (!container) return;
@@ -2722,39 +816,23 @@ function create3DLabels() {
   HOSPITAL_BUILDINGS.forEach(bld => {
     const pin = document.createElement('div');
     pin.className = 'label-pin';
-    pin.id = `label-${bld.id}`;
+    pin.id = 'label-' + bld.id;
     pin.setAttribute('data-id', bld.id);
 
     const name = document.createElement('span');
     name.className = 'name';
-    name.textContent = bld.num || bld.name;
+    name.textContent = bld.num;
     pin.appendChild(name);
 
     pin.addEventListener('click', (e) => {
       e.stopPropagation();
-      selectBuilding(bld.id);
+      selectBuilding(bld.id, true);
     });
 
     container.appendChild(pin);
     labelElements.set(bld.id, { element: pin, data: bld });
   });
 }
-
-const MAJOR_LANDMARK_IDS = new Set([
-  'bld-1',
-  'bld-2',
-  'bld-3',
-  'bld-4',
-  'bld-5',
-  'bld-8',
-  'bld-11',
-  'bld-15',
-  'bld-22',
-  'bld-23',
-  'bld-28',
-  'bld-43',
-  'bld-57'
-]);
 
 function updateLabelPositions() {
   const container = document.getElementById('labelsContainer');
@@ -2776,9 +854,6 @@ function updateLabelPositions() {
   const camDir = new THREE.Vector3();
   camera.getWorldDirection(camDir);
   const toAnchor = new THREE.Vector3();
-
-  const camDist = controls ? camera.position.distanceTo(controls.target) : 200;
-  const isOverview = camDist > 165;
   const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
@@ -2801,14 +876,13 @@ function updateLabelPositions() {
     const screenX = (tempV.x * 0.5 + 0.5) * w;
     const screenY = (-(tempV.y * 0.5) + 0.5) * h;
 
-    if (screenX < -60 || screenX > w + 60 || screenY < -60 || screenY > h + 60) {
+    if (screenX < -50 || screenX > w + 50 || screenY < -50 || screenY > h + 50) {
       element.style.display = 'none';
       return;
     }
 
-    // 2D Collision Culling for compact number badges
     let adjustedY = screenY - 26;
-    const boxW = 32;
+    const boxW = 28;
     const boxH = 26;
     let collides = false;
     for (const pb of placedBoxes) {
@@ -2826,16 +900,17 @@ function updateLabelPositions() {
     placedBoxes.push({ x: screenX, y: adjustedY });
 
     element.style.display = 'flex';
-    element.style.left = `${screenX}px`;
-    element.style.top = `${adjustedY}px`;
+    element.style.left = screenX + 'px';
+    element.style.top = adjustedY + 'px';
 
-    svgPaths += `<line x1="${screenX}" y1="${screenY}" x2="${screenX}" y2="${adjustedY + 6}" stroke="rgba(2, 132, 199, 0.75)" stroke-width="1.2" stroke-dasharray="2,2"/>`;
+    svgPaths += '<line x1="' + screenX + '" y1="' + screenY + '" x2="' + screenX + '" y2="' + (adjustedY + 6) + '" stroke="rgba(2, 132, 199, 0.75)" stroke-width="1.2" stroke-dasharray="2,2"/>';
   });
 
   svg.innerHTML = svgPaths;
 }
 
-function selectBuilding(id, shouldFocus = false) {
+// Building Selection & Detail Panel
+function selectBuilding(id, shouldFocus) {
   if (!id || id === 'overview') {
     resetView();
     return;
@@ -2877,7 +952,7 @@ function focusBuilding(bld) {
   const targetY = (bld.dimensions.h || 10) * 0.45;
   const targetZ = bld.pos.z;
 
-  const off = bld.cameraOffset || { x: 18, y: 32, z: 42 };
+  const off = { x: 18, y: 32, z: 42 };
   new TWEEN.Tween(controls.target)
     .to({ x: targetX, y: targetY, z: targetZ }, 1000)
     .easing(TWEEN.Easing.Cubic.Out)
@@ -2889,12 +964,29 @@ function focusBuilding(bld) {
     .start();
 }
 
-function closeDetailCard() {
-  const detail = document.getElementById('detail');
-  if (detail) {
-    detail.hidden = true;
-    detail.classList.remove('active');
+function updateDetailPanel(bld) {
+  const panel = document.getElementById('panel');
+  if (!panel) return;
+
+  document.getElementById('bldCode').textContent = bld.num;
+  document.getElementById('bldName').textContent = bld.name;
+  document.getElementById('bldSub').textContent = bld.sub || '';
+  document.getElementById('entityCategory').textContent = bld.category;
+  document.getElementById('entityStatus').textContent = bld.status;
+
+  const floorList = document.getElementById('floorList');
+  if (floorList) {
+    floorList.innerHTML = (bld.floors || []).map(f =>
+      '<div class="floor-row" style="padding: 6px 10px; background: rgba(0,0,0,0.03); border-radius: 6px; margin-bottom: 4px; font-size: 12px;">' +
+        '<strong>ชั้น ' + f.num + ':</strong> ' + f.desc +
+      '</div>'
+    ).join('');
   }
+
+  panel.hidden = false;
+}
+
+function resetView() {
   state.selectedBuilding = null;
   labelElements.forEach(({ element }) => element.classList.remove('selected'));
   buildingMeshes.forEach(mesh => {
@@ -2905,195 +997,139 @@ function closeDetailCard() {
       }
     });
   });
-}
 
-function resetView() {
-  closeDetailCard();
   const p = VIEW_PRESETS.overview;
   new TWEEN.Tween(controls.target).to(p.target, 1100).easing(TWEEN.Easing.Cubic.Out).start();
   new TWEEN.Tween(camera.position).to(p.pos, 1100).easing(TWEEN.Easing.Cubic.Out).start();
+
+  const panel = document.getElementById('panel');
+  if (panel) panel.hidden = true;
 }
 
-function toggleExplodeFloor() {
-  if (!state.selectedBuilding) {
-    showToast('กรุณาเลือกอาคารเพื่อดูผังแยกชั้น');
-    return;
-  }
-  const bld = state.selectedBuilding;
-  const meshGroup = buildingMeshes.get(bld.id);
-  if (!meshGroup || !meshGroup.userData.floorMeshes || meshGroup.userData.floorMeshes.length <= 1) {
-    showToast(`${bld.shortName || bld.name} เป็นอาคารชั้นเดียว`);
-    return;
-  }
+// UI Controls & Event Listeners
+function setupUI() {
+  setInterval(() => {
+    const el = document.getElementById('clock');
+    if (el) {
+      const now = new Date();
+      el.textContent = now.toTimeString().split(' ')[0];
+    }
+  }, 1000);
 
-  state.isExploded = !state.isExploded;
-  const floors = meshGroup.userData.floorMeshes;
-  const spreadDist = 4.6;
-
-  floors.forEach((fGroup, idx) => {
-    const targetY = state.isExploded ? idx * spreadDist : 0;
-    new TWEEN.Tween(fGroup.position)
-      .to({ y: targetY }, 850)
-      .easing(TWEEN.Easing.Back.Out)
-      .start();
+  document.getElementById('brandReset')?.addEventListener('click', resetView);
+  document.getElementById('reset')?.addEventListener('click', resetView);
+  document.getElementById('closePanel')?.addEventListener('click', () => {
+    const p = document.getElementById('panel');
+    if (p) p.hidden = true;
   });
 
-  const btn = document.getElementById('isolateFloor');
-  if (btn) {
-    btn.textContent = state.isExploded ? 'รวมชั้นกลับสู่ปกติ' : 'ดูผังแยกชั้น (Explode)';
-    btn.style.background = state.isExploded ? 'var(--accent)' : '';
-    btn.style.color = state.isExploded ? '#ffffff' : '';
-  }
-  showToast(state.isExploded ? `แสดงผังแยกชั้น 3D: ${bld.shortName}` : 'รวมชั้นกลับสู่ปกติ');
-}
+  setupSearch();
 
-function updateDetailPanel(bld) {
-  const panel = document.getElementById('detail');
-  if (panel) {
-    panel.hidden = false;
-    panel.classList.add('active');
-  }
-
-  document.getElementById('entityTitle').textContent = bld.name;
-  document.getElementById('entitySub').textContent = bld.sub || `${bld.category} · มรภ.วไลยอลงกรณ์ฯ`;
-  document.getElementById('entityStatus').textContent = bld.status || 'เปิดทำการปกติ';
-  const entityType = document.getElementById('entityType');
-  if (entityType) {
-    if (bld.hasSolar || bld.lid) {
-      entityType.textContent = `🟢 Solar Rooftop (lid: ${bld.lid}) · ${bld.solarZone || 'Zone 1'}`;
-      entityType.style.background = 'rgba(16, 185, 129, 0.2)';
-      entityType.style.color = '#047857';
-      entityType.style.borderColor = '#10b981';
-    } else {
-      entityType.textContent = 'ข้อมูลอาคาร';
-      entityType.style.background = '';
-      entityType.style.color = '';
-      entityType.style.borderColor = '';
-    }
-  }
-  document.getElementById('detailNote').textContent = bld.stats?.note || '';
-
-  const miniDiag = document.getElementById('miniDiagram');
-  if (miniDiag) {
-    miniDiag.innerHTML = '';
-    if (bld.floors && bld.floors.length > 0) {
-      bld.floors.forEach((fl, idx) => {
-        const block = document.createElement('div');
-        block.className = `floor-block ${idx === 0 ? 'active' : ''}`;
-        block.setAttribute('data-floor', fl.num);
-        block.innerHTML = `<span>ชั้น ${fl.num}</span><small>${fl.desc}</small>`;
-        miniDiag.appendChild(block);
-      });
-    }
-  }
-
-  const statsDiv = document.getElementById('stats');
-  if (statsDiv && bld.stats) {
-    statsDiv.innerHTML = `
-      <div><small>จำนวนชั้น</small><strong>${bld.stats.floors || '-'}</strong></div>
-      <div><small>ความจุ/รองรับ</small><strong>${bld.stats.capacity || '-'}</strong></div>
-      <div><small>กำลังไฟฟ้า</small><strong>${bld.stats.power || '-'}</strong></div>
-      <div><small>ความพร้อม</small><strong style="color: #2e7d32">${bld.stats.security || 'ปกติ 100%'}</strong></div>
-    `;
-    const load = bld.stats.load || 78;
-    document.getElementById('loadText').textContent = `${load}%`;
-    document.getElementById('loadBar').style.width = `${load}%`;
-  }
-
-  const btnExp = document.getElementById('isolateFloor');
-  if (btnExp) {
-    btnExp.textContent = 'ดูผังแยกชั้น (Explode)';
-    btnExp.style.background = '';
-    btnExp.style.color = '';
-  }
-  state.isExploded = false;
-}
-
-function updateTables() {
-  const head = document.getElementById('tableHead');
-  const body = document.getElementById('tableBody');
-  if (!head || !body) return;
-
-  if (state.activeTab === 'buildings') {
-    head.innerHTML = `<tr><th>รหัส</th><th>ชื่ออาคาร / สถานที่ (ครบ 57 หมายเลข VRU)</th><th>ประเภท</th><th>สถานะ</th></tr>`;
-    body.innerHTML = HOSPITAL_BUILDINGS.map(b => `
-      <tr data-id="${b.id}" style="cursor: pointer">
-        <td><strong>${b.code}</strong></td>
-        <td>${b.name}</td>
-        <td><small class="tag">${b.category}</small></td>
-        <td><span class="badge">${b.status}</span></td>
-      </tr>
-    `).join('');
-  } else if (state.activeTab === 'wards') {
-    head.innerHTML = `<tr><th>รหัสหน่วยงาน</th><th>ชื่อคณะ / วิทยาลัย / สำนัก / หน่วยงาน</th><th>อาคารที่ตั้ง</th><th>สถานะ</th></tr>`;
-    body.innerHTML = WARDS_DATA.map(w => `
-      <tr>
-        <td><strong>${w.code}</strong></td>
-        <td>${w.name}</td>
-        <td>${w.bld}</td>
-        <td><span class="badge">${w.status}</span></td>
-      </tr>
-    `).join('');
-  } else if (state.activeTab === 'infrastructure') {
-    head.innerHTML = `<tr><th>รหัสระบบ</th><th>สระน้ำ / คลอง / สนามกีฬา / สาธารณูปโภค</th><th>พิกัดอ้างอิง</th><th>ความพร้อม</th></tr>`;
-    body.innerHTML = INFRASTRUCTURE_DATA.map(inf => `
-      <tr>
-        <td><strong>${inf.code}</strong></td>
-        <td>${inf.name}</td>
-        <td>${inf.bld}</td>
-        <td><strong style="color: #2e7d32">${inf.status}</strong></td>
-      </tr>
-    `).join('');
-  }
-
-  body.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => {
-      const id = tr.getAttribute('data-id');
-      selectBuilding(id, true);
-      const tp = document.getElementById('tablePanel');
-      if (tp) tp.hidden = true;
-    });
+  document.getElementById('btnOrbit360')?.addEventListener('click', () => {
+    state.isOrbiting = !state.isOrbiting;
+    controls.autoRotate = state.isOrbiting;
+    controls.autoRotateSpeed = 1.6;
+    document.getElementById('btnOrbit360').classList.toggle('active', state.isOrbiting);
   });
+
+  document.getElementById('btnLabels')?.addEventListener('click', () => {
+    state.showLabels = !state.showLabels;
+    document.getElementById('btnLabels').classList.toggle('active', state.showLabels);
+    updateLabelPositions();
+  });
+
+  document.getElementById('btnTour')?.addEventListener('click', startCampusTour);
+  document.getElementById('btnTable')?.addEventListener('click', showDirectoryTable);
+  document.getElementById('closeTable')?.addEventListener('click', () => {
+    const tm = document.getElementById('tableModal');
+    if (tm) tm.hidden = true;
+  });
+
+  const lightToggle = document.getElementById('lightToggle');
+  const lightPanel = document.getElementById('lightPanel');
+  lightToggle?.addEventListener('click', () => {
+    lightPanel.hidden = !lightPanel.hidden;
+  });
+  document.getElementById('closeLight')?.addEventListener('click', () => {
+    lightPanel.hidden = true;
+  });
+
+  document.getElementById('btnDay')?.addEventListener('click', () => setDayMode(true));
+  document.getElementById('btnNight')?.addEventListener('click', () => setDayMode(false));
+
+  const fsBtn = document.getElementById('fullscreenTop');
+  fsBtn?.addEventListener('click', toggleFullscreen);
+  document.getElementById('btnFullscreenDock')?.addEventListener('click', toggleFullscreen);
+
+  setupMapModal();
+}
+
+function setDayMode(isDay) {
+  state.dayMode = isDay;
+  if (isDay) {
+    scene.background.setHex(0xdce7f2);
+    scene.fog.color.setHex(0xdce7f2);
+    ambientLight.color.setHex(0xfff7ed);
+    ambientLight.intensity = 0.72;
+    sunLight.intensity = 1.35;
+    emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.0; });
+  } else {
+    scene.background.setHex(0x0f172a);
+    scene.fog.color.setHex(0x0f172a);
+    ambientLight.color.setHex(0x1e293b);
+    ambientLight.intensity = 0.35;
+    sunLight.intensity = 0.2;
+    emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.85; });
+  }
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
 }
 
 function setupSearch() {
   const inp = document.getElementById('search');
-  const res = document.getElementById('searchResults');
-  if (!inp || !res) return;
+  if (!inp) return;
+
+  const res = document.createElement('div');
+  res.id = 'searchResults';
+  res.className = 'glass';
+  res.style.cssText = 'position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 340px; max-height: 280px; overflow-y: auto; border-radius: 10px; z-index: 100; display: none;';
+  document.body.appendChild(res);
 
   inp.addEventListener('input', () => {
     const q = inp.value.trim().toLowerCase();
-    if (!q) {
-      res.hidden = true;
-      return;
-    }
+    if (!q) { res.style.display = 'none'; return; }
 
-    const matched = HOSPITAL_BUILDINGS.filter(b =>
+    const matches = HOSPITAL_BUILDINGS.filter(b =>
+      b.num.toLowerCase().includes(q) ||
       b.name.toLowerCase().includes(q) ||
-      (b.shortName && b.shortName.toLowerCase().includes(q)) ||
-      (b.sub && b.sub.toLowerCase().includes(q)) ||
-      b.code.toLowerCase().includes(q)
+      (b.sub && b.sub.toLowerCase().includes(q))
     );
 
-    if (matched.length === 0) {
-      res.innerHTML = `<div style="padding: 10px; font-size: 12px; color: var(--muted)">ไม่พบอาคารที่ตรงกับ "${q}"</div>`;
-      res.hidden = false;
+    if (matches.length === 0) {
+      res.innerHTML = '<div style="padding: 10px; font-size: 12px; color: var(--muted);">ไม่พบอาคารที่ตรงกับ "' + q + '"</div>';
+      res.style.display = 'block';
       return;
     }
 
-    res.innerHTML = matched.slice(0, 10).map(b => `
-      <div class="search-item" data-id="${b.id}" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px;">
-        <strong>${b.code}</strong> · ${b.shortName || b.name}
-        <div style="font-size: 11px; color: var(--muted)">${b.category}</div>
-      </div>
-    `).join('');
-    res.hidden = false;
+    res.innerHTML = matches.slice(0, 10).map(b =>
+      '<div class="search-item" data-id="' + b.id + '" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px;">' +
+        '<strong>' + b.num + '</strong> · ' + b.name +
+        '<div style="font-size: 11px; color: var(--muted);">' + b.category + '</div>' +
+      '</div>'
+    ).join('');
+    res.style.display = 'block';
 
     res.querySelectorAll('.search-item').forEach(item => {
       item.addEventListener('click', () => {
         const id = item.getAttribute('data-id');
         selectBuilding(id, true);
-        res.hidden = true;
+        res.style.display = 'none';
         inp.value = '';
       });
     });
@@ -3101,17 +1137,9 @@ function setupSearch() {
 
   document.addEventListener('click', (e) => {
     if (!inp.contains(e.target) && !res.contains(e.target)) {
-      res.hidden = true;
+      res.style.display = 'none';
     }
   });
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  if (!toast) return;
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2600);
 }
 
 function setupMapModal() {
@@ -3123,7 +1151,6 @@ function setupMapModal() {
   const btnMap1 = document.getElementById('btnModalMap1');
 
   function switchMap(type) {
-    state.activeMapTab = type;
     if (!mapImg || !modalTitle) return;
     if (type === 'floor') {
       mapImg.src = 'Artboard-6.png';
@@ -3149,321 +1176,100 @@ function setupMapModal() {
   btnFloor?.addEventListener('click', () => switchMap('floor'));
   btnMap2?.addEventListener('click', () => switchMap('maps2'));
   btnMap1?.addEventListener('click', () => switchMap('maps'));
-  switchMap('floor');
-
   document.getElementById('map')?.addEventListener('click', () => { if (modal) modal.hidden = false; });
   document.getElementById('closeModal')?.addEventListener('click', () => { if (modal) modal.hidden = true; });
-  modal?.addEventListener('click', (e) => {
-    if (e.target === modal) modal.hidden = true;
-  });
 }
 
-function setupEventListeners() {
-  const canvas = renderer.domElement;
-  let pointerStart = { x: 0, y: 0 };
+function showDirectoryTable() {
+  const tm = document.getElementById('tableModal');
+  const tbody = document.getElementById('tableBody');
+  if (!tm || !tbody) return;
 
-  canvas.addEventListener('pointerdown', (e) => {
-    pointerStart = { x: e.clientX, y: e.clientY };
-  });
+  tbody.innerHTML = HOSPITAL_BUILDINGS.map(b =>
+    '<tr style="cursor: pointer;" data-id="' + b.id + '">' +
+      '<td style="padding: 8px 12px; font-weight: 700;">' + b.num + '</td>' +
+      '<td style="padding: 8px 12px;">' + b.name + '</td>' +
+      '<td style="padding: 8px 12px;">' + b.category + '</td>' +
+      '<td style="padding: 8px 12px; color: var(--accent);">' + b.status + '</td>' +
+    '</tr>'
+  ).join('');
 
-  canvas.addEventListener('pointerup', (e) => {
-    const dist = Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y);
-    if (dist > 6) return;
-
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(buildingsGroup.children, true);
-
-    if (intersects.length > 0) {
-      let topObj = intersects[0].object;
-      while (topObj.parent && topObj.parent !== buildingsGroup) {
-        topObj = topObj.parent;
-      }
-      if (topObj.userData && topObj.userData.id) {
-        selectBuilding(topObj.userData.id, false);
-      }
-    }
-  });
-
-  canvas.addEventListener('dblclick', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects([groundGroup, buildingsGroup, walkwaysGroup, propsGroup, foliageGroup], true);
-    if (intersects.length > 0) {
-      const hitPoint = intersects[0].point;
-      const currentDir = camera.position.clone().sub(controls.target).normalize();
-      const newCamPos = hitPoint.clone().add(currentDir.multiplyScalar(32.0));
-      if (newCamPos.y < 8.0) newCamPos.y = 8.0;
-
-      new TWEEN.Tween(controls.target).to({ x: hitPoint.x, y: hitPoint.y + 0.5, z: hitPoint.z }, 800).easing(TWEEN.Easing.Cubic.Out).start();
-      new TWEEN.Tween(camera.position).to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 800).easing(TWEEN.Easing.Cubic.Out).start();
-    }
-  });
-
-  document.getElementById('reset')?.addEventListener('click', resetView);
-  document.getElementById('brandReset')?.addEventListener('click', resetView);
-  document.getElementById('closeDetail')?.addEventListener('click', closeDetailCard);
-  document.getElementById('isolateFloor')?.addEventListener('click', toggleExplodeFloor);
-
-  document.getElementById('follow')?.addEventListener('click', () => {
-    if (state.selectedBuilding) {
-      focusBuilding(state.selectedBuilding);
-      showToast(`โฟกัสและบินเข้าชม: ${state.selectedBuilding.shortName || state.selectedBuilding.name}`);
-    }
-  });
-
-  const btnLabels = document.getElementById('toggleLabels');
-  btnLabels?.addEventListener('click', () => {
-    state.showLabels = !state.showLabels;
-    btnLabels.classList.toggle('active', state.showLabels);
-    updateLabelPositions();
-  });
-
-  const btnWalkways = document.getElementById('toggleWalkways');
-    if (btnWalkways) btnWalkways.style.display = 'none'; // ทางเชื่อม ไม่ต้องมี
-  btnWalkways?.addEventListener('click', () => {
-    state.showWalkways = !state.showWalkways;
-    btnWalkways.classList.toggle('active', state.showWalkways);
-    walkwaysGroup.visible = state.showWalkways;
-  });
-
-  const btnTurntable = document.getElementById('turntable');
-  btnTurntable?.addEventListener('click', () => {
-    state.isTurntable = !state.isTurntable;
-    btnTurntable.classList.toggle('active', state.isTurntable);
-    showToast(state.isTurntable ? 'เปิดการหมุนชมมหาวิทยาลัย 360 องศา' : 'หยุดหมุน');
-  });
-
-  const btnTour = document.getElementById('tour');
-  btnTour?.addEventListener('click', () => {
-    state.isTouring = !state.isTouring;
-    btnTour.classList.toggle('active', state.isTouring);
-    if (state.isTouring) {
-      showToast('เริ่มทัวร์ชมแลนด์มาร์ค มรภ.วไลยอลงกรณ์ฯ อัตโนมัติ');
-      runTourStep();
-    } else {
-      clearTimeout(state.tourTimer);
-      showToast('หยุดทัวร์ชม');
-    }
-  });
-
-  function runTourStep() {
-    if (!state.isTouring) return;
-    const tourKeys = [
-      'bld-80yr', 'bld-100yr', 'bld-hotel', 'bld-pool',
-      'bld-edu2', 'bld-fst', 'bld-fms', 'bld-arit',
-      'bld-thai-pavilion', 'bld-satit-pri', 'bld-dorms-main', 'bld-stadium'
-    ];
-    const id = tourKeys[state.tourIndex % tourKeys.length];
-    state.tourIndex++;
-    selectBuilding(id, true);
-    state.tourTimer = setTimeout(runTourStep, 5200);
-  }
-
-  // Fullscreen UI toggle
-  const btnUI = document.getElementById('toggleUI');
-  const btnTopFS = document.getElementById('fullscreenTop');
-  const btnTopFSText = document.getElementById('fullscreenTopText');
-
-  function updateFullscreenUI(active) {
-    state.uiHidden = active;
-    document.querySelector('.top')?.classList.toggle('hidden', active);
-    document.getElementById('detail')?.classList.toggle('hidden', active);
-    if (btnUI) {
-      btnUI.classList.toggle('active', active);
-      btnUI.textContent = active ? 'ออกเต็มจอ' : 'เต็มจอ';
-    }
-    if (btnTopFS) btnTopFS.classList.toggle('active', active);
-    if (btnTopFSText) btnTopFSText.textContent = active ? 'ออกเต็มจอ' : 'เต็มจอ';
-  }
-
-  function toggleFullscreen() {
-    const willBeActive = !(state.uiHidden || !!document.fullscreenElement);
-    updateFullscreenUI(willBeActive);
-    if (willBeActive) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.().catch(() => {});
-    }
-    showToast(willBeActive ? 'เข้าสู่โหมดเต็มจอ (กด Esc เพื่อออก)' : 'ออกจากโหมดเต็มจอ');
-  }
-
-  btnUI?.addEventListener('click', (e) => { e.preventDefault(); toggleFullscreen(); });
-  btnTopFS?.addEventListener('click', (e) => { e.preventDefault(); toggleFullscreen(); });
-
-  const btnCollapseToolbar = document.getElementById('collapseToolbar');
-  const toolbar = document.querySelector('.toolbar');
-  btnCollapseToolbar?.addEventListener('click', () => {
-    if (!toolbar) return;
-    const isCollapsed = toolbar.classList.toggle('collapsed');
-    btnCollapseToolbar.textContent = isCollapsed ? '›' : '‹';
-  });
-
-  // Light Panel & Table Panel toggles
-  const btnLightToggle = document.getElementById('lightToggle');
-  const lightPanel = document.getElementById('lightPanel');
-  const btnCloseLight = document.getElementById('closeLight');
-  const btnToggleTable = document.getElementById('toggleTable');
-  const tablePanel = document.getElementById('tablePanel');
-  const btnCloseTable = document.getElementById('closeTable');
-
-  btnLightToggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (lightPanel) lightPanel.hidden = !lightPanel.hidden;
-  });
-  btnCloseLight?.addEventListener('click', () => { if (lightPanel) lightPanel.hidden = true; });
-
-  btnToggleTable?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (tablePanel) tablePanel.hidden = !tablePanel.hidden;
-  });
-  btnCloseTable?.addEventListener('click', () => { if (tablePanel) tablePanel.hidden = true; });
-
-  // Sun & Light sliders
-  const sunAz = document.getElementById('sunAz');
-  const sunEl = document.getElementById('sunEl');
-  const sunPower = document.getElementById('sunPower');
-  const ambInput = document.getElementById('ambient');
-  const expInput = document.getElementById('exposure');
-
-  function setSunPosition(azDeg, elDeg, power, ambVal = 0.45, expVal = 0.90) {
-    if (sunAz) sunAz.value = azDeg;
-    if (sunEl) sunEl.value = elDeg;
-    if (sunPower) sunPower.value = power;
-    if (ambInput) ambInput.value = ambVal;
-    if (expInput) expInput.value = expVal;
-
-    const azRad = THREE.MathUtils.degToRad(azDeg);
-    const elRad = THREE.MathUtils.degToRad(elDeg);
-    const dist = 180;
-    sunLight.position.set(
-      dist * Math.cos(elRad) * Math.sin(azRad),
-      dist * Math.sin(elRad),
-      dist * Math.cos(elRad) * Math.cos(azRad)
-    );
-    sunLight.intensity = power;
-    if (ambientLight) ambientLight.intensity = ambVal;
-    if (renderer) renderer.toneMappingExposure = expVal;
-  }
-
-  [sunAz, sunEl, sunPower, ambInput, expInput].forEach(inp => {
-    inp?.addEventListener('input', () => {
-      setSunPosition(
-        parseFloat(sunAz?.value || -40),
-        parseFloat(sunEl?.value || 48),
-        parseFloat(sunPower?.value || 1.65),
-        parseFloat(ambInput?.value || 0.45),
-        parseFloat(expInput?.value || 0.90)
-      );
+  tbody.querySelectorAll('tr').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-id');
+      tm.hidden = true;
+      selectBuilding(id, true);
     });
   });
 
-  document.querySelectorAll('.light-presets button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const p = btn.getAttribute('data-light');
-      if (p === 'morning') {
-        state.isNight = false; state.nightTarget = 0.0;
-        setSunPosition(-45, 38, 1.65, 0.45, 0.90);
-        showToast('☀ ช่วงเช้า · แสงแดดสดใส เริ่มคาบเรียน มรภ.วไลยอลงกรณ์ฯ');
-      } else if (p === 'noon') {
-        state.isNight = false; state.nightTarget = 0.0;
-        setSunPosition(0, 78, 2.15, 0.55, 0.95);
-        showToast('☼ ช่วงกลางวัน · แดดจัด กิจกรรมการเรียนการสอนทุกคณะ');
-      } else if (p === 'evening') {
-        state.isNight = false; state.nightTarget = 0.0;
-        setSunPosition(60, 18, 1.35, 0.38, 0.85);
-        showToast('⛅ ช่วงเย็น · แดดร่มลมตก กิจกรรมชมรมและสนามกีฬากลาง');
-      } else if (p === 'night') {
-        state.isNight = true; state.nightTarget = 1.0;
-        setSunPosition(0, 10, 0.08, 0.22, 0.80);
-        showToast('☽ ช่วงกลางคืน · เปิดไฟส่องสว่างทั่วมหาวิทยาลัยและหอพักนักศึกษา');
-      }
-    });
-  });
+  tm.hidden = false;
+}
 
-  document.getElementById('resetLight')?.addEventListener('click', () => {
-    state.isNight = false; state.nightTarget = 0.0;
-    setSunPosition(-40, 48, 1.65, 0.45, 0.90);
-    showToast('↺ คืนค่าแสงมาตรฐานเรียบร้อย');
-  });
+let tourIndex = 0;
+function startCampusTour() {
+  const tourStops = ['bld-8', 'bld-1', 'bld-2', 'bld-3', 'bld-22', 'bld-36', 'bld-43', 'bld-57'];
+  tourIndex = 0;
 
-  document.querySelectorAll('.tabs button').forEach(tb => {
-    tb.addEventListener('click', () => {
-      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-      tb.classList.add('active');
-      state.activeTab = tb.getAttribute('data-tab');
-      updateTables();
-    });
-  });
+  function nextStop() {
+    if (tourIndex >= tourStops.length) {
+      resetView();
+      return;
+    }
+    const bldId = tourStops[tourIndex++];
+    selectBuilding(bldId, true);
+    setTimeout(nextStop, 3500);
+  }
 
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    updateLabelPositions();
-  });
+  nextStop();
+}
 
-  setupSearch();
-  setupMapModal();
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  updateLabelPositions();
+}
+
+function onCanvasClick(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(buildingsGroup.children, true);
+  if (intersects.length > 0) {
+    let top = intersects[0].object;
+    while (top.parent && top.parent !== buildingsGroup) {
+      top = top.parent;
+    }
+    if (top.userData && top.userData.id) {
+      selectBuilding(top.userData.id, true);
+    }
+  } else {
+    const hits = raycaster.intersectObjects(groundGroup.children, true);
+    if (hits.length > 0) {
+      resetView();
+    }
+  }
 }
 
 function animate() {
   requestAnimationFrame(animate);
   TWEEN.update();
   controls.update();
-
-  controls.autoRotate = !!state.isTurntable;
-  controls.autoRotateSpeed = 1.0;
-
-  if (Math.abs(state.nightLerp - state.nightTarget) > 0.005) {
-    state.nightLerp += (state.nightTarget - state.nightLerp) * 0.06;
-    const daySky = new THREE.Color(0xdce7f2);
-    const nightSky = new THREE.Color(0x0a1120);
-    const curSky = daySky.clone().lerp(nightSky, state.nightLerp);
-    scene.background = curSky;
-    scene.fog.color = curSky;
-
-    emissiveMaterials.forEach(m => {
-      m.emissiveIntensity = state.nightLerp * 0.85;
-    });
-  }
-
-  renderer.render(scene, camera);
   updateLabelPositions();
+  renderer.render(scene, camera);
 }
 
-setInterval(() => {
-  const clk = document.getElementById('clock');
-  if (clk) clk.textContent = new Date().toTimeString().split(' ')[0];
-}, 1000);
-
-function init() {
+window.addEventListener('DOMContentLoaded', () => {
   initProceduralTextures();
   initScene();
-  initLights();
-  buildPure3DMasterplanTerrain();
-  buildCoveredWalkways();
-  buildHospitalBuildings();
-  buildStreetLightingAndProps();
-  buildLandscapingTrees();
-  create3DLabels();
-  setupEventListeners();
-  updateTables();
+  animate();
 
   const loading = document.getElementById('loading');
   if (loading) {
     setTimeout(() => {
       loading.style.opacity = '0';
-      setTimeout(() => { loading.style.display = 'none'; }, 500);
-    }, 350);
+      setTimeout(() => { loading.style.display = 'none'; }, 400);
+    }, 600);
   }
-
-  requestAnimationFrame(animate);
-}
-
-window.addEventListener('DOMContentLoaded', init);
+});
