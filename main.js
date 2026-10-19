@@ -9,13 +9,23 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1', sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย', category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ', archType: 'auditorium80', pos: { x: 153.86, y: 0, z: 14.82 }, rotY: 0, anchorHeight: 15, dimensions: { w: 30.12, h: 11.0, d: 32.89 }, roofColor: 0xf8fafc, accentColor: 0x047857,
     floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการและลานจอดรถ' }]
   },
-  {
+    {
     id: 'bld-2', num: '2', name: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)', shortName: '2',
-    sub: 'สำนักงานอธิการบดี, ห้องประชุมสภามหาวิทยาลัย, สำนักส่งเสริมวิชาการและงานทะเบียน',
+    sub: 'สำนักงานอธิการบดี, ห้องประชุมสภามหาวิทยาลัย, สำนักส่งเสริมวิชาการและงานทะเบียน (อาคารสูง 9 ชั้น)',
     category: 'อาคารบริหารและสำนักงานกลาง', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'spb100', pos: { x: 122.8, y: 0, z: 14.8 }, rotY: 0, anchorHeight: 20,
-    dimensions: { w: 25.4, h: 16.0, d: 13.2 }, roofColor: 0x94a3b8, accentColor: 0x047857,
-    floors: [{ num: 6, desc: 'สำนักงานอธิการบดี' }, { num: 5, desc: 'กองนโยบายและแผน' }, { num: 4, desc: 'ศูนย์เทคโนโลยีดิจิทัล' }, { num: 3, desc: 'กองกลาง' }, { num: 2, desc: 'กองคลัง' }, { num: 1, desc: 'One Stop Service' }]
+    archType: 'spb100', pos: { x: 122.84, y: 0, z: 14.41 }, rotY: 0, anchorHeight: 32,
+    dimensions: { w: 22.5, h: 28.0, d: 14.0 }, roofColor: 0x94a3b8, accentColor: 0x047857,
+    floors: [
+      { num: 9, desc: 'ห้องประชุมสภามหาวิทยาลัย และห้องรับรองพิเศษ' },
+      { num: 8, desc: 'สำนักงานอธิการบดี และห้องผู้บริหารระดับสูง' },
+      { num: 7, desc: 'กองนโยบายและแผน' },
+      { num: 6, desc: 'ศูนย์เทคโนโลยีดิจิทัล (Digital Center)' },
+      { num: 5, desc: 'กองกลาง และงานสารบรรณ' },
+      { num: 4, desc: 'กองคลังและพัสดุ' },
+      { num: 3, desc: 'กองพัฒนานักศึกษา' },
+      { num: 2, desc: 'สำนักส่งเสริมวิชาการและงานทะเบียน' },
+      { num: 1, desc: 'โถงต้อนรับ One Stop Service และห้องโถงกลาง' }
+    ]
   },
   {
     id: 'bld-3', num: '3', name: '3. โรงแรม มรภ.วไลยอลงกรณ์', shortName: '3',
@@ -843,6 +853,250 @@ function createAuditorium80Mesh() {
 }
 
 // 3D Building Geometries (All others wiped - building anew one by one)
+// === Building 2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ - SPB) - 9-Story Architectural Model ===
+function createSPB100Mesh() {
+  const group = new THREE.Group();
+
+  // Materials
+  const whiteWallMat = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.35,
+    metalness: 0.08
+  });
+  const darkTrimMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.45,
+    metalness: 0.4
+  });
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0xd9dde2,
+    roughness: 0.8,
+    metalness: 0.03
+  });
+  const roofDeckMat = new THREE.MeshStandardMaterial({
+    color: 0xcfd4d9,
+    roughness: 0.65,
+    metalness: 0.1
+  });
+  const barrelVaultMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    roughness: 0.3,
+    metalness: 0.55
+  });
+  const windowGlassMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.08,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.85,
+    emissive: new THREE.Color(0xffbf69),
+    emissiveIntensity: 0.1
+  });
+  emissiveMaterials.push(windowGlassMat);
+
+  const balconyGlassMat = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    roughness: 0.1,
+    metalness: 0.7,
+    transparent: true,
+    opacity: 0.75
+  });
+  const chillerMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.5,
+    metalness: 0.6
+  });
+  const beaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+
+  const bldW = 21.35; // X width (east-west)
+  const bldD = 12.26; // Z depth (north-south)
+  const numFloors = 9;
+  const floorHeight = 3.0; // 9 floors * 3.0m = 27.0m
+  const podiumH = 0.8;
+  const totalHeight = podiumH + numFloors * floorHeight; // 27.8m
+
+  // --- 1. Base Concrete Foundation Podium ---
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(bldW + 1.2, podiumH, bldD + 1.2), concreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  podium.receiveShadow = true;
+  group.add(podium);
+
+  // --- 2. Main 9-Story Building Massing ---
+  const mainTower = new THREE.Mesh(new THREE.BoxGeometry(bldW, numFloors * floorHeight, bldD), whiteWallMat);
+  mainTower.position.set(0, podiumH + (numFloors * floorHeight) / 2, 0);
+  mainTower.castShadow = true;
+  mainTower.receiveShadow = true;
+  group.add(mainTower);
+
+  // --- 3. 9-Story Ribbon Windows and Floor Slabs ---
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winCenterY = floorY + floorHeight * 0.55;
+
+    // Continuous ribbon windows across North and South facades
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(bldW * 0.88, 1.35, 0.25), windowGlassMat);
+    winN.position.set(0, winCenterY, -bldD / 2 - 0.05);
+    group.add(winN);
+
+    const winS = new THREE.Mesh(new THREE.BoxGeometry(bldW * 0.88, 1.35, 0.25), windowGlassMat);
+    winS.position.set(0, winCenterY, bldD / 2 + 0.05);
+    group.add(winS);
+
+    // West facade windows
+    const winW = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.35, bldD * 0.75), windowGlassMat);
+    winW.position.set(-bldW / 2 - 0.05, winCenterY, 0);
+    group.add(winW);
+
+    // East facade windows (flanking the central curved balcony)
+    for (let side of [-1, 1]) {
+      const winE = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.35, 3.2), windowGlassMat);
+      winE.position.set(bldW / 2 + 0.05, winCenterY, side * 3.8);
+      group.add(winE);
+    }
+
+    // Horizontal Spandrel Beam Trims between floors
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(bldW + 0.2, 0.35, bldD + 0.2), darkTrimMat);
+    spandrel.position.set(0, floorY, 0);
+    group.add(spandrel);
+  }
+
+  // --- 4. Semicircular Curved Cantilevered Balconies on East Facade (Floors 2 to 9) ---
+  // Exactly matching user photo: Semicircular balconies projecting outward at center of East facade
+  const balconyRadius = 2.6;
+  for (let f = 2; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const bGroup = new THREE.Group();
+    bGroup.position.set(bldW / 2, floorY, 0);
+
+    // Semicircular concrete balcony slab (cylinder 180 degrees)
+    const slabGeo = new THREE.CylinderGeometry(balconyRadius, balconyRadius, 0.35, 24, 1, false, -Math.PI / 2, Math.PI);
+    const bSlab = new THREE.Mesh(slabGeo, whiteWallMat);
+    bSlab.position.y = 0.175;
+    bSlab.castShadow = true;
+    bGroup.add(bSlab);
+
+    // Semicircular glass balustrade railing
+    const railGeo = new THREE.CylinderGeometry(balconyRadius - 0.08, balconyRadius - 0.08, 0.95, 24, 1, true, -Math.PI / 2, Math.PI);
+    const bRail = new THREE.Mesh(railGeo, balconyGlassMat);
+    bRail.position.y = 0.35 + 0.475;
+    bGroup.add(bRail);
+
+    // Top metal handrail rim
+    const rimGeo = new THREE.CylinderGeometry(balconyRadius, balconyRadius, 0.08, 24, 1, true, -Math.PI / 2, Math.PI);
+    const bRim = new THREE.Mesh(rimGeo, darkTrimMat);
+    bRim.position.y = 0.35 + 0.95;
+    bGroup.add(bRim);
+
+    // Sliding glass door behind balcony
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.15, 2.2, 2.8), windowGlassMat);
+    door.position.set(-0.1, 1.1, 0);
+    bGroup.add(door);
+
+    group.add(bGroup);
+  }
+
+  // --- 5. Ground Floor Main Entrance Portico (East facade) ---
+  const canopyW = 3.8;
+  const canopyD = 6.5;
+  const canopyH = 3.6;
+  const canopy = new THREE.Mesh(new THREE.BoxGeometry(canopyW, 0.4, canopyD), whiteWallMat);
+  canopy.position.set(bldW / 2 + canopyW / 2, podiumH + canopyH, 0);
+  canopy.castShadow = true;
+  group.add(canopy);
+
+  // Entrance support pillars
+  for (let cz of [-canopyD / 2 + 0.5, canopyD / 2 - 0.5]) {
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.45, canopyH, 0.45), whiteWallMat);
+    col.position.set(bldW / 2 + canopyW - 0.4, podiumH + canopyH / 2, cz);
+    col.castShadow = true;
+    group.add(col);
+  }
+
+  // Entrance Double Glass Doors
+  const mainDoors = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.6, 4.0), windowGlassMat);
+  mainDoors.position.set(bldW / 2 + 0.05, podiumH + 1.3, 0);
+  group.add(mainDoors);
+
+  // --- 6. Rooftop (Level +27.8m): Parapet, Barrel Vault, Chiller Array, and Penthouse ---
+  const roofY = totalHeight;
+
+  // Perimeter parapet wall (1.1m high)
+  const parapetN = new THREE.Mesh(new THREE.BoxGeometry(bldW + 0.2, 1.1, 0.3), darkTrimMat);
+  parapetN.position.set(0, roofY + 0.55, -bldD / 2 + 0.15);
+  group.add(parapetN);
+  const parapetS = new THREE.Mesh(new THREE.BoxGeometry(bldW + 0.2, 1.1, 0.3), darkTrimMat);
+  parapetS.position.set(0, roofY + 0.55, bldD / 2 - 0.15);
+  group.add(parapetS);
+  const parapetW = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, bldD), darkTrimMat);
+  parapetW.position.set(-bldW / 2 + 0.15, roofY + 0.55, 0);
+  group.add(parapetW);
+  const parapetE = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, bldD), darkTrimMat);
+  parapetE.position.set(bldW / 2 - 0.15, roofY + 0.55, 0);
+  group.add(parapetE);
+
+  // Elevator Penthouse & Stair Tower
+  const pentW = 5.5;
+  const pentD = 4.2;
+  const pentH = 3.2;
+  const pentX = 2.0;
+  const pentZ = 0.5;
+  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), whiteWallMat);
+  penthouse.position.set(pentX, roofY + pentH / 2, pentZ);
+  penthouse.castShadow = true;
+  group.add(penthouse);
+
+  // Red Aviation Obstruction Warning Beacon on top of penthouse
+  const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.6, 8), beaconMat);
+  beacon.position.set(pentX, roofY + pentH + 0.3, pentZ);
+  group.add(beacon);
+
+  // Rooftop Barrel Vault Skylight (Curved roof matching exact drone photo: dx = -4.8m, dz = -0.9m)
+  const vaultRadius = 1.4;
+  const vaultLength = 4.8;
+  const vault = new THREE.Mesh(
+    new THREE.CylinderGeometry(vaultRadius, vaultRadius, vaultLength, 20, 1, false, 0, Math.PI),
+    barrelVaultMat
+  );
+  vault.rotation.x = Math.PI / 2;
+  vault.position.set(-4.8, roofY + 0.2, -0.9);
+  vault.castShadow = true;
+  group.add(vault);
+
+  // Rooftop Chiller / HVAC Array (8 ventilation fans in 2x4 grid on west roof deck)
+  const chillerBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.4, 4.5), chillerMat);
+  chillerBase.position.set(-7.5, roofY + 0.2, 0.8);
+  chillerBase.castShadow = true;
+  group.add(chillerBase);
+
+  for (let cx of [-8.2, -6.8]) {
+    for (let cz = -1.0; cz <= 2.6; cz += 1.2) {
+      const fan = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.35, 12), darkTrimMat);
+      fan.position.set(cx, roofY + 0.55, cz);
+      group.add(fan);
+    }
+  }
+
+  // --- 7. Night Mode Interior & Facade Lights for SPB 100 ---
+  const spbLightsGroup = new THREE.Group();
+  spbLightsGroup.name = 'spb100Lighting';
+
+  // Warm interior floor lights
+  for (let f of [2, 5, 8]) {
+    const pLight = new THREE.PointLight(0xffa726, 2.0, 22, 1.8);
+    pLight.position.set(0, podiumH + (f - 0.5) * floorHeight, 0);
+    spbLightsGroup.add(pLight);
+  }
+
+  // Entrance portico downlight
+  const porticoLight = new THREE.PointLight(0xfff3e0, 2.2, 12, 1.5);
+  porticoLight.position.set(bldW / 2 + 1.8, podiumH + canopyH - 0.2, 0);
+  spbLightsGroup.add(porticoLight);
+
+  group.add(spbLightsGroup);
+
+  return group;
+}
+
 function buildBuildings() {
   HOSPITAL_BUILDINGS.forEach(bld => {
     const bGroup = new THREE.Group();
@@ -851,8 +1105,11 @@ function buildBuildings() {
     bGroup.userData = bld;
 
     if (bld.id === 'bld-1') {
-      // ONLY Building 1 is built as 3D model!
       const mesh = createAuditorium80Mesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-2') {
+      // Building 2 (SPB 100 ปี - 9 Floors)
+      const mesh = createSPB100Mesh();
       bGroup.add(mesh);
     } else {
       // Invisible flat hitbox on ground for raycasting/clicking (no 3D mesh rendered yet)
@@ -921,7 +1178,7 @@ function updateLabelPositions() {
   const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
-    const anchorY = (data.id === 'bld-1' ? 15.0 : 1.2);
+    const anchorY = (data.id === 'bld-1' ? 15.0 : data.id === 'bld-2' ? 31.0 : 1.2);
     toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
     if (toAnchor.dot(camDir) <= 0.2) {
