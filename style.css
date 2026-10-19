@@ -964,12 +964,44 @@ td:first-child {
   margin: 0 4px;
 }
 
+.toolbar.collapsed {
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--accent);
+}
+
 .toolbar.collapsed button:not(#collapseToolbar) {
-  display: none;
+  display: none !important;
 }
 
 .toolbar.collapsed .sep {
-  display: none;
+  display: none !important;
+}
+
+#collapseToolbar {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 7px 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(4, 120, 87, 0.25);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+#collapseToolbar:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.toolbar.collapsed #collapseToolbar {
+  background: var(--accent);
+  color: #ffffff;
+  padding: 8px 14px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(4, 120, 87, 0.35);
 }
 
 /* Restore UI Button (when UI is hidden or Fullscreen) */

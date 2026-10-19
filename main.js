@@ -1378,8 +1378,47 @@ function setupUI() {
     });
   });
 
+  // Collapse / Expand Toolbar Button
+  const collapseToolbarBtn = document.getElementById('collapseToolbar');
+  const toolbar = document.querySelector('.toolbar');
+  collapseToolbarBtn?.addEventListener('click', () => {
+    if (!toolbar) return;
+    const isCollapsed = toolbar.classList.toggle('collapsed');
+    collapseToolbarBtn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    collapseToolbarBtn.innerHTML = isCollapsed ? '› เมนู' : '‹';
+    collapseToolbarBtn.title = isCollapsed ? 'ขยายแถบเมนูนำทาง' : 'ย่อแถบเมนูนำทาง';
+  });
+
+  // Toggle Walkways
+  const toggleWalkwaysBtn = document.getElementById('toggleWalkways');
+  toggleWalkwaysBtn?.addEventListener('click', () => {
+    state.showWalkways = state.showWalkways === undefined ? false : !state.showWalkways;
+    toggleWalkwaysBtn.classList.toggle('active', state.showWalkways);
+    toggleWalkwaysBtn.setAttribute('aria-pressed', state.showWalkways ? 'true' : 'false');
+  });
+
   document.getElementById('fullscreenTop')?.addEventListener('click', toggleFullscreen);
   document.getElementById('toggleUI')?.addEventListener('click', toggleFullscreen);
+
+  // Setup fullscreen change listeners to keep button labels and titles in sync
+  ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(ev => {
+    document.addEventListener(ev, updateFullscreenButtons);
+  });
+
+  // Keyboard shortcuts: F for Fullscreen/Minimize, H for Collapse Toolbar
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    } else if (e.key === 'h' || e.key === 'H') {
+      collapseToolbarBtn?.click();
+    } else if (e.key === 'Escape') {
+      if (document.body.classList.contains('fullscreen-mode')) {
+        document.body.classList.remove('fullscreen-mode');
+        updateFullscreenButtons();
+      }
+    }
+  });
 
   setupMapModal();
 }
@@ -1415,12 +1454,51 @@ function setDayMode(isDay) {
   }
 }
 
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(() => {});
-  } else {
-    document.exitFullscreen().catch(() => {});
+function isFullscreenActive() {
+  return !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement ||
+    document.body.classList.contains('fullscreen-mode')
+  );
+}
+
+function updateFullscreenButtons() {
+  const isFs = isFullscreenActive();
+  const topText = document.getElementById('fullscreenTopText');
+  const dockBtn = document.getElementById('toggleUI');
+  if (topText) topText.textContent = isFs ? 'ย่อจอ' : 'เต็มจอ';
+  if (dockBtn) {
+    dockBtn.textContent = isFs ? 'ย่อจอ' : 'เต็มจอ';
+    dockBtn.title = isFs ? 'ย่อหน้าต่างกลับสู่ขนาดปกติ (กดปุ่ม F หรือ Esc)' : 'เปิดโหมดเต็มจอ (กดปุ่ม F)';
+    dockBtn.classList.toggle('active', isFs);
   }
+}
+
+function toggleFullscreen() {
+  const isFs = isFullscreenActive();
+  if (!isFs) {
+    const el = document.documentElement;
+    const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (rfs) {
+      rfs.call(el).catch(() => {
+        // Fallback for mobile devices / iOS Safari where requestFullscreen is not allowed
+        document.body.classList.toggle('fullscreen-mode');
+        updateFullscreenButtons();
+      });
+    } else {
+      document.body.classList.toggle('fullscreen-mode');
+      updateFullscreenButtons();
+    }
+  } else {
+    const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (efs && (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)) {
+      efs.call(document).catch(() => {});
+    }
+    document.body.classList.remove('fullscreen-mode');
+  }
+  setTimeout(updateFullscreenButtons, 80);
 }
 
 function setupSearch() {
