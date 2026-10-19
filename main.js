@@ -57,11 +57,11 @@ const HOSPITAL_BUILDINGS = [
     floors: [{ num: 1, desc: 'ลานพระอนุสาวรีย์' }]
   },
     {
-    id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ (อาคาร 9 ชั้น ทรงระเบียงโค้ง)', shortName: '10',
-    sub: 'อาคารเรียนรวม 9 ชั้น โดดเด่นด้วยระเบียงทรงโค้งฝั่งทิศตะวันตกและแผงครีบกันแดด',
+    id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ (อาคาร 9 ชั้น พร้อมปีกตะวันตก 1:1 และลานจอดรถติดถนน)', shortName: '10',
+    sub: 'อาคารเรียนรวม 9 ชั้น ปีกตะวันตกครอบคลุมครบ 1:1 พร้อมลานจอดรถแอสฟัลต์ติดถนนหลักทิศเหนือ',
     category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'bld10_9floors', pos: { x: 158.8, y: 0, z: 54.1 }, rotY: 0, anchorHeight: 31,
-    dimensions: { w: 13.0, h: 28.0, d: 9.2 }, roofColor: 0xebedf0, accentColor: 0x047857,
+    archType: 'bld10_9floors', pos: { x: 141.57, y: 0, z: 52.87 }, rotY: 0, anchorHeight: 31,
+    dimensions: { w: 49.5, h: 28.0, d: 12.2 }, roofColor: 0xebedf0, accentColor: 0x047857,
     floors: [
       { num: 9, desc: 'ห้องปฏิบัติการและห้องวิจัย' },
       { num: 8, desc: 'ห้องเรียนรวมและห้องบรรยาย' },
@@ -870,6 +870,9 @@ function createAuditorium80Mesh() {
 // 3D Building Geometries (All others wiped - building anew one by one)
 // === Building 2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ - SPB) - 9-Story Architectural Model ===
 // === Building 10 (อาคารเรียนรวมทิศใต้ - อาคาร 9 ชั้น ทรงระเบียงโค้ง) - Exact 1:1 Match ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - West Wing 1:1 + North Parking Lot) ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - สัดส่วนปีกตะวันตก 1:1 + ลานจอดรถติดถนนทิศเหนือ) ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - สัดส่วนปีกตะวันตก 1:1 ครบวงจร + ลานจอดรถติดถนนทิศเหนือ) ===
 function createBuilding10Mesh() {
   const group = new THREE.Group();
 
@@ -889,10 +892,15 @@ function createBuilding10Mesh() {
     roughness: 0.8,
     metalness: 0.03
   });
+  const greenDeckMat = new THREE.MeshStandardMaterial({
+    color: 0x2e7d32, // Waterproof green deck coating on West Wing roof
+    roughness: 0.6,
+    metalness: 0.05
+  });
   const shedRoofMat = new THREE.MeshStandardMaterial({
     color: 0xebedf0,
-    roughness: 0.4,
-    metalness: 0.2
+    roughness: 0.35,
+    metalness: 0.15
   });
   const windowGlassMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
@@ -905,146 +913,284 @@ function createBuilding10Mesh() {
   });
   emissiveMaterials.push(windowGlassMat);
 
-  const balconyGlassMat = new THREE.MeshStandardMaterial({
-    color: 0x38bdf8,
-    roughness: 0.1,
-    metalness: 0.7,
-    transparent: true,
-    opacity: 0.75
+  const asphaltMat = new THREE.MeshStandardMaterial({
+    color: 0x222a36, // Dark rich asphalt for parking lot
+    roughness: 0.92,
+    metalness: 0.02
+  });
+  const curbMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    roughness: 0.75,
+    metalness: 0.05
+  });
+  const whiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const hedgeMat = new THREE.MeshStandardMaterial({
+    color: 0x15803d,
+    roughness: 0.9,
+    metalness: 0.0
   });
   const beaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
 
-  const bldW = 13.0; // X width (east-west)
-  const bldD = 9.2;  // Z depth (north-south) - calibrated tight to clear the North road buffer!
   const numFloors = 9;
-  const floorHeight = 3.0; // 9 floors * 3.0m = 27.0m
+  const floorHeight = 3.0; // 9 * 3.0m = 27.0m
   const podiumH = 0.8;
   const totalHeight = podiumH + numFloors * floorHeight; // 27.8m
 
-  // --- 1. Base Concrete Foundation Podium ---
-  const podium = new THREE.Mesh(new THREE.BoxGeometry(bldW + 1.2, podiumH, bldD + 1.2), concreteMat);
+  // Entire complex spans 49.5m along X (x: -24.75 to +24.75)
+  // Depth is 12.0m along Z (z: -6.0 to +6.0)
+  const totalSpanX = 49.5;
+  const totalDepthZ = 12.0;
+
+  // =========================================================================
+  // 1. BASE FOUNDATION PODIUM (Spanning 49.5m East-West)
+  // =========================================================================
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(totalSpanX + 0.6, podiumH, totalDepthZ + 0.6), concreteMat);
   podium.position.set(0, podiumH / 2, 0);
   podium.receiveShadow = true;
   group.add(podium);
 
-  // --- 2. Main 9-Story Building Massing ---
-  const mainTower = new THREE.Mesh(new THREE.BoxGeometry(bldW, numFloors * floorHeight, bldD), whiteWallMat);
-  mainTower.position.set(0, podiumH + (numFloors * floorHeight) / 2, 0);
-  mainTower.castShadow = true;
-  mainTower.receiveShadow = true;
-  group.add(mainTower);
+  // =========================================================================
+  // 2. CENTRAL 9-STORY ATRIUM & NORTH ENTRANCE PORCH (X in [-3.0 .. +3.0])
+  // =========================================================================
+  const atriumW = 6.0;
+  const atriumD = totalDepthZ * 0.75;
+  const atriumTower = new THREE.Mesh(new THREE.BoxGeometry(atriumW, numFloors * floorHeight, atriumD), whiteWallMat);
+  atriumTower.position.set(0, podiumH + (numFloors * floorHeight) / 2, 0);
+  atriumTower.castShadow = true;
+  atriumTower.receiveShadow = true;
+  group.add(atriumTower);
 
-  // --- 3. 9-Story Ribbon Windows and Floor Slabs ---
+  // North Curved Entrance & Drop-off Canopy (Facing North -Z at Z = -atriumD/2)
+  const porchRadius = 3.2;
+  const porchH = 4.5;
+  const porchGeo = new THREE.CylinderGeometry(porchRadius, porchRadius, porchH, 24, 1, false, -Math.PI / 2, Math.PI);
+  const porch = new THREE.Mesh(porchGeo, whiteWallMat);
+  porch.position.set(0, podiumH + porchH / 2, -atriumD / 2);
+  porch.castShadow = true;
+  group.add(porch);
+
+  // Glass entrance doors on curved porch
+  const porchGlassGeo = new THREE.CylinderGeometry(porchRadius + 0.05, porchRadius + 0.05, 3.2, 20, 1, false, -Math.PI * 0.45, Math.PI * 0.9);
+  const porchGlass = new THREE.Mesh(porchGlassGeo, windowGlassMat);
+  porchGlass.position.set(0, podiumH + 1.6, -atriumD / 2);
+  group.add(porchGlass);
+
+  // Stepped Barrel Vaults / Curved Skylight on Atrium Roof
+  const vaultRadius = 2.6;
+  const vaultL = atriumD * 0.85;
+  const vaultGeo = new THREE.CylinderGeometry(vaultRadius, vaultRadius, vaultL, 16, 1, false, 0, Math.PI);
+  const vault = new THREE.Mesh(vaultGeo, windowGlassMat);
+  vault.rotation.x = Math.PI / 2;
+  vault.position.set(0, totalHeight + 0.6, 0);
+  vault.castShadow = true;
+  group.add(vault);
+
+  // Central Elevator Penthouse & Aviation Beacon
+  const pentH = 3.4;
+  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(4.2, pentH, 3.8), whiteWallMat);
+  penthouse.position.set(0, totalHeight + pentH / 2 + 0.4, 2.0);
+  penthouse.castShadow = true;
+  group.add(penthouse);
+
+  const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.6, 8), beaconMat);
+  beacon.position.set(0, totalHeight + pentH + 0.7, 2.0);
+  group.add(beacon);
+
+  // =========================================================================
+  // 3. WEST WING (1:1 FULL EXTENT: X in [-24.75 .. -3.0], Width = 21.75m)
+  // =========================================================================
+  // 3A. Mid-West 9-Story Main Wing (X in [-14.0 .. -3.0], Width = 11.0m)
+  const midWestW = 11.0;
+  const midWestCenterX = -3.0 - midWestW / 2; // -8.5
+  const midWestD = 8.5;
+
+  const midWestTower = new THREE.Mesh(new THREE.BoxGeometry(midWestW, numFloors * floorHeight, midWestD), whiteWallMat);
+  midWestTower.position.set(midWestCenterX, podiumH + (numFloors * floorHeight) / 2, 0);
+  midWestTower.castShadow = true;
+  midWestTower.receiveShadow = true;
+  group.add(midWestTower);
+
+  // Ribbon windows for Mid-West Wing
   for (let f = 1; f <= numFloors; f++) {
     const floorY = podiumH + (f - 1) * floorHeight;
-    const winCenterY = floorY + floorHeight * 0.55;
+    const winY = floorY + floorHeight * 0.55;
 
-    // Continuous ribbon windows across North and South facades
-    const winN = new THREE.Mesh(new THREE.BoxGeometry(bldW * 0.85, 1.35, 0.25), windowGlassMat);
-    winN.position.set(0, winCenterY, -bldD / 2 - 0.05);
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(midWestW * 0.9, 1.35, 0.2), windowGlassMat);
+    winN.position.set(midWestCenterX, winY, -midWestD / 2 - 0.05);
     group.add(winN);
 
-    const winS = new THREE.Mesh(new THREE.BoxGeometry(bldW * 0.85, 1.35, 0.25), windowGlassMat);
-    winS.position.set(0, winCenterY, bldD / 2 + 0.05);
+    const winS = new THREE.Mesh(new THREE.BoxGeometry(midWestW * 0.9, 1.35, 0.2), windowGlassMat);
+    winS.position.set(midWestCenterX, winY, midWestD / 2 + 0.05);
     group.add(winS);
 
-    // East facade windows (facing road)
-    const winE = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.35, bldD * 0.82), windowGlassMat);
-    winE.position.set(bldW / 2 + 0.05, winCenterY, 0);
-    group.add(winE);
-
-    // West facade windows (flanking the central curved balconies)
-    for (let side of [-1, 1]) {
-      const winW = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.35, 3.8), windowGlassMat);
-      winW.position.set(-bldW / 2 - 0.05, winCenterY, side * 2.8);
-      group.add(winW);
-    }
-
-    // Horizontal Spandrel Beam Trims between floors
-    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(bldW + 0.2, 0.35, bldD + 0.2), darkTrimMat);
-    spandrel.position.set(0, floorY, 0);
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(midWestW + 0.2, 0.35, midWestD + 0.2), darkTrimMat);
+    spandrel.position.set(midWestCenterX, floorY, 0);
     group.add(spandrel);
   }
 
-  // --- 4. Semicircular Curved Cantilevered Balconies on West Facade (Floors 2 to 9) ---
-  // Exactly matching user photo: Semicircular balconies projecting outward along West facade
-  const balconyRadius = 2.4;
-  for (let f = 2; f <= numFloors; f++) {
-    const floorY = podiumH + (f - 1) * floorHeight;
-    const bGroup = new THREE.Group();
-    bGroup.position.set(-bldW / 2, floorY, 0);
+  // Waterproof Green Roof Deck on Mid-West Roof
+  const midWestGreenDeck = new THREE.Mesh(new THREE.BoxGeometry(midWestW - 0.4, 0.15, midWestD - 0.4), greenDeckMat);
+  midWestGreenDeck.position.set(midWestCenterX, totalHeight + 0.08, 0);
+  group.add(midWestGreenDeck);
 
-    // Semicircular concrete balcony slab (cylinder 180 degrees facing West)
-    const slabGeo = new THREE.CylinderGeometry(balconyRadius, balconyRadius, 0.35, 24, 1, false, Math.PI / 2, Math.PI);
-    const bSlab = new THREE.Mesh(slabGeo, whiteWallMat);
-    bSlab.position.y = 0.175;
-    bSlab.castShadow = true;
-    bGroup.add(bSlab);
+  const midWestParapet = new THREE.Mesh(new THREE.BoxGeometry(midWestW, 0.8, midWestD), darkTrimMat);
+  midWestParapet.position.set(midWestCenterX, totalHeight + 0.4, 0);
+  group.add(midWestParapet);
 
-    // Semicircular glass balustrade railing
-    const railGeo = new THREE.CylinderGeometry(balconyRadius - 0.08, balconyRadius - 0.08, 0.95, 24, 1, true, Math.PI / 2, Math.PI);
-    const bRail = new THREE.Mesh(railGeo, balconyGlassMat);
-    bRail.position.y = 0.35 + 0.475;
-    bGroup.add(bRail);
+  // Mid-wing Small Gabled Roof Pavilion on Deck
+  const midGable = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, 3.2), whiteWallMat);
+  midGable.position.set(midWestCenterX, totalHeight + 0.7, 0.5);
+  midGable.castShadow = true;
+  group.add(midGable);
 
-    // Top metal handrail rim
-    const rimGeo = new THREE.CylinderGeometry(balconyRadius, balconyRadius, 0.08, 24, 1, true, Math.PI / 2, Math.PI);
-    const bRim = new THREE.Mesh(rimGeo, darkTrimMat);
-    bRim.position.y = 0.35 + 0.95;
-    bGroup.add(bRim);
+  // 3B. Far-West Laboratory & Engineering Complex (X in [-24.75 .. -14.0], Width = 10.75m)
+  const farWestW = 10.75;
+  const farWestCenterX = -14.0 - farWestW / 2; // -19.375
+  const farWestH = 14.5; // ~4-5 stories
+  const farWestD = totalDepthZ * 0.85;
 
-    group.add(bGroup);
+  const farWestTower = new THREE.Mesh(new THREE.BoxGeometry(farWestW, farWestH, farWestD), whiteWallMat);
+  farWestTower.position.set(farWestCenterX, podiumH + farWestH / 2, 0);
+  farWestTower.castShadow = true;
+  farWestTower.receiveShadow = true;
+  group.add(farWestTower);
+
+  // Far-West Gabled White Roof Pavilion on North half
+  const farGableW = farWestW * 0.85;
+  const farGableD = farWestD * 0.45;
+  const farGable = new THREE.Mesh(new THREE.BoxGeometry(farGableW, 1.2, farGableD), shedRoofMat);
+  farGable.position.set(farWestCenterX, podiumH + farWestH + 0.6, -farWestD * 0.22);
+  farGable.castShadow = true;
+  group.add(farGable);
+
+  // HVAC Chillers and mechanical duct units on Far-West flat deck
+  for (let ox of [-2.2, 0, 2.2]) {
+    const chiller = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 2.0), darkTrimMat);
+    chiller.position.set(farWestCenterX + ox, podiumH + farWestH + 0.6, farWestD * 0.24);
+    chiller.castShadow = true;
+    group.add(chiller);
   }
 
-  // --- 5. Angled Vertical Architectural Fins on East Facade ---
-  const finDepth = 0.8;
-  for (let z = -bldD / 2 + 1.5; z <= bldD / 2 - 1.5; z += 1.8) {
-    const fin = new THREE.Mesh(new THREE.BoxGeometry(finDepth, numFloors * floorHeight * 0.92, 0.12), whiteWallMat);
-    fin.position.set(bldW / 2 + finDepth / 2, podiumH + (numFloors * floorHeight) / 2, z);
-    fin.rotation.y = 0.25; // angled louvers
+  // Far-West Diagonal Structural Brise-Soleil Fins (at X = -24.75)
+  const farWestX = -totalSpanX / 2; // -24.75
+  for (let z = -farWestD / 2 + 1.0; z <= farWestD / 2 - 1.0; z += 1.8) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.8, farWestH * 0.9, 0.15), whiteWallMat);
+    fin.position.set(farWestX + 0.4, podiumH + farWestH / 2, z);
+    fin.rotation.y = 0.45;
     fin.castShadow = true;
     group.add(fin);
   }
 
-  // --- 6. Rooftop: South Sloped Shed Roof + North Stepped Concrete Deck & Penthouse ---
-  const roofY = totalHeight;
+  // =========================================================================
+  // 4. EAST WING (X in [+3.0 .. +24.75], Width = 21.75m)
+  // =========================================================================
+  const eastW = 21.75;
+  const eastCenterX = 3.0 + eastW / 2; // +13.875
 
-  // South Sloped Shed Roof (facing South +Z)
-  const shedRoofW = bldW + 0.4;
-  const shedRoofD = bldD * 0.42;
-  const shedRoof = new THREE.Mesh(new THREE.BoxGeometry(shedRoofW, 0.4, shedRoofD), shedRoofMat);
-  shedRoof.position.set(0, roofY + 1.2, bldD * 0.28);
-  shedRoof.rotation.x = -0.16; // sloped down towards south
-  shedRoof.castShadow = true;
-  group.add(shedRoof);
+  // 4A. North 9-Story Classroom Tower
+  const eastNorthD = 5.8;
+  const eastNorthTower = new THREE.Mesh(new THREE.BoxGeometry(eastW, numFloors * floorHeight, eastNorthD), whiteWallMat);
+  eastNorthTower.position.set(eastCenterX, podiumH + (numFloors * floorHeight) / 2, -totalDepthZ / 2 + eastNorthD / 2);
+  eastNorthTower.castShadow = true;
+  eastNorthTower.receiveShadow = true;
+  group.add(eastNorthTower);
 
-  // North Stepped Flat Concrete Roof Deck
-  const northDeck = new THREE.Mesh(new THREE.BoxGeometry(bldW * 0.95, 0.6, bldD * 0.52), concreteMat);
-  northDeck.position.set(0, roofY + 0.3, -bldD * 0.22);
-  northDeck.castShadow = true;
-  group.add(northDeck);
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winY = floorY + floorHeight * 0.55;
 
-  // Parapet walls around roof perimeter
-  const parapetW = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, bldD), darkTrimMat);
-  parapetW.position.set(-bldW / 2 + 0.15, roofY + 0.55, 0);
-  group.add(parapetW);
-  const parapetE = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, bldD), darkTrimMat);
-  parapetE.position.set(bldW / 2 - 0.15, roofY + 0.55, 0);
-  group.add(parapetE);
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(eastW * 0.92, 1.35, 0.2), windowGlassMat);
+    winN.position.set(eastCenterX, winY, -totalDepthZ / 2 - 0.05);
+    group.add(winN);
 
-  // Elevator Penthouse & Stair Tower
-  const pentW = 5.0;
-  const pentD = 4.2;
-  const pentH = 3.2;
-  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), whiteWallMat);
-  penthouse.position.set(-1.0, roofY + pentH / 2 + 0.6, -1.2);
-  penthouse.castShadow = true;
-  group.add(penthouse);
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(eastW + 0.2, 0.35, eastNorthD + 0.2), darkTrimMat);
+    spandrel.position.set(eastCenterX, floorY, -totalDepthZ / 2 + eastNorthD / 2);
+    group.add(spandrel);
+  }
 
-  // Red Aviation Obstruction Warning Beacon
-  const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.6, 8), beaconMat);
-  beacon.position.set(-1.0, roofY + pentH + 0.9, -1.2);
-  group.add(beacon);
+  // 4B. South Grand Lecture Auditorium Hall (Large Pitched White Metal Roof)
+  const audW = eastW * 0.88;
+  const audD = totalDepthZ * 0.5;
+  const audH = 14.5;
+  const audCenterZ = totalDepthZ / 2 - audD / 2;
+
+  const audBlock = new THREE.Mesh(new THREE.BoxGeometry(audW, audH, audD), whiteWallMat);
+  audBlock.position.set(eastCenterX - 1.0, podiumH + audH / 2, audCenterZ);
+  audBlock.castShadow = true;
+  audBlock.receiveShadow = true;
+  group.add(audBlock);
+
+  const audRoof = new THREE.Mesh(new THREE.BoxGeometry(audW + 0.6, 0.6, audD + 0.6), shedRoofMat);
+  audRoof.position.set(eastCenterX - 1.0, podiumH + audH + 0.8, audCenterZ);
+  audRoof.rotation.x = -0.16; // sloped down to south
+  audRoof.castShadow = true;
+  group.add(audRoof);
+
+  // Far-East Diagonal Structural Fins (at X = +24.75)
+  const farEastX = totalSpanX / 2; // +24.75
+  for (let z = -totalDepthZ / 2 + 1.0; z <= totalDepthZ / 2 - 1.0; z += 1.8) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.8, numFloors * floorHeight * 0.9, 0.15), whiteWallMat);
+    fin.position.set(farEastX - 0.4, podiumH + (numFloors * floorHeight) / 2, z);
+    fin.rotation.y = -0.45;
+    fin.castShadow = true;
+    group.add(fin);
+  }
+
+  // =========================================================================
+  // 5. NORTH PARKING LOT (ติดถนนทางทิศเหนือ พอดี 0-GAP FLUSH)
+  // =========================================================================
+  // Extending from Z = -11.82 (touching the main North Road flush) down to Z = -6.84
+  const parkW = totalSpanX; // 49.5m wide spanning the whole front
+  const parkD = 4.98;
+  const parkX = 0;
+  const parkZ = -9.33; // Centered at -9.33, extends from -11.82 (road) to -6.84
+
+  // Full Asphalt Paved Parking Surface
+  const parkGround = new THREE.Mesh(new THREE.BoxGeometry(parkW, 0.12, parkD), asphaltMat);
+  parkGround.position.set(parkX, 0.06, parkZ);
+  parkGround.receiveShadow = true;
+  group.add(parkGround);
+
+  // Concrete Curbs along the perimeter (North, South, West, East)
+  const curbN = new THREE.Mesh(new THREE.BoxGeometry(parkW + 0.4, 0.22, 0.22), curbMat);
+  curbN.position.set(parkX, 0.11, parkZ - parkD / 2);
+  group.add(curbN);
+
+  const curbS = new THREE.Mesh(new THREE.BoxGeometry(parkW + 0.4, 0.22, 0.22), curbMat);
+  curbS.position.set(parkX, 0.11, parkZ + parkD / 2);
+  group.add(curbS);
+
+  const curbW = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, parkD), curbMat);
+  curbW.position.set(parkX - parkW / 2, 0.11, parkZ);
+  group.add(curbW);
+
+  const curbE = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, parkD), curbMat);
+  curbE.position.set(parkX + parkW / 2, 0.11, parkZ);
+  group.add(curbE);
+
+  // White Painted Parking Stall Dividing Stripes (Every 2.4m along width: 20 stalls)
+  const stallStep = 2.4;
+  for (let x = -parkW / 2 + 1.2; x <= parkW / 2 - 1.2; x += stallStep) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, parkD * 0.88), whiteLineMat);
+    line.position.set(parkX + x, 0.13, parkZ);
+    group.add(line);
+  }
+
+  // Access Entrance / Drop-off Driveway connecting Parking directly to Main Entrance
+  const driveW = 6.0;
+  const driveD = Math.abs(parkZ - (-atriumD / 2));
+  const driveway = new THREE.Mesh(new THREE.BoxGeometry(driveW, 0.1, driveD + 0.4), asphaltMat);
+  driveway.position.set(0, 0.05, (parkZ + (-atriumD / 2)) / 2);
+  driveway.receiveShadow = true;
+  group.add(driveway);
+
+  // Low decorative hedge shrubs separating parking lot from entrance concourse
+  const hedgeW = parkW * 0.44;
+  for (let side of [-1, 1]) {
+    const hedge = new THREE.Mesh(new THREE.BoxGeometry(hedgeW, 0.55, 0.45), hedgeMat);
+    hedge.position.set(parkX + side * (parkW * 0.27), 0.28, parkZ + parkD / 2 + 0.35);
+    group.add(hedge);
+  }
 
   return group;
 }
