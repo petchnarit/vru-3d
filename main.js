@@ -544,15 +544,32 @@ function createAuditorium80Mesh() {
 
   // NO WATER PLANE / NO POND: Natural drone ground surface
 
-  // --- 1. Ground Floor Open Undercroft (ใต้ถุนเสาเปิดโล่ง ไร้ผนังทึบตามภาพจริง) ---
+  // --- 1. Ground Floor: Half Enclosed Conference Room (Rear) & Half Open Undercroft (Front) ---
+  // Ground foundation slab
   const groundSlab = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 4.0, 0.6, hallLength + 2.0), concreteMat);
   groundSlab.position.set(0, 0.3, 0);
   groundSlab.receiveShadow = true;
   group.add(groundSlab);
 
-  // Structural Grid Columns supporting the floating 2nd floor (Pilotis)
-  for (let xi = -hallWidth / 2 + 2.0; xi <= colonnadeX - 1.5; xi += 6.5) {
-    for (let zi = -hallLength / 2 + 2.0; zi <= hallLength / 2 - 2.0; zi += 4.2) {
+  // 1.1 Enclosed Lower Conference Hall (ครึ่งหลังฝั่งทิศตะวันตก: ห้องประชุมชั้นล่าง)
+  const confRoomW = 14.5; // Rear half width along X
+  const confRoomD = hallLength * 0.92; // Along Z
+  const confRoomX = -hallWidth / 2 + confRoomW / 2 + 0.5; // X: ~ -5.25
+  const confRoom = new THREE.Mesh(new THREE.BoxGeometry(confRoomW, floor1H, confRoomD), whiteArchMat);
+  confRoom.position.set(confRoomX, floor1H / 2 + 0.6, 0);
+  confRoom.castShadow = true;
+  confRoom.receiveShadow = true;
+  group.add(confRoom);
+
+  // Conference room window ribbon & doors along its front and sides
+  const confWin = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.4, confRoomD * 0.8), darkFasciaMat);
+  confWin.position.set(confRoomX + confRoomW / 2 + 0.05, floor1H * 0.55 + 0.6, 0);
+  group.add(confWin);
+
+  // 1.2 Open Undercroft with Pilotis Columns (ครึ่งหน้าฝั่งทิศตะวันออก: โถงเสาเปิดโล่ง)
+  // Grid columns supporting the 2nd floor terrace in the open front section
+  for (let xi of [confRoomX + confRoomW / 2 + 1.2, confRoomX + confRoomW / 2 + 4.8, colonnadeX - 1.2]) {
+    for (let zi = -hallLength / 2 + 2.2; zi <= hallLength / 2 - 2.2; zi += 4.2) {
       const col = new THREE.Mesh(new THREE.BoxGeometry(0.85, floor1H, 0.85), concreteMat);
       col.position.set(xi, floor1H / 2 + 0.6, zi);
       col.castShadow = true;
