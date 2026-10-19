@@ -60,8 +60,8 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ (อาคาร 9 ชั้น ทรงระเบียงโค้ง)', shortName: '10',
     sub: 'อาคารเรียนรวม 9 ชั้น โดดเด่นด้วยระเบียงทรงโค้งฝั่งทิศตะวันตกและแผงครีบกันแดด',
     category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'bld10_9floors', pos: { x: 160.2, y: 0, z: 50.4 }, rotY: 0, anchorHeight: 31,
-    dimensions: { w: 16.6, h: 28.0, d: 17.6 }, roofColor: 0xebedf0, accentColor: 0x047857,
+    archType: 'bld10_9floors', pos: { x: 158.8, y: 0, z: 54.1 }, rotY: 0, anchorHeight: 31,
+    dimensions: { w: 13.0, h: 28.0, d: 9.2 }, roofColor: 0xebedf0, accentColor: 0x047857,
     floors: [
       { num: 9, desc: 'ห้องปฏิบัติการและห้องวิจัย' },
       { num: 8, desc: 'ห้องเรียนรวมและห้องบรรยาย' },
@@ -914,8 +914,8 @@ function createBuilding10Mesh() {
   });
   const beaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
 
-  const bldW = 16.6; // X width (east-west)
-  const bldD = 17.6; // Z depth (north-south)
+  const bldW = 13.0; // X width (east-west)
+  const bldD = 9.2;  // Z depth (north-south) - calibrated tight to clear the North road buffer!
   const numFloors = 9;
   const floorHeight = 3.0; // 9 floors * 3.0m = 27.0m
   const podiumH = 0.8;
@@ -956,7 +956,7 @@ function createBuilding10Mesh() {
     // West facade windows (flanking the central curved balconies)
     for (let side of [-1, 1]) {
       const winW = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.35, 3.8), windowGlassMat);
-      winW.position.set(-bldW / 2 - 0.05, winCenterY, side * 4.8);
+      winW.position.set(-bldW / 2 - 0.05, winCenterY, side * 2.8);
       group.add(winW);
     }
 
@@ -1037,13 +1037,13 @@ function createBuilding10Mesh() {
   const pentD = 4.2;
   const pentH = 3.2;
   const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), whiteWallMat);
-  penthouse.position.set(-2.0, roofY + pentH / 2 + 0.6, -2.5);
+  penthouse.position.set(-1.0, roofY + pentH / 2 + 0.6, -1.2);
   penthouse.castShadow = true;
   group.add(penthouse);
 
   // Red Aviation Obstruction Warning Beacon
   const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.6, 8), beaconMat);
-  beacon.position.set(-2.0, roofY + pentH + 0.9, -2.5);
+  beacon.position.set(-1.0, roofY + pentH + 0.9, -1.2);
   group.add(beacon);
 
   return group;
