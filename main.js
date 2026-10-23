@@ -1204,43 +1204,44 @@ function createBuilding10Mesh() {
 // =========================================================================
 
 // Shared GISTDA Materials
+// Exact Color Palette calibrated from maps3d-project.json
 const gistdaWallMat = new THREE.MeshStandardMaterial({
-  color: 0xf8fafc,
-  roughness: 0.35,
-  metalness: 0.08
+  color: 0xF1ECE1, // Maps3D buildings.color (#F1ECE1)
+  roughness: 0.4,
+  metalness: 0.05
 });
 const gistdaTrimMat = new THREE.MeshStandardMaterial({
-  color: 0x1e293b,
-  roughness: 0.45,
-  metalness: 0.4
+  color: 0x64748b, // Maps3D building edge contour
+  roughness: 0.5,
+  metalness: 0.2
 });
 const gistdaConcreteMat = new THREE.MeshStandardMaterial({
-  color: 0xd9dde2,
+  color: 0xF5F0EF, // Maps3D groundColor (#F5F0EF)
   roughness: 0.8,
-  metalness: 0.03
+  metalness: 0.02
 });
 const gistdaGlassMat = new THREE.MeshStandardMaterial({
-  color: 0x0284c7,
-  roughness: 0.08,
-  metalness: 0.85,
+  color: 0x98DCFF, // Maps3D water tint
+  roughness: 0.1,
+  metalness: 0.8,
   transparent: true,
-  opacity: 0.85,
+  opacity: 0.8,
   emissive: new THREE.Color(0xffbf69),
   emissiveIntensity: 0.1
 });
 emissiveMaterials.push(gistdaGlassMat);
 
 const gistdaWaterMat = new THREE.MeshStandardMaterial({
-  color: 0x0284c7,
-  roughness: 0.1,
-  metalness: 0.9,
+  color: 0x98DCFF, // Maps3D water.color (#98DCFF)
+  roughness: 0.15,
+  metalness: 0.85,
   transparent: true,
-  opacity: 0.82
+  opacity: 0.70 // Maps3D water.opacity: 0.7
 });
 const gistdaAsphaltMat = new THREE.MeshStandardMaterial({
-  color: 0x1e293b,
-  roughness: 0.92,
-  metalness: 0.02
+  color: 0xB0B4C0, // Maps3D roads.color (#B0B4C0)
+  roughness: 0.85,
+  metalness: 0.05
 });
 const gistdaHighwayMat = new THREE.MeshStandardMaterial({
   color: 0x0f172a,
@@ -2116,7 +2117,7 @@ function setupUI() {
       if (mode === 'morning') {
         setSunLight(-120, 30, 1.2, 0.45);
       } else if (mode === 'noon') {
-        setSunLight(-40, 75, 1.6, 0.6);
+        setSunLight(134, 46, 1.5, 0.55); // Maps3D sun: az 134, el 46
       } else if (mode === 'evening') {
         setSunLight(130, 20, 1.3, 0.4);
       } else if (mode === 'night') {
