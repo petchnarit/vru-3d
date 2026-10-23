@@ -1196,7 +1196,592 @@ function createBuilding10Mesh() {
 }
 
 
+
+// =========================================================================
+// GISTDA GeoTwin LOD1 3D Smart Campus Engine
+// Procedural LOD1 Building Massing, Highway & Campus Roads, Parking,
+// Hydrology (Canals & Ponds), Paddy Fields, Thai House, Monument, Stadium
+// =========================================================================
+
+// Shared GISTDA Materials
+const gistdaWallMat = new THREE.MeshStandardMaterial({
+  color: 0xf8fafc,
+  roughness: 0.35,
+  metalness: 0.08
+});
+const gistdaTrimMat = new THREE.MeshStandardMaterial({
+  color: 0x1e293b,
+  roughness: 0.45,
+  metalness: 0.4
+});
+const gistdaConcreteMat = new THREE.MeshStandardMaterial({
+  color: 0xd9dde2,
+  roughness: 0.8,
+  metalness: 0.03
+});
+const gistdaGlassMat = new THREE.MeshStandardMaterial({
+  color: 0x0284c7,
+  roughness: 0.08,
+  metalness: 0.85,
+  transparent: true,
+  opacity: 0.85,
+  emissive: new THREE.Color(0xffbf69),
+  emissiveIntensity: 0.1
+});
+emissiveMaterials.push(gistdaGlassMat);
+
+const gistdaWaterMat = new THREE.MeshStandardMaterial({
+  color: 0x0284c7,
+  roughness: 0.1,
+  metalness: 0.9,
+  transparent: true,
+  opacity: 0.82
+});
+const gistdaAsphaltMat = new THREE.MeshStandardMaterial({
+  color: 0x1e293b,
+  roughness: 0.92,
+  metalness: 0.02
+});
+const gistdaHighwayMat = new THREE.MeshStandardMaterial({
+  color: 0x0f172a,
+  roughness: 0.95,
+  metalness: 0.01
+});
+const gistdaCurbMat = new THREE.MeshStandardMaterial({
+  color: 0xe2e8f0,
+  roughness: 0.75,
+  metalness: 0.05
+});
+const gistdaWhiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const gistdaYellowLineMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+const gistdaTrackMat = new THREE.MeshStandardMaterial({
+  color: 0xd946ef, // Synthetic athletic track
+  roughness: 0.8,
+  metalness: 0.02
+});
+const gistdaGrassPitchMat = new THREE.MeshStandardMaterial({
+  color: 0x15803d,
+  roughness: 0.9,
+  metalness: 0.0
+});
+const gistdaPaddyMat = new THREE.MeshStandardMaterial({
+  color: 0x65a30d, // Rice paddy green
+  roughness: 0.95,
+  metalness: 0.0
+});
+const gistdaEarthMat = new THREE.MeshStandardMaterial({
+  color: 0x78350f, // Earth bunds / คันนาดิน
+  roughness: 0.95,
+  metalness: 0.0
+});
+const gistdaThaiWoodMat = new THREE.MeshStandardMaterial({
+  color: 0x78350f, // Teak wood
+  roughness: 0.7,
+  metalness: 0.1
+});
+const gistdaThaiRoofMat = new THREE.MeshStandardMaterial({
+  color: 0xb45309, // Orange-brown terracotta Thai tile
+  roughness: 0.4,
+  metalness: 0.15
+});
+
+// --- Standard GISTDA GeoTwin LOD1 Building Generator ---
+function createGistdaLOD1Mesh(bld) {
+  const group = new THREE.Group();
+  const w = bld.dimensions.w;
+  const h = bld.dimensions.h;
+  const d = bld.dimensions.d;
+  const numFloors = Math.max(1, Math.round(h / 3.0));
+  const floorHeight = h / numFloors;
+  const podiumH = 0.5;
+
+  // Base Concrete Podium
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(w + 0.6, podiumH, d + 0.6), gistdaConcreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  podium.receiveShadow = true;
+  group.add(podium);
+
+  // Main LOD1 Tower Mass
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gistdaWallMat);
+  tower.position.set(0, podiumH + h / 2, 0);
+  tower.castShadow = true;
+  tower.receiveShadow = true;
+  group.add(tower);
+
+  // Ribbon Windows & Floor Bands
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winY = floorY + floorHeight * 0.55;
+
+    // North & South Windows
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, floorHeight * 0.45, 0.15), gistdaGlassMat);
+    winN.position.set(0, winY, -d / 2 - 0.03);
+    group.add(winN);
+
+    const winS = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, floorHeight * 0.45, 0.15), gistdaGlassMat);
+    winS.position.set(0, winY, d / 2 + 0.03);
+    group.add(winS);
+
+    // East & West Windows
+    const winE = new THREE.Mesh(new THREE.BoxGeometry(0.15, floorHeight * 0.45, d * 0.82), gistdaGlassMat);
+    winE.position.set(w / 2 + 0.03, winY, 0);
+    group.add(winE);
+
+    const winW = new THREE.Mesh(new THREE.BoxGeometry(0.15, floorHeight * 0.45, d * 0.82), gistdaGlassMat);
+    winW.position.set(-w / 2 - 0.03, winY, 0);
+    group.add(winW);
+
+    // Spandrel band
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(w + 0.15, 0.25, d + 0.15), gistdaTrimMat);
+    spandrel.position.set(0, floorY, 0);
+    group.add(spandrel);
+  }
+
+  // Rooftop Parapet Wall
+  const roofY = podiumH + h;
+  const parapet = new THREE.Mesh(new THREE.BoxGeometry(w, 0.7, d), gistdaTrimMat);
+  parapet.position.set(0, roofY + 0.35, 0);
+  group.add(parapet);
+
+  // Rooftop Flat Deck Inner (Slightly sunken)
+  const deckMat = new THREE.MeshStandardMaterial({
+    color: bld.roofColor || 0x475569,
+    roughness: 0.6,
+    metalness: 0.1
+  });
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(w - 0.4, 0.1, d - 0.4), deckMat);
+  deck.position.set(0, roofY + 0.1, 0);
+  group.add(deck);
+
+  // Rooftop Elevator Penthouse & Mechanical Room
+  const pentW = Math.min(w * 0.35, 5.0);
+  const pentD = Math.min(d * 0.35, 4.0);
+  const pentH = 2.4;
+  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), gistdaWallMat);
+  penthouse.position.set(w * 0.15, roofY + pentH / 2 + 0.2, -d * 0.15);
+  penthouse.castShadow = true;
+  group.add(penthouse);
+
+  // AC Condenser Chiller Units
+  if (w > 12 && d > 8) {
+    const chW = 1.6;
+    const chD = 1.2;
+    const chH = 1.0;
+    const chiller = new THREE.Mesh(new THREE.BoxGeometry(chW, chH, chD), gistdaTrimMat);
+    chiller.position.set(-w * 0.2, roofY + chH / 2 + 0.2, d * 0.2);
+    chiller.castShadow = true;
+    group.add(chiller);
+  }
+
+  return group;
+}
+
+// --- Building 2: อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB 100) ---
+function createSPB100Mesh() {
+  const group = new THREE.Group();
+  const w = 22.5;
+  const h = 18.0; // 6-story monumental administrative tower
+  const d = 14.0;
+  const podiumH = 0.8;
+
+  // Base
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(w + 1.2, podiumH, d + 1.2), gistdaConcreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  group.add(podium);
+
+  // Main Tower
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gistdaWallMat);
+  tower.position.set(0, podiumH + h / 2, 0);
+  tower.castShadow = true;
+  tower.receiveShadow = true;
+  group.add(tower);
+
+  // Front Blue Tinted Curtain Wall Atrium
+  const curtnW = w * 0.6;
+  const curtnH = h * 0.85;
+  const curtain = new THREE.Mesh(new THREE.BoxGeometry(curtnW, curtnH, 0.4), gistdaGlassMat);
+  curtain.position.set(0, podiumH + curtnH / 2 + 0.8, -d / 2 - 0.1);
+  group.add(curtain);
+
+  // Architectural Crown Parapet
+  const crown = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 1.2, d + 0.4), gistdaTrimMat);
+  crown.position.set(0, podiumH + h + 0.6, 0);
+  crown.castShadow = true;
+  group.add(crown);
+
+  // Helipad / Rooftop Platform
+  const heli = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 0.3, 24), gistdaConcreteMat);
+  heli.position.set(0, podiumH + h + 1.3, 0);
+  group.add(heli);
+
+  return group;
+}
+
+// --- Building 8: พระอนุสาวรีย์สมเด็จเจ้าฟ้าวไลยอลงกรณ์ฯ ---
+function createMonumentMesh() {
+  const group = new THREE.Group();
+  // 3-Tier Marble Plinth
+  const tier1 = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 5.2, 0.4, 32), gistdaConcreteMat);
+  tier1.position.y = 0.2;
+  tier1.receiveShadow = true;
+  group.add(tier1);
+
+  const tier2 = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.8, 0.4, 32), gistdaWallMat);
+  tier2.position.y = 0.6;
+  group.add(tier2);
+
+  const tier3 = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.4, 0.8, 32), gistdaWallMat);
+  tier3.position.y = 1.2;
+  tier3.castShadow = true;
+  group.add(tier3);
+
+  // Pedestal & Bronze Statue
+  const pedestalMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3, metalness: 0.5 });
+  const pedestal = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.6, 1.4), pedestalMat);
+  pedestal.position.y = 2.4;
+  pedestal.castShadow = true;
+  group.add(pedestal);
+
+  const bronzeMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.85 });
+  const statue = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.8, 16), bronzeMat);
+  statue.position.y = 4.1;
+  statue.castShadow = true;
+  group.add(statue);
+
+  // Landscaped Floral Ring
+  const flowerRing = new THREE.Mesh(new THREE.RingGeometry(5.5, 7.2, 32), gistdaGrassPitchMat);
+  flowerRing.rotation.x = -Math.PI / 2;
+  flowerRing.position.y = 0.05;
+  flowerRing.receiveShadow = true;
+  group.add(flowerRing);
+
+  return group;
+}
+
+// --- Building 36: เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์) ---
+function createThaiPavilionMesh() {
+  const group = new THREE.Group();
+  const w = 8.5;
+  const d = 8.0;
+  const stiltH = 2.4; // ยกใต้ถุนสูง
+
+  // Wooden Stilts / Pillars (ใต้ถุน)
+  for (let x of [-w / 2 + 0.8, 0, w / 2 - 0.8]) {
+    for (let z of [-d / 2 + 0.8, 0, d / 2 - 0.8]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, stiltH, 8), gistdaThaiWoodMat);
+      col.position.set(x, stiltH / 2, z);
+      col.castShadow = true;
+      group.add(col);
+    }
+  }
+
+  // Wooden Floor Veranda (ชานเรือน)
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(w, 0.25, d), gistdaThaiWoodMat);
+  floor.position.set(0, stiltH, 0);
+  floor.castShadow = true;
+  group.add(floor);
+
+  // House Body
+  const houseW = w * 0.75;
+  const houseD = d * 0.75;
+  const houseH = 2.8;
+  const house = new THREE.Mesh(new THREE.BoxGeometry(houseW, houseH, houseD), gistdaThaiWoodMat);
+  house.position.set(0, stiltH + houseH / 2, 0);
+  house.castShadow = true;
+  group.add(house);
+
+  // Traditional Pitched Thai Roof (ทรงจั่ว)
+  const roofGeo = new THREE.ConeGeometry(houseW * 0.85, 2.6, 4);
+  const roof = new THREE.Mesh(roofGeo, gistdaThaiRoofMat);
+  roof.rotation.y = Math.PI / 4;
+  roof.position.set(0, stiltH + houseH + 1.3, 0);
+  roof.castShadow = true;
+  group.add(roof);
+
+  return group;
+}
+
+// --- Building 57: สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ ---
+function createStadiumMesh() {
+  const group = new THREE.Group();
+  const trackW = 27.3;
+  const trackD = 49.0;
+
+  // 1. Red Synthetic Running Track (400m Oval)
+  const track = new THREE.Mesh(new THREE.BoxGeometry(trackW, 0.12, trackD), gistdaTrackMat);
+  track.position.set(0, 0.06, 0);
+  track.receiveShadow = true;
+  group.add(track);
+
+  // 2. Inner Green Football Pitch
+  const pitchW = trackW * 0.65;
+  const pitchD = trackD * 0.78;
+  const pitch = new THREE.Mesh(new THREE.BoxGeometry(pitchW, 0.15, pitchD), gistdaGrassPitchMat);
+  pitch.position.set(0, 0.08, 0);
+  pitch.receiveShadow = true;
+  group.add(pitch);
+
+  // 3. Football Pitch Markings (White Lines)
+  const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const centerCircle = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.35, 24), lineMat);
+  centerCircle.rotation.x = -Math.PI / 2;
+  centerCircle.position.set(0, 0.17, 0);
+  group.add(centerCircle);
+
+  // 4. Main Covered Grandstand on West Side (-X)
+  const standW = 4.2;
+  const standD = trackD * 0.7;
+  const standH = 4.5;
+  const stand = new THREE.Mesh(new THREE.BoxGeometry(standW, standH, standD), gistdaConcreteMat);
+  stand.position.set(-trackW / 2 - standW / 2 + 0.2, standH / 2, 0);
+  stand.castShadow = true;
+  group.add(stand);
+
+  // Grandstand Canopy Roof
+  const canopy = new THREE.Mesh(new THREE.BoxGeometry(standW + 1.8, 0.35, standD + 0.8), gistdaTrimMat);
+  canopy.position.set(-trackW / 2 - standW / 2 + 1.0, standH + 0.5, 0);
+  canopy.rotation.z = -0.12;
+  canopy.castShadow = true;
+  group.add(canopy);
+
+  // 5. 4 Floodlight Spotlight Towers
+  for (let x of [-trackW / 2 - 1.5, trackW / 2 + 1.5]) {
+    for (let z of [-trackD / 2 + 3.0, trackD / 2 - 3.0]) {
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.25, 12.0, 8), gistdaTrimMat);
+      pole.position.set(x, 6.0, z);
+      pole.castShadow = true;
+      group.add(pole);
+
+      const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.8), gistdaWallMat);
+      lamp.position.set(x, 12.2, z);
+      group.add(lamp);
+    }
+  }
+
+  return group;
+}
+
+// --- Building 5: อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ 50 เมตร ---
+function createHealthPoolMesh() {
+  const group = new THREE.Group();
+  const bldW = 16.0;
+  const bldD = 14.0;
+  const bldH = 5.0;
+
+  // Gym Building
+  const bld = new THREE.Mesh(new THREE.BoxGeometry(bldW, bldH, bldD), gistdaWallMat);
+  bld.position.set(0, bldH / 2, 0);
+  bld.castShadow = true;
+  group.add(bld);
+
+  // 50m Swimming Pool Deck next to building (+Z)
+  const poolW = 12.0;
+  const poolD = 18.0;
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(poolW + 2.0, 0.2, poolD + 2.0), gistdaConcreteMat);
+  deck.position.set(0, 0.1, bldD / 2 + poolD / 2 + 1.0);
+  deck.receiveShadow = true;
+  group.add(deck);
+
+  // Blue Water Surface
+  const water = new THREE.Mesh(new THREE.BoxGeometry(poolW, 0.22, poolD), gistdaWaterMat);
+  water.position.set(0, 0.12, bldD / 2 + poolD / 2 + 1.0);
+  group.add(water);
+
+  return group;
+}
+
+// --- GISTDA Infrastructure: Roads, Highway, Parking, Canals, Paddy, Housing ---
+function createGistdaInfrastructure() {
+  const infraGroup = new THREE.Group();
+
+  // =========================================================================
+  // 1. PHAHONYOTHIN HIGHWAY (ถนนพหลโยธิน - ทล.1 ด้านหน้า ม. ฝั่งทิศตะวันออก)
+  // =========================================================================
+  const hwW = 18.0; // 8 lanes wide
+  const hwL = 118.0; // spanning full north-south length of campus
+  const hwX = 196.0;
+  const hwZ = 0;
+
+  const highway = new THREE.Mesh(new THREE.BoxGeometry(hwW, 0.12, hwL), gistdaHighwayMat);
+  highway.position.set(hwX, 0.06, hwZ);
+  highway.receiveShadow = true;
+  infraGroup.add(highway);
+
+  // Central Median Barrier (เกาะกลางถนน)
+  const median = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, hwL), gistdaConcreteMat);
+  median.position.set(hwX, 0.3, hwZ);
+  infraGroup.add(median);
+
+  // Highway Lane Divider Stripes
+  for (let laneOffset of [-6.0, -3.0, 3.0, 6.0]) {
+    for (let z = -hwL / 2 + 2.5; z <= hwL / 2 - 2.5; z += 5.0) {
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 3.0), gistdaWhiteLineMat);
+      stripe.position.set(hwX + laneOffset, 0.14, z);
+      infraGroup.add(stripe);
+    }
+  }
+
+  // =========================================================================
+  // 2. MAIN CAMPUS INTERNAL ROADS (ถนนหลักภายในมหาวิทยาลัย)
+  // =========================================================================
+  const roadMat = gistdaAsphaltMat;
+  const roadW = 6.0;
+
+  // 2A. Main East-West Spine Road (เชื่อมจากซุ้มประตูหน้า ทะลุถึงท้าย ม.)
+  const mainSpineL = 340.0;
+  const mainSpineX = 15.0; // from 185 down to -155
+  const mainSpine = new THREE.Mesh(new THREE.BoxGeometry(mainSpineL, 0.1, roadW), roadMat);
+  mainSpine.position.set(mainSpineX, 0.05, 0);
+  mainSpine.receiveShadow = true;
+  infraGroup.add(mainSpine);
+
+  // Dashed Centerline for Main Spine
+  for (let x = -150; x <= 180; x += 4.5) {
+    const dash = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.02, 0.15), gistdaWhiteLineMat);
+    dash.position.set(x, 0.12, 0);
+    infraGroup.add(dash);
+  }
+
+  // 2B. North Ring Road (เลียบแนวอาคาร 19, 20, 29, 30)
+  const northRoadL = 280.0;
+  const northRoad = new THREE.Mesh(new THREE.BoxGeometry(northRoadL, 0.1, roadW), roadMat);
+  northRoad.position.set(20.0, 0.05, -34.0);
+  northRoad.receiveShadow = true;
+  infraGroup.add(northRoad);
+
+  // 2C. South Ring Road (ผ่านหน้าตึก 10, คณะครุศาสตร์, หอสมุด, ถึงสนามกีฬา)
+  const southRoadL = 310.0;
+  const southRoad = new THREE.Mesh(new THREE.BoxGeometry(southRoadL, 0.1, roadW), roadMat);
+  southRoad.position.set(10.0, 0.05, 42.0);
+  southRoad.receiveShadow = true;
+  infraGroup.add(southRoad);
+
+  // 2D. North-South Connecting Cross Avenues
+  for (let crossX of [138.0, 68.0, -10.0, -85.0]) {
+    const crossAve = new THREE.Mesh(new THREE.BoxGeometry(roadW, 0.09, 82.0), roadMat);
+    crossAve.position.set(crossX, 0.045, 4.0);
+    crossAve.receiveShadow = true;
+    infraGroup.add(crossAve);
+  }
+
+  // =========================================================================
+  // 3. GISTDA PARKING LOTS (ลานจอดรถตามผัง GIS)
+  // =========================================================================
+  const parkingConfigs = [
+    { x: 135.0, z: 14.0, w: 14.0, d: 18.0, name: 'SPB 100 Parking' },
+    { x: -6.0, z: 20.0, w: 22.0, d: 10.0, name: 'Library Parking' },
+    { x: 51.0, z: -10.0, w: 24.0, d: 8.0, name: 'Science Faculty Parking' },
+    { x: -120.0, z: 14.0, w: 16.0, d: 24.0, name: 'Stadium Parking' }
+  ];
+
+  parkingConfigs.forEach(pk => {
+    const lot = new THREE.Mesh(new THREE.BoxGeometry(pk.w, 0.12, pk.d), gistdaAsphaltMat);
+    lot.position.set(pk.x, 0.06, pk.z);
+    lot.receiveShadow = true;
+    infraGroup.add(lot);
+
+    // Curbs
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(pk.w + 0.4, 0.22, pk.d + 0.4), gistdaCurbMat);
+    curb.position.set(pk.x, 0.1, pk.z);
+    infraGroup.add(curb);
+
+    // Stalls
+    const step = 2.4;
+    for (let ox = -pk.w / 2 + 1.2; ox <= pk.w / 2 - 1.2; ox += step) {
+      const line = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, pk.d * 0.85), gistdaWhiteLineMat);
+      line.position.set(pk.x + ox, 0.14, pk.z);
+      infraGroup.add(line);
+    }
+  });
+
+  // =========================================================================
+  // 4. HYDROLOGY: CANALS & NATURAL PONDS (ระบบคูคลองและสระน้ำ)
+  // =========================================================================
+  // 4A. North Drainage Canal (คลองระบายน้ำคอนกรีตทิศเหนือ)
+  const canalW = 4.2;
+  const canalL = 90.0;
+  const canalX = 135.0;
+  const canalZ = 39.5;
+
+  const canalBed = new THREE.Mesh(new THREE.BoxGeometry(canalL, 0.25, canalW + 0.8), gistdaConcreteMat);
+  canalBed.position.set(canalX, 0.05, canalZ);
+  infraGroup.add(canalBed);
+
+  const canalWater = new THREE.Mesh(new THREE.BoxGeometry(canalL, 0.2, canalW), gistdaWaterMat);
+  canalWater.position.set(canalX, 0.15, canalZ);
+  infraGroup.add(canalWater);
+
+  // 4B. Natural Lotus Pond at Thai House (สระบัวเรือนเจ้าฟ้า)
+  const pondGeo = new THREE.CylinderGeometry(11.0, 11.0, 0.2, 32);
+  const pond = new THREE.Mesh(pondGeo, gistdaWaterMat);
+  pond.position.set(-0.7, 0.1, 8.0);
+  infraGroup.add(pond);
+
+  const pondBank = new THREE.Mesh(new THREE.CylinderGeometry(11.8, 12.0, 0.18, 32), gistdaConcreteMat);
+  pondBank.position.set(-0.7, 0.05, 8.0);
+  infraGroup.add(pondBank);
+
+  // =========================================================================
+  // 5. AGRICULTURAL DEMONSTRATION PADDY FIELDS (ทุ่งนาและแปลงเกษตรสาธิต)
+  // =========================================================================
+  // Located at X in [15..45], Z in [22..40] near Faculty of Agriculture
+  const paddyW = 32.0;
+  const paddyD = 18.0;
+  const paddyX = 30.0;
+  const paddyZ = 32.0;
+
+  const paddyBase = new THREE.Mesh(new THREE.BoxGeometry(paddyW, 0.15, paddyD), gistdaPaddyMat);
+  paddyBase.position.set(paddyX, 0.08, paddyZ);
+  paddyBase.receiveShadow = true;
+  infraGroup.add(paddyBase);
+
+  // Earth bund dikes (คันนาดิน) dividing the fields into plots
+  for (let ox of [-10.0, 0.0, 10.0]) {
+    const bund = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.3, paddyD), gistdaEarthMat);
+    bund.position.set(paddyX + ox, 0.2, paddyZ);
+    infraGroup.add(bund);
+  }
+  for (let oz of [-4.5, 4.5]) {
+    const bund = new THREE.Mesh(new THREE.BoxGeometry(paddyW, 0.3, 0.6), gistdaEarthMat);
+    bund.position.set(paddyX, 0.2, paddyZ + oz);
+    infraGroup.add(bund);
+  }
+
+  // =========================================================================
+  // 6. STAFF RESIDENTIAL HOUSING (โซนบ้านพักอาจารย์/บุคลากร ท้าย ม.)
+  // =========================================================================
+  // Grid layout of detached 1-2 story cottages with pitched hip roofs
+  const houseMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, roughness: 0.5 });
+  const houseRoofMat = new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.4 });
+
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 5; c++) {
+      const hx = -105.0 - c * 7.5;
+      const hz = -15.0 - r * 8.0;
+
+      const houseBody = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.5, 5.0), houseMat);
+      houseBody.position.set(hx, 1.75, hz);
+      houseBody.castShadow = true;
+      infraGroup.add(houseBody);
+
+      const roofCone = new THREE.ConeGeometry(4.2, 1.8, 4);
+      const hRoof = new THREE.Mesh(roofCone, houseRoofMat);
+      hRoof.rotation.y = Math.PI / 4;
+      hRoof.position.set(hx, 4.4, hz);
+      hRoof.castShadow = true;
+      infraGroup.add(hRoof);
+    }
+  }
+
+  return infraGroup;
+}
+
 function buildBuildings() {
+  // 1. Build GISTDA Campus Infrastructure (Highway, Internal Roads, Parking, Canals, Ponds, Paddy, Housing)
+  const infra = createGistdaInfrastructure();
+  buildingsGroup.add(infra);
+
+  // 2. Build 3D Models for ALL Campus Buildings in GISTDA GeoTwin LOD1 precision
   HOSPITAL_BUILDINGS.forEach(bld => {
     const bGroup = new THREE.Group();
     bGroup.position.set(bld.pos.x, 0, bld.pos.z);
@@ -1204,21 +1789,37 @@ function buildBuildings() {
     bGroup.userData = bld;
 
     if (bld.id === 'bld-1') {
+      // Landmark 1: หอประชุม 80 ปี (1:1 Architectural Precision)
       const mesh = createAuditorium80Mesh();
       bGroup.add(mesh);
     } else if (bld.id === 'bld-10') {
-      // Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - ทรงระเบียงโค้ง) - Correct spot!
+      // Landmark 10: อาคารเรียนรวมทิศใต้ 9 ชั้น (1:1 West Wing + Chillers + Parking)
       const mesh = createBuilding10Mesh();
       bGroup.add(mesh);
+    } else if (bld.id === 'bld-2') {
+      // Landmark 2: อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB 100)
+      const mesh = createSPB100Mesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-8') {
+      // Landmark 8: พระอนุสาวรีย์สมเด็จเจ้าฟ้าวไลยอลงกรณ์ฯ
+      const mesh = createMonumentMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-36') {
+      // Landmark 36: เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)
+      const mesh = createThaiPavilionMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-57') {
+      // Landmark 57: สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ (ลู่วิ่ง 400 ม. + อัฒจันทร์)
+      const mesh = createStadiumMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-5') {
+      // Landmark 5: ศูนย์ส่งเสริมสุขภาพ & สระว่ายน้ำ 50 ม.
+      const mesh = createHealthPoolMesh();
+      bGroup.add(mesh);
     } else {
-      // Invisible flat hitbox on ground for raycasting/clicking (no 3D mesh rendered yet)
-      const hitGeo = new THREE.PlaneGeometry(bld.dimensions.w, bld.dimensions.d);
-      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-      hitMesh.rotation.x = -Math.PI / 2;
-      hitMesh.position.y = 0.05;
-      hitMesh.userData = bld;
-      bGroup.add(hitMesh);
+      // GISTDA GeoTwin LOD1 Model for all other faculties, dorms, and campus facilities
+      const mesh = createGistdaLOD1Mesh(bld);
+      bGroup.add(mesh);
     }
 
     buildingsGroup.add(bGroup);
