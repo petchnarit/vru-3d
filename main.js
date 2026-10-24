@@ -901,30 +901,38 @@ function dismissLoading() {
   }
 }
 
-// 1. Scene Base Slab (1480.9m x 408.0m with 31m solid extrusion)
+// 1. Scene Base Slab (1480.9m x 408.0m with Real 4K Drone Aerial Orthophoto Ground)
 function buildMaps3DBase() {
   const bw = 1480.9;
   const bd = 408.0;
   const baseH = 31.0; // target model thickness from Maps3D
 
-  // Solid Extruded Base Block below ground
+  // Solid Extruded Base Block below ground (Dark architectural plinth)
   const baseGeo = new THREE.BoxGeometry(bw, baseH, bd);
   const baseMat = new THREE.MeshStandardMaterial({
-    color: 0xF5F0EF, // sideColor / groundColor
-    roughness: 0.9,
-    metalness: 0.02
+    color: 0x1e293b, // Elegant slate base plinth
+    roughness: 0.8,
+    metalness: 0.1
   });
   baseBlockMesh = new THREE.Mesh(baseGeo, baseMat);
   baseBlockMesh.position.set(0, -baseH / 2, 0);
   baseBlockMesh.receiveShadow = true;
   scene.add(baseBlockMesh);
 
-  // Top Surface Ground Plane
+  // High-Resolution 4K Aerial Drone Texture
+  const texLoader = new THREE.TextureLoader();
+  const droneTexture = texLoader.load('img/vru-drone-map-4k.jpg', (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+  });
+
+  // Top Surface Ground Plane with Real Drone Orthophoto Background
   const groundGeo = new THREE.PlaneGeometry(bw, bd);
-  const groundMat = new THREE.MeshStandardMaterial({
-    color: 0xF5F0EF,
-    roughness: 0.85,
-    metalness: 0.02
+  const groundMat = new THREE.MeshBasicMaterial({
+    map: droneTexture
   });
   groundMesh = new THREE.Mesh(groundGeo, groundMat);
   groundMesh.rotation.x = -Math.PI / 2;
@@ -932,9 +940,21 @@ function buildMaps3DBase() {
   groundMesh.receiveShadow = true;
   scene.add(groundMesh);
 
+  // Surrounding Ambient Horizon Ground (Lush greenery surrounding the campus)
+  const horizonGeo = new THREE.PlaneGeometry(2400, 1200);
+  const horizonMat = new THREE.MeshStandardMaterial({
+    color: 0x27431e,
+    roughness: 0.95,
+    metalness: 0.0
+  });
+  const horizonMesh = new THREE.Mesh(horizonGeo, horizonMat);
+  horizonMesh.rotation.x = -Math.PI / 2;
+  horizonMesh.position.set(0, -0.05, 0);
+  scene.add(horizonMesh);
+
   // Crisp Base Border Outline
   const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(bw, 0.2, bd));
-  const lineMat = new THREE.LineBasicMaterial({ color: 0x94a3b8, linewidth: 2 });
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
   const borderLine = new THREE.LineSegments(edges, lineMat);
   borderLine.position.set(0, 0.1, 0);
   scene.add(borderLine);
@@ -947,7 +967,9 @@ function buildMaps3DRoads() {
   const roadMat = new THREE.MeshStandardMaterial({
     color: 0xB0B4C0, // maps3d roads.color (#B0B4C0)
     roughness: 0.75,
-    metalness: 0.05
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.45 // Semitransparent so real drone photo roads and details shine through!
   });
 
   const curbMat = new THREE.MeshStandardMaterial({
