@@ -1,506 +1,19 @@
 /**
- * VRU 3D Smart Campus - Pure Maps3D Project Implementation
- * Built strictly and exclusively from maps3d-project.json & OSM Vector Data
- *
- * Bounds: Width = 1480.9m, Depth = 408.0m (UTM Zone 47N centered at 100.61132E, 14.13384N)
- * Palette: Topographic (Ground #F5F0EF, Buildings #F1ECE1 with dark edges, Roads #B0B4C0, Water #98DCFF)
+ * Valaya Alongkorn Rajabhat University under the Royal Patronage (VRU) - 3D Smart Campus
+ * Complete 1:1 Ground-Truth Digital Twin with Real Drone Orthophoto and Complete 3D Architectural Models
  */
 
-// 1. Raw Project Configuration (maps3d-project.json)
-const MAPS3D_CONFIG = {
-  "format": "maps3d-project",
-  "configVersion": 5,
-  "savedAt": "2026-10-23T14:25:01.428Z",
-  "trackOmitted": false,
-  "params": {
-    "areaSelected": {
-      "ne": {
-        "lat": 14.13569,
-        "lng": 100.61818
-      },
-      "sw": {
-        "lat": 14.132,
-        "lng": 100.60446
-      },
-      "polygon": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              100.61818,
-              14.13569
-            ],
-            [
-              100.61818,
-              14.132
-            ],
-            [
-              100.60446,
-              14.132
-            ],
-            [
-              100.60446,
-              14.13569
-            ],
-            [
-              100.61818,
-              14.13569
-            ],
-            [
-              100.61818,
-              14.13569
-            ]
-          ]
-        ]
-      },
-      "rectCenter": [
-        100.61132,
-        14.13384
-      ],
-      "rectWidth": 1.4809,
-      "rectHeight": 0.408,
-      "rectRotation": 0,
-      "shapeType": "rectangle"
-    },
-    "imagerySelected": "satlas-superes-2023",
-    "groundMaterialMode": "color",
-    "groundColor": "#F5F0EF",
-    "terrainColorMode": "solid",
-    "elevationLayers": [
-      {
-        "color": "#4ade80",
-        "heightPercent": 40
-      },
-      {
-        "color": "#9ca3af",
-        "heightPercent": 75
-      },
-      {
-        "color": "#ffffff",
-        "heightPercent": 100
-      }
-    ],
-    "buildings": {
-      "show": true,
-      "source": "auto",
-      "detailed": false,
-      "extrudedHeightExaggerationRatio": 1,
-      "heightRandomnessPercent": 0,
-      "color": "#F1ECE1",
-      "minHeight": 9,
-      "maxHeight": 12,
-      "offset": 0,
-      "hideSmallBuildings": false,
-      "minWidthM": null,
-      "minAreaM2": null,
-      "edgeRendering": true,
-      "edgeWidth": 30,
-      "placement": "raised",
-      "carveDepth": null
-    },
-    "roads": {
-      "show": true,
-      "color": "#B0B4C0",
-      "widthScale": 1,
-      "extrudedHeight": 3,
-      "renderMode": "surface",
-      "offset": 0.02,
-      "placement": "raised",
-      "carveDepth": null,
-      "showFeature": null,
-      "groups": {
-        "arterial": {
-          "enabled": true,
-          "width": 10,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "collector": {
-          "enabled": true,
-          "width": 6,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "local": {
-          "enabled": true,
-          "width": 4,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "service": {
-          "enabled": true,
-          "width": 2,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "paths": {
-          "enabled": true,
-          "width": 1,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "rail": {
-          "enabled": false,
-          "width": 3,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "ferry": {
-          "enabled": false,
-          "width": 3,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "tunnel": {
-          "enabled": false,
-          "width": 4,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "bridge": {
-          "enabled": true,
-          "width": 6,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "sidewalk": {
-          "enabled": false,
-          "width": 1,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "crosswalk": {
-          "enabled": false,
-          "width": 1,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        },
-        "parking": {
-          "enabled": false,
-          "width": 2,
-          "color": "#B0B4C0",
-          "renderMode": "surface",
-          "extrudedHeight": 3
-        }
-      }
-    },
-    "water": {
-      "show": true,
-      "color": "#98DCFF",
-      "extrudedHeight": 1,
-      "opacity": 0.7,
-      "renderMode": "surface",
-      "offset": 0.02,
-      "placement": "raised",
-      "carveDepth": null,
-      "showFeature": null,
-      "flatten": "off",
-      "hideSmallBodies": true,
-      "minWidthM": null,
-      "minAreaM2": null,
-      "groups": {
-        "ocean": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "lakes": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "rivers": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "streams": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "canals": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "ditches": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "reservoirs": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "ponds": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "pools": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        },
-        "other": {
-          "enabled": true,
-          "width": null,
-          "color": null,
-          "renderMode": null,
-          "extrudedHeight": null,
-          "placement": null,
-          "carveDepth": null
-        }
-      }
-    },
-    "landCover": {
-      "show": true,
-      "extrudedHeight": 1,
-      "opacity": 1,
-      "renderMode": "surface",
-      "offset": 0.02,
-      "minUrbanAreaM2": null,
-      "categories": {
-        "WOOD": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "GRASS": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "FARMLAND": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "WETLAND": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "SAND": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "ICE": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "ROCK": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        },
-        "URBAN": {
-          "height": null,
-          "enabled": true,
-          "color": null,
-          "renderMode": null,
-          "placement": "raised",
-          "carveDepth": null,
-          "showFeature": null
-        }
-      }
-    },
-    "parcels": {
-      "show": false,
-      "color": "#646464"
-    },
-    "contour": {
-      "show": false,
-      "interval": null,
-      "color": "#8b6f47",
-      "renderMode": "line",
-      "width": null,
-      "extrudedHeight": null,
-      "labels": false,
-      "placement": "raised",
-      "carveDepth": null,
-      "offset": 0.1
-    },
-    "trees": {
-      "show": true,
-      "color": "#4a7c3a",
-      "scale": 0.9,
-      "style": "classic",
-      "sources": {
-        "chm": true,
-        "osm": true,
-        "fill": false
-      },
-      "density": 0.005,
-      "clearanceM": 4
-    },
-    "sideTexture": "dirt",
-    "sideColor": "#F5F0EF",
-    "sideMaterial": "color",
-    "printing": {
-      "base": 20,
-      "baseMm": 2,
-      "largestSideScaling": {
-        "enabled": false,
-        "targetSize": 250
-      },
-      "straightenNorth": null,
-      "zMode": "exaggeration",
-      "targetModelHeightMm": 17,
-      "plateSize": 220,
-      "splitting": {
-        "mode": "none",
-        "autoFit": true,
-        "columns": 2,
-        "rows": 2
-      }
-    },
-    "printFrame": {
-      "baseElevation": null,
-      "frameCenter": null,
-      "fixedScale": null
-    },
-    "exportCrs": "UTM",
-    "exportUnit": "m",
-    "exportAbsoluteCoordinates": false,
-    "elevationDataset": "mapterhorn-global",
-    "elevationVerticalResolution": null,
-    "elevationExaggeration": 1,
-    "wireframe": false,
-    "gridOverlay": {
-      "visible": false
-    },
-    "sun": {
-      "shadows": false,
-      "azimuthDeg": 134,
-      "elevationDeg": 46,
-      "timeHours": null,
-      "date": null
-    },
-    "renderingPreset": "topographic",
-    "palette": "topographic",
-    "elevationZoom": 11,
-    "textureZoom": 15,
-    "markers": [],
-    "markers3d": {
-      "show": true,
-      "items": []
-    },
-    "tracks": [],
-    "tracksShow": true,
-    "frame": {
-      "enabled": false,
-      "style": "rounded",
-      "color": "#C8A96A",
-      "thickness": 3,
-      "fuseToModel": true,
-      "height": 5,
-      "title": "",
-      "subtitle": "",
-      "font": "montserrat",
-      "customFontName": "",
-      "textColor": "#222222",
-      "textEdge": "bottom",
-      "textSize": 6,
-      "textHeight": 0.8,
-      "textPlacement": "raised"
-    }
-  }
-};
-
-// 2. Real Vector Data (OpenStreetMap roads and water strictly within 1.48km x 408m box)
-const MAPS3D_VECTORS = {"bounds": {"width": 1480.9, "depth": 408.0, "center": [100.61132, 14.13384]}, "roads": [{"id": "217802050", "name": "", "group": "local", "width": 4.0, "pts": [[694.85, -57.72], [642.83, -57.35], [561.47, -56.65], [553.36, -56.49], [424.66, -56.45], [417.27, -56.51], [406.95, -56.57], [386.73, -56.54], [339.4, -56.62], [116.68, -55.57]]}, {"id": "217802052", "name": "", "group": "service", "width": 2.0, "pts": [[-101.08, 99.19], [-127.06, 108.76], [-125.44, 174.53], [-413.33, 177.2], [-595.5, 176.99], [-614.73, 178.07], [-614.15, 170.82], [-614.09, 165.54], [-613.2, 134.31], [-612.14, 106.12], [-610.23, 71.68], [-701.75, 70.25]]}, {"id": "217802054", "name": "", "group": "local", "width": 4.0, "pts": [[-15.45, -85.62], [-15.16, -39.31], [-15.05, -22.09], [-14.92, -1.38], [-14.39, 83.16]]}, {"id": "217802055", "name": "", "group": "service", "width": 2.0, "pts": [[-127.06, 108.76], [-165.56, 107.33], [-350.41, 97.63], [-407.97, 94.6]]}, {"id": "217802057", "name": "", "group": "local", "width": 4.0, "pts": [[740.37, -217.46], [493.0, -210.68], [426.85, -209.88], [292.63, -208.26], [172.93, -206.8], [27.26, -205.04], [-26.43, -204.41], [-237.38, -203.3], [-415.64, -204.77]]}, {"id": "217802058", "name": "", "group": "local", "width": 4.0, "pts": [[407.99, 144.03], [408.2, 83.88], [407.66, 34.97], [407.22, -4.58], [406.95, -56.57]]}, {"id": "217802059", "name": "", "group": "service", "width": 2.0, "pts": [[-612.14, 106.12], [-664.53, 105.03], [-684.0, 104.31], [-702.4, 103.64]]}, {"id": "217802060", "name": "", "group": "service", "width": 2.0, "pts": [[-400.38, -65.29], [-403.31, -10.36], [-407.97, 94.6], [-413.33, 177.2]]}, {"id": "217802066", "name": "", "group": "service", "width": 2.0, "pts": [[-613.2, 134.31], [-647.09, 132.89], [-665.62, 132.6], [-672.56, 132.97], [-675.53, 134.05], [-676.74, 136.09], [-676.48, 177.69]]}, {"id": "217802068", "name": "", "group": "local", "width": 4.0, "pts": [[742.73, 27.21], [730.21, 28.28], [695.26, 31.26], [695.26, 42.48], [695.26, 57.46], [730.29, 54.48], [742.82, 53.41]]}, {"id": "217802073", "name": "", "group": "local", "width": 4.0, "pts": [[695.26, 57.46], [693.53, 143.75], [611.28, 143.83], [565.82, 143.87], [526.01, 143.91], [433.64, 144.0], [424.81, 144.01], [407.99, 144.03], [296.83, 144.03], [267.15, 144.03], [211.7, 144.03], [115.53, 144.03], [115.07, 130.39], [113.55, 84.0], [116.68, -55.57]]}, {"id": "218121112", "name": "", "group": "local", "width": 4.0, "pts": [[-617.7, -287.16], [-615.29, -231.41], [-616.33, -212.23], [-617.05, -206.89], [-617.26, -198.42], [-624.5, -198.13], [-685.82, -195.96]]}, {"id": "622540412", "name": "", "group": "service", "width": 2.0, "pts": [[93.86, 83.87], [93.42, 137.46], [93.5, 144.4], [97.26, 144.33], [100.65, 144.27], [103.92, 144.26], [115.53, 144.03]]}, {"id": "622540413", "name": "", "group": "service", "width": 2.0, "pts": [[72.87, 83.73], [75.77, 124.72], [76.48, 134.56], [77.36, 141.87], [78.59, 143.83], [81.19, 144.84], [84.96, 144.98], [93.5, 144.4]]}, {"id": "622540415", "name": "", "group": "service", "width": 2.0, "pts": [[-81.68, 89.82], [-54.24, 111.61], [-4.51, 151.72], [36.45, 188.63], [40.3, 191.53], [44.5, 193.77], [49.85, 193.55], [60.99, 192.91]]}, {"id": "622540416", "name": "", "group": "local", "width": 4.0, "pts": [[-101.08, 99.19], [-35.14, 158.95]]}, {"id": "622540418", "name": "", "group": "local", "width": 4.0, "pts": [[-81.68, 89.82], [-101.08, 99.19]]}, {"id": "622540419", "name": "", "group": "local", "width": 4.0, "pts": [[113.55, 84.0], [93.86, 83.87], [72.87, 83.73], [-14.39, 83.16], [-64.31, 82.54], [-72.78, 86.09], [-81.68, 89.82]]}, {"id": "622540420", "name": "", "group": "service", "width": 2.0, "pts": [[-249.03, -8.56], [-170.37, 100.67], [-165.56, 107.33]]}, {"id": "622540421", "name": "", "group": "service", "width": 2.0, "pts": [[-608.9, 38.02], [-702.04, 35.97]]}, {"id": "622540422", "name": "", "group": "service", "width": 2.0, "pts": [[-676.48, 177.69], [-702.53, 177.63]]}, {"id": "622540423", "name": "", "group": "service", "width": 2.0, "pts": [[-614.73, 178.07], [-624.43, 178.21], [-676.48, 177.69]]}, {"id": "622540424", "name": "", "group": "service", "width": 2.0, "pts": [[-698.67, -66.27], [-701.66, -64.93], [-702.31, -63.42], [-702.31, 3.18], [-702.04, 35.97], [-701.75, 70.25], [-702.4, 103.64], [-702.53, 177.63], [-702.46, 185.88]]}, {"id": "622540425", "name": "", "group": "service", "width": 2.0, "pts": [[-604.95, -65.96], [-608.9, 38.02], [-609.01, 40.97], [-610.23, 71.68]]}, {"id": "622540426", "name": "", "group": "local", "width": 4.0, "pts": [[-408.63, -183.76], [-402.65, -179.7], [-391.86, -172.62], [-373.68, -160.27], [-348.06, -141.38], [-318.24, -121.76], [-284.29, -95.91], [-273.86, -82.81], [-266.82, -71.24]]}, {"id": "622540432", "name": "", "group": "service", "width": 2.0, "pts": [[27.26, -205.04], [26.39, -259.08], [25.45, -261.54], [23.79, -263.42], [-17.33, -264.57], [-23.7, -261.39], [-25.86, -256.9], [-26.16, -251.84], [-26.43, -204.41]]}, {"id": "622540433", "name": "", "group": "local", "width": 4.0, "pts": [[-242.29, -80.74], [-257.32, -74.92]]}, {"id": "622540434", "name": "", "group": "service", "width": 2.0, "pts": [[-266.82, -71.24], [-279.3, -69.75], [-285.44, -68.75], [-400.38, -65.29], [-517.37, -65.68], [-604.95, -65.96], [-698.67, -66.27]]}, {"id": "622552193", "name": "", "group": "service", "width": 2.0, "pts": [[267.15, 144.03], [265.85, 170.46], [262.52, 174.95], [257.88, 179.0], [257.74, 194.5], [259.77, 196.81], [353.0, 193.49]]}, {"id": "622552195", "name": "", "group": "service", "width": 2.0, "pts": [[100.65, 144.27], [97.62, 195.51], [99.51, 198.26], [130.34, 197.97]]}, {"id": "622552197", "name": "", "group": "service", "width": 2.0, "pts": [[408.45, 174.95], [407.99, 144.03]]}, {"id": "622552199", "name": "", "group": "service", "width": 2.0, "pts": [[424.81, 144.01], [424.37, 176.69], [427.27, 179.44]]}, {"id": "622552203", "name": "", "group": "service", "width": 2.0, "pts": [[742.97, 165.39], [711.16, 168.44], [707.84, 176.11], [667.6, 176.11]]}, {"id": "622552205", "name": "", "group": "service", "width": 2.0, "pts": [[611.15, 162.36], [529.77, 162.5], [527.3, 160.91], [526.44, 153.96], [526.01, 143.91]]}, {"id": "622552206", "name": "", "group": "service", "width": 2.0, "pts": [[611.28, 143.83], [611.15, 162.36], [610.99, 185.82]]}, {"id": "622552208", "name": "", "group": "service", "width": 2.0, "pts": [[705.23, -57.83], [704.09, -75.36], [703.5, -103.88]]}, {"id": "622552209", "name": "", "group": "local", "width": 4.0, "pts": [[694.85, -57.72], [705.23, -57.83], [731.77, -59.24], [741.22, -59.75]]}, {"id": "622552210", "name": "", "group": "service", "width": 2.0, "pts": [[628.79, -102.97], [627.92, -73.77]]}, {"id": "622552211", "name": "", "group": "service", "width": 2.0, "pts": [[552.93, -73.32], [507.47, -74.06]]}, {"id": "622552212", "name": "", "group": "service", "width": 2.0, "pts": [[553.36, -56.49], [552.93, -73.32], [552.79, -82.31], [552.5, -90.41], [550.9, -91.72], [508.06, -92.01]]}, {"id": "622552213", "name": "", "group": "local", "width": 4.0, "pts": [[386.88, -103.06], [386.73, -56.54]]}, {"id": "622552214", "name": "", "group": "local", "width": 4.0, "pts": [[-125.44, 174.53], [-44.97, 173.94], [-38.46, 172.2], [-34.99, 170.03], [-33.4, 166.85], [-33.32, 162.86], [-35.14, 158.95]]}, {"id": "622552215", "name": "", "group": "paths", "width": 1.0, "pts": [[695.26, 42.48], [670.06, 43.06]]}, {"id": "622552216", "name": "", "group": "service", "width": 2.0, "pts": [[563.24, 45.52], [520.21, 46.25]]}, {"id": "622552217", "name": "", "group": "service", "width": 2.0, "pts": [[565.82, 143.87], [563.24, 45.52], [561.47, -56.65]]}, {"id": "622552218", "name": "", "group": "service", "width": 2.0, "pts": [[471.15, -32.44], [472.58, -2.83]]}, {"id": "622552219", "name": "", "group": "service", "width": 2.0, "pts": [[454.2, -32.07], [454.92, 21.01]]}, {"id": "622552220", "name": "", "group": "service", "width": 2.0, "pts": [[437.83, -31.72], [438.13, 19.18], [440.3, 21.21], [454.92, 21.01], [462.31, 20.92]]}, {"id": "622552221", "name": "", "group": "service", "width": 2.0, "pts": [[424.66, -56.45], [424.81, -36.99], [434.22, -31.64], [437.83, -31.72], [454.2, -32.07], [471.15, -32.44], [487.35, -32.79]]}, {"id": "622552222", "name": "", "group": "service", "width": 2.0, "pts": [[457.68, 79.84], [457.23, 121.09]]}, {"id": "622552223", "name": "", "group": "service", "width": 2.0, "pts": [[433.64, 144.0], [439.86, 121.67], [439.57, 80.56]]}, {"id": "622552224", "name": "", "group": "service", "width": 2.0, "pts": [[439.86, 121.67], [457.23, 121.09]]}, {"id": "622552225", "name": "", "group": "service", "width": 2.0, "pts": [[439.57, 80.56], [441.46, 77.81], [456.37, 77.38], [457.68, 79.84]]}, {"id": "622552226", "name": "", "group": "service", "width": 2.0, "pts": [[407.66, 34.97], [344.89, 34.38]]}, {"id": "622552227", "name": "", "group": "service", "width": 2.0, "pts": [[257.78, 47.43], [274.25, 40.31], [279.31, 38.86], [295.68, 14.68], [307.26, 5.57]]}, {"id": "622552228", "name": "", "group": "service", "width": 2.0, "pts": [[236.31, 63.47], [258.48, 63.47]]}, {"id": "622552229", "name": "", "group": "service", "width": 2.0, "pts": [[211.7, 144.03], [211.61, 127.86]]}, {"id": "622552230", "name": "", "group": "service", "width": 2.0, "pts": [[339.1, -11.22], [307.26, 5.57], [291.04, 6.0], [273.96, 5.42], [263.39, 8.75], [259.05, 13.81], [257.16, 32.78], [257.78, 47.43], [258.48, 63.47], [259.34, 83.6]]}, {"id": "622552231", "name": "", "group": "service", "width": 2.0, "pts": [[407.22, -4.58], [345.33, -5.72], [342.15, -7.31], [339.1, -11.22], [339.4, -56.62]]}, {"id": "622552232", "name": "", "group": "service", "width": 2.0, "pts": [[408.2, 83.88], [352.27, 82.59]]}, {"id": "622552233", "name": "", "group": "service", "width": 2.0, "pts": [[362.56, 132.39], [364.15, 94.02]]}, {"id": "622552234", "name": "", "group": "service", "width": 2.0, "pts": [[296.69, 131.96], [360.82, 130.08], [362.56, 132.39], [363.13, 136.88]]}, {"id": "622552235", "name": "", "group": "service", "width": 2.0, "pts": [[115.07, 130.39], [207.07, 130.08], [211.61, 127.86], [217.79, 124.86], [222.27, 122.54], [292.77, 122.25], [295.23, 124.13], [296.69, 131.96], [296.83, 144.03]]}, {"id": "622552236", "name": "", "group": "paths", "width": 1.0, "pts": [[0.3, -16.48], [1.06, -26.35], [0.63, -31.72], [-1.91, -40.75], [-5.6, -49.37], [-7.41, -55.24], [-7.99, -61.25], [-6.33, -67.62], [-4.66, -70.8], [-2.34, -73.11], [1.13, -74.85], [4.46, -75.8], [7.72, -75.8], [11.63, -74.78], [16.92, -72.1], [20.61, -67.83], [21.47, -61.75], [21.04, -53.71], [19.23, -41.91], [15.47, -22.88], [13.31, -9.43]]}, {"id": "622552237", "name": "", "group": "paths", "width": 1.0, "pts": [[-15.05, -22.09], [-6.03, -19.92], [0.3, -16.48], [13.31, -9.43], [16.41, -7.75], [24.66, -3.55], [28.42, -1.81]]}, {"id": "622552238", "name": "", "group": "service", "width": 2.0, "pts": [[-97.67, -85.87], [-98.11, -45.98], [-99.84, -41.48], [-106.65, -39.89], [-121.56, -40.9], [-123.01, -43.66], [-124.16, -85.95]]}, {"id": "622552239", "name": "", "group": "local", "width": 4.0, "pts": [[-14.92, -1.38], [-66.4, -1.24]]}, {"id": "622552240", "name": "", "group": "local", "width": 4.0, "pts": [[-15.16, -39.31], [-73.21, -39.6]]}, {"id": "622552241", "name": "", "group": "service", "width": 2.0, "pts": [[-517.37, -65.68], [-521.42, 123.13]]}, {"id": "622552242", "name": "", "group": "local", "width": 4.0, "pts": [[106.89, -83.61], [110.37, -91.86], [113.69, -95.33], [117.31, -97.22], [203.75, -98.08], [317.39, -103.29], [386.88, -103.06], [442.77, -102.86], [602.01, -102.58], [628.79, -102.97], [701.61, -104.03], [703.5, -103.88], [741.55, -108.23]]}, {"id": "622552243", "name": "", "group": "local", "width": 4.0, "pts": [[417.71, -198.13], [265.56, -195.96], [136.14, -196.82], [100.95, -196.97], [-43.97, -195.96], [-196.57, -194.58], [-237.17, -194.22]]}, {"id": "622552244", "name": "", "group": "paths", "width": 1.0, "pts": [[558.15, -126.75], [539.32, -126.9], [480.83, -128.34], [434.08, -125.74]]}, {"id": "622552245", "name": "", "group": "local", "width": 4.0, "pts": [[740.37, -158.33], [731.63, -158.32], [722.9, -158.31], [714.93, -153.9], [712.04, -145.14], [707.7, -139.21], [695.39, -137.76], [687.13, -135.88], [677.43, -132.55], [671.8, -131.1], [668.61, -129.8], [558.15, -126.75]]}, {"id": "622564460", "name": "", "group": "service", "width": 2.0, "pts": [[642.83, -57.35], [643.56, -72.32], [647.32, -74.35], [704.09, -75.36]]}, {"id": "622575380", "name": "", "group": "paths", "width": 1.0, "pts": [[742.57, -9.01], [736.19, -10.93], [736.76, -25.73]]}, {"id": "623038390", "name": "", "group": "bridge", "width": 6.0, "pts": [[-603.11, -171.78], [-601.41, -168.95], [-597.14, -161.2]]}, {"id": "623038391", "name": "", "group": "paths", "width": 1.0, "pts": [[-617.26, -198.42], [-610.75, -187.05], [-603.11, -171.78]]}, {"id": "694361219", "name": "", "group": "local", "width": 4.0, "pts": [[116.68, -55.57], [112.75, -74.71], [106.89, -83.61], [99.78, -87.6], [-15.45, -85.62], [-97.67, -85.87], [-124.16, -85.95], [-228.01, -86.27], [-238.54, -82.6], [-242.29, -80.74]]}, {"id": "694361220", "name": "", "group": "local", "width": 4.0, "pts": [[695.26, 31.26], [694.85, -57.72]]}, {"id": "865247122", "name": "", "group": "local", "width": 4.0, "pts": [[-196.57, -194.58], [-194.93, -133.86], [-194.53, -118.93], [-194.82, -115.46], [-197.42, -113.29], [-242.74, -113.0], [-250.12, -112.71], [-253.81, -111.77], [-256.2, -109.82], [-258.8, -106.41], [-238.54, -82.6]]}, {"id": "865247123", "name": "", "group": "local", "width": 4.0, "pts": [[278.59, -137.47], [279.74, -126.46], [281.2, -124.58], [285.54, -121.97], [332.44, -123.28], [389.48, -123.42], [394.55, -125.01], [400.48, -130.67], [408.02, -151.22], [415.54, -187.71], [417.71, -198.13]]}, {"id": "865247124", "name": "", "group": "local", "width": 4.0, "pts": [[99.78, -87.6], [100.66, -151.22], [100.95, -196.97]]}, {"id": "865248005", "name": "", "group": "local", "width": 4.0, "pts": [[100.66, -151.22], [192.45, -151.22]]}, {"id": "898311787", "name": "", "group": "local", "width": 4.0, "pts": [[-257.32, -74.92], [-258.79, -74.35], [-266.82, -71.24]]}, {"id": "898311788", "name": "", "group": "service", "width": 2.0, "pts": [[-290.9, -128.55], [-276.18, -129.94], [-261.84, -130.67], [-216.54, -132.69], [-194.93, -133.86]]}, {"id": "898311789", "name": "", "group": "local", "width": 4.0, "pts": [[-384.32, -194.0], [-362.31, -177.42], [-339.45, -160.2], [-290.9, -128.55], [-266.63, -112.13], [-258.8, -106.41]]}, {"id": "898311790", "name": "", "group": "local", "width": 4.0, "pts": [[-417.91, -192.05], [-394.03, -193.93], [-384.32, -194.0], [-373.76, -194.08], [-336.84, -194.65], [-237.17, -194.22]]}, {"id": "898311791", "name": "", "group": "local", "width": 4.0, "pts": [[-417.91, -192.05], [-429.06, -192.34], [-442.23, -193.35], [-475.82, -193.21], [-504.77, -193.21], [-520.56, -192.92], [-531.27, -192.19], [-546.25, -185.67], [-570.57, -169.32], [-594.54, -154.41], [-598.44, -148.76], [-603.51, -142.68], [-610.6, -138.05], [-653.16, -123.28]]}, {"id": "912841342", "name": "", "group": "local", "width": 4.0, "pts": [[714.93, -153.9], [710.59, -165.77], [703.86, -179.37], [693.8, -197.26], [574.5, -196.03], [510.81, -195.38], [417.71, -198.13]]}, {"id": "930540606", "name": "", "group": "service", "width": 2.0, "pts": [[-72.78, 86.09], [-75.67, 67.09], [-78.13, 42.48]]}, {"id": "930600845", "name": "", "group": "service", "width": 2.0, "pts": [[417.27, -56.51], [417.36, -89.91], [417.42, -94.18], [417.86, -97.0], [418.73, -98.81], [419.67, -99.75], [421.84, -100.41]]}, {"id": "930602380", "name": "", "group": "local", "width": 4.0, "pts": [[574.5, -196.03], [569.01, -184.08], [566.39, -173.95], [562.92, -165.56], [557.71, -158.32], [554.81, -152.52], [553.36, -143.84], [553.95, -137.76], [558.15, -126.75]]}, {"id": "948038381", "name": "ถนนพหลโยธิน", "group": "arterial", "width": 10.0, "pts": [[743.34, 508.5], [743.31, 439.31], [743.33, 431.21], [743.43, 389.14], [743.52, 379.39], [743.77, 350.38], [743.42, 316.43], [743.48, 307.31], [742.97, 165.39], [742.83, 58.57], [742.82, 53.41], [742.73, 27.21], [742.66, 6.04], [742.63, -2.87], [742.57, -9.01], [741.22, -59.75], [741.55, -108.23], [740.37, -158.33], [740.37, -217.46], [739.67, -246.9], [738.67, -287.05], [738.61, -305.58], [738.37, -327.82], [737.66, -356.29], [735.66, -398.37], [734.18, -505.15], [731.97, -580.02], [732.05, -588.59], [731.92, -661.54], [732.2, -675.28], [733.54, -742.01], [733.49, -762.88], [733.86, -805.14], [733.7, -819.08], [733.28, -837.81], [733.23, -887.13], [732.78, -898.03], [732.13, -960.22], [731.72, -1030.54], [731.41, -1083.97], [731.22, -1113.93], [730.79, -1187.62], [730.56, -1197.17]]}, {"id": "950398274", "name": "", "group": "paths", "width": 1.0, "pts": [[13.31, -9.43], [15.69, -2.39], [22.41, 15.48], [23.5, 19.83], [22.85, 25.84], [21.55, 27.64], [19.23, 31.05], [16.04, 33.44], [13.15, 35.1], [8.37, 35.82], [4.24, 35.1], [0.63, 34.16], [-1.98, 31.85], [-5.16, 29.17], [-6.68, 25.69], [-6.9, 21.79], [-6.39, 15.12], [-4.59, 9.04], [-2.05, -4.64], [-0.74, -13.18], [0.3, -16.48]]}, {"id": "1049832023", "name": "", "group": "service", "width": 2.0, "pts": [[-241.0, -43.66], [-258.79, -74.35]]}, {"id": "1198891198", "name": "", "group": "service", "width": 2.0, "pts": [[-350.41, 97.63], [-348.39, 2.4]]}, {"id": "1560094118", "name": "", "group": "paths", "width": 1.0, "pts": [[-597.14, -161.2], [-594.54, -154.41]]}], "water": [{"id": "174967791", "name": "คลองเชียงรากน้อย", "pts": [[-690.89, -139.98], [-746.92, -161.11], [-827.19, -166.98], [-870.35, -167.56], [-929.61, -152.02], [-942.85, -147.99], [-979.67, -141.67], [-1030.88, -124.98], [-1049.87, -101.38], [-1090.15, -48.45], [-1117.77, -35.79], [-1158.05, -20.83], [-1209.83, 9.09], [-1461.29, 158.13], [-1495.81, 169.63], [-1534.93, 172.51], [-1784.66, 175.96], [-1814.0, 175.38], [-1864.06, 168.48], [-1893.41, 161.58], [-1934.84, 166.18], [-1983.17, 183.44], [-2052.8, 202.44], [-2146.02, 243.29], [-2168.46, 253.64], [-2242.69, 268.6], [-2360.64, 302.56], [-2426.23, 335.35], [-2452.7, 351.46], [-2497.0, 402.68], [-2521.17, 433.75], [-2538.44, 456.19], [-2562.03, 475.18], [-2612.66, 495.32], [-2688.62, 523.52], [-2773.21, 532.14], [-2799.68, 532.72], [-2851.46, 537.9], [-2917.63, 552.86], [-2986.68, 537.32], [-3019.47, 534.45], [-3059.18, 540.2], [-3105.22, 570.69], [-3142.23, 576.47]]}, {"id": "789326159", "name": "คลองเชียงรากน้อย", "pts": [[-546.83, -204.91], [-582.03, -176.81], [-632.41, -151.91], [-666.49, -140.12], [-690.89, -139.98]]}, {"id": "789326165", "name": "คลองเชียงรากน้อย", "pts": [[902.44, -1237.79], [889.29, -1233.68], [860.25, -1225.43], [806.14, -1222.17], [801.26, -1218.51], [723.14, -1206.72], [692.62, -1198.17], [675.13, -1190.44], [644.61, -1173.76], [396.43, -970.74], [384.63, -960.57], [-514.62, -230.27], [-546.83, -204.91]]}, {"id": "789326169", "name": "Canal", "pts": [[28.27, 198.31], [-92.9, 91.27], [-137.49, 21.5], [-233.03, -57.26], [-274.73, -108.23], [-398.08, -188.72]]}]};
-
-// 3. VRU Campus Building Directory (1:1 scaled to Maps3D box)
+// 1. Campus Buildings Inventory (100% Calibrated to Drone Orthophoto & VRU Masterplan)
 const HOSPITAL_BUILDINGS = [
   {
-    id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1', sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย', category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ', archType: 'auditorium80', pos: { x: 546.93, y: 0.00, z: 50.39 }, rotY: 0, anchorHeight: 15, dimensions: { w: 30.12, h: 11.0, d: 32.89 }, roofColor: 0xf8fafc, accentColor: 0x047857,
+    id: 'bld-1', num: '1', name: '1. หอประชุม 80 ปี วไลยอลงกรณ์', shortName: '1', sub: 'หอประชุมใหญ่เฉลิมพระเกียรติ 80 พรรษา อาคารแลนด์มาร์คขนาดใหญ่ด้านหน้ามหาวิทยาลัย', category: 'อาคารหอประชุมและแลนด์มาร์ค', status: 'เปิดทำการปกติ', archType: 'auditorium80', pos: { x: 153.86, y: 0, z: 14.82 }, rotY: 0, anchorHeight: 15, dimensions: { w: 30.12, h: 11.0, d: 32.89 }, roofColor: 0xf8fafc, accentColor: 0x047857,
     floors: [{ num: 3, desc: 'โถงหอประชุมใหญ่ 3,500 ที่นั่ง' }, { num: 2, desc: 'โถงต้อนรับและห้องประชุมย่อย' }, { num: 1, desc: 'ลานนิทรรศการและลานจอดรถ' }]
   },
       {
     id: 'bld-2', num: '2', name: '2. อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB)', shortName: '2',
     sub: 'สำนักงานอธิการบดี, ห้องประชุมสภามหาวิทยาลัย, สำนักส่งเสริมวิชาการและงานทะเบียน',
     category: 'อาคารบริหารและสำนักงานกลาง', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'spb100', pos: { x: 436.66, y: 0.00, z: 48.99 }, rotY: 0, anchorHeight: 18,
+    archType: 'spb100', pos: { x: 122.84, y: 0, z: 14.41 }, rotY: 0, anchorHeight: 18,
     dimensions: { w: 22.5, h: 16.0, d: 14.0 }, roofColor: 0x94a3b8, accentColor: 0x047857,
     floors: [
       { num: 6, desc: 'สำนักงานอธิการบดี' },
@@ -515,7 +28,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-3', num: '3', name: '3. โรงแรม มรภ.วไลยอลงกรณ์', shortName: '3',
     sub: 'ศูนย์ฝึกประสบการณ์วิชาชีพ โรงแรม มรภ.วไลยอลงกรณ์ฯ มาตรฐาน 78 ห้องพัก',
     category: 'ศูนย์ฝึกวิชาชีพและบริการที่พัก', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'hotel', pos: { x: 645.18, y: 0.00, z: -75.48 }, rotY: 0, anchorHeight: 16,
+    archType: 'hotel', pos: { x: 181.5, y: 0, z: -22.2 }, rotY: 0, anchorHeight: 16,
     dimensions: { w: 24.0, h: 12.0, d: 14.0 }, roofColor: 0x334155, accentColor: 0x059669,
     floors: [{ num: 4, desc: 'ห้องพักรับรองพิเศษ' }, { num: 3, desc: 'ห้องพักสัมมนา' }, { num: 2, desc: 'ห้องจัดเลี้ยง' }, { num: 1, desc: 'ล็อบบี้ต้อนรับ' }]
   },
@@ -523,7 +36,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-4', num: '4', name: '4. VRU Green Community Mall', shortName: '4',
     sub: 'ศูนย์รวมร้านค้า ร้านอาหาร สหกรณ์ และพื้นที่บริการชุมชนริมถนนพหลโยธิน',
     category: 'อาคารบริการและสวัสดิการ', status: 'เปิดบริการ 07:00 - 20:00 น.',
-    archType: 'mall', pos: { x: 642.34, y: 0.00, z: -142.80 }, rotY: 0, anchorHeight: 9,
+    archType: 'mall', pos: { x: 180.7, y: 0, z: -42.0 }, rotY: 0, anchorHeight: 9,
     dimensions: { w: 36.0, h: 6.0, d: 26.0 }, roofColor: 0x475569, accentColor: 0x10b981,
     floors: [{ num: 2, desc: 'Co-Working Space' }, { num: 1, desc: 'ศูนย์อาหารและร้านค้า' }]
   },
@@ -531,7 +44,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-5', num: '5', name: '5. อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ', shortName: '5',
     sub: 'สระว่ายน้ำอวยพร เปล่งวานิช ขนาด 50 เมตร และศูนย์ฟิตเนสออกกำลังกาย',
     category: 'ศูนย์กีฬาและสุขภาพ', status: 'เปิดบริการ 06:00 - 20:00 น.',
-    archType: 'pool', pos: { x: 558.80, y: 0.00, z: -75.48 }, rotY: 0, anchorHeight: 7,
+    archType: 'pool', pos: { x: 157.2, y: 0, z: -22.2 }, rotY: 0, anchorHeight: 7,
     dimensions: { w: 16.0, h: 4.5, d: 14.0 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
     floors: [{ num: 1, desc: 'สระว่ายน้ำ 50 เมตรและศูนย์ฟิตเนส' }]
   },
@@ -539,7 +52,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-8', num: '8', name: '8. พระอนุสาวรีย์เจ้าฟ้าวไลยอลงกรณ์ฯ', shortName: '8',
     sub: 'พระอนุสาวรีย์สมเด็จพระราชปิตุจฉา เจ้าฟ้าวไลยอลงกรณ์ กรมหลวงเพชรบุรีราชสิรินธร',
     category: 'อนุสาวรีย์และสิ่งศักดิ์สิทธิ์', status: 'เปิดสักการะตลอดวัน',
-    archType: 'monument', pos: { x: 654.07, y: 0.00, z: 49.30 }, rotY: 0, anchorHeight: 8,
+    archType: 'monument', pos: { x: 184.0, y: 0, z: 14.5 }, rotY: 0, anchorHeight: 8,
     dimensions: { w: 5.0, h: 5.0, d: 5.0 }, roofColor: 0xfbbf24, accentColor: 0xf59e0b,
     floors: [{ num: 1, desc: 'ลานพระอนุสาวรีย์' }]
   },
@@ -547,7 +60,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-10', num: '10', name: '10. อาคารเรียนรวมทิศใต้ (อาคาร 9 ชั้น พร้อมปีกตะวันตก 1:1 และลานจอดรถติดถนน)', shortName: '10',
     sub: 'อาคารเรียนรวม 9 ชั้น ปีกตะวันตกครอบคลุมครบ 1:1 พร้อมลานจอดรถแอสฟัลต์ติดถนนหลักทิศเหนือ',
     category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'bld10_9floors', pos: { x: 503.24, y: 0.00, z: 179.76 }, rotY: 0, anchorHeight: 31,
+    archType: 'bld10_9floors', pos: { x: 141.57, y: 0, z: 52.87 }, rotY: 0, anchorHeight: 31,
     dimensions: { w: 49.5, h: 28.0, d: 12.2 }, roofColor: 0xebedf0, accentColor: 0x047857,
     floors: [
       { num: 9, desc: 'ห้องปฏิบัติการและห้องวิจัย' },
@@ -565,7 +78,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-11', num: '11', name: '11. ยิมเนเซียม 1 (โรงยิม 1)', shortName: '11',
     sub: 'อาคารพลศึกษา สนามบาสเกตบอล วอลเลย์บอล และแบดมินตันในร่ม',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
-    archType: 'box', pos: { x: 349.79, y: 0.00, z: 36.38 }, rotY: 0, anchorHeight: 11,
+    archType: 'box', pos: { x: 98.4, y: 0, z: 10.7 }, rotY: 0, anchorHeight: 11,
     dimensions: { w: 13.2, h: 8.0, d: 13.2 }, roofColor: 0x334155, accentColor: 0x38bdf8,
     floors: [{ num: 2, desc: 'อัฒจันทร์ในร่ม' }, { num: 1, desc: 'สนามแข่งขันในร่ม' }]
   },
@@ -573,7 +86,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-12', num: '12', name: '12. อาคาร 75 ปี วไลยอลงกรณ์ (ศูนย์ภาษา)', shortName: '12',
     sub: 'สถาบันภาษา ศูนย์การเรียนรู้ภาษาต่างประเทศและห้องปฏิบัติการคอมพิวเตอร์',
     category: 'อาคารเรียนและภาษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 241.72, y: 0.00, z: 54.40 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: 68.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ศูนย์ภาษา' }, { num: 3, desc: 'ห้อง Lab ภาษา' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'ประชาสัมพันธ์' }]
   },
@@ -581,7 +94,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-13', num: '13', name: '13. อาคารศูนย์วิทยาศาสตร์ (SCB)', shortName: '13',
     sub: 'ศูนย์ปฏิบัติการวิทยาศาสตร์ เครื่องมือวิเคราะห์ขั้นสูง และห้องแล็บวิจัย',
     category: 'อาคารวิทยาศาสตร์และวิจัย', status: 'เปิดทำการ 08:30 - 17:00 น.',
-    archType: 'box', pos: { x: 191.96, y: 0.00, z: 54.40 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: 54.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 20.0, h: 10.0, d: 12.0 }, roofColor: 0x1e293b, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องปฏิบัติการเคมี' }, { num: 3, desc: 'ห้องปฏิบัติการฟิสิกส์' }, { num: 2, desc: 'ห้องชีววิทยา' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
@@ -589,7 +102,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-14', num: '14', name: '14. อาคารเรียนคณะเทคโนโลยีการเกษตร', shortName: '14',
     sub: 'อาคารเรียนและห้องปฏิบัติการเทคโนโลยีการผลิตพืชและสัตว์',
     category: 'อาคารเรียนและเกษตร', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 135.08, y: 0.00, z: 54.40 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: 38.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 18.0, h: 9.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องเรียน' }, { num: 2, desc: 'ห้องพักอาจารย์' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
@@ -597,7 +110,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-15', num: '15', name: '15. คณะเทคโนโลยีการเกษตร (FAT)', shortName: '15',
     sub: 'สำนักงานคณบดีคณะเทคโนโลยีการเกษตร และศูนย์วิจัยแปรรูปผลผลิตทางการเกษตร',
     category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 94.91, y: 0.00, z: 79.56 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: 26.7, y: 0, z: 23.4 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 16.3, h: 9.0, d: 20.3 }, roofColor: 0x166534, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องประชุมคณะ' }, { num: 1, desc: 'บริการวิชาการ' }]
   },
@@ -605,7 +118,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-16', num: '16', name: '16. อาคารเรียนคณะครุศาสตร์', shortName: '16',
     sub: 'อาคารเรียนรวมคณะครุศาสตร์ ศูนย์พัฒนาวิชาชีพครู (ปีกทิศเหนือ)',
     category: 'อาคารเรียนและฝึกอบรม', status: 'เปิดทำการ 08:00 - 17:00 น.',
-    archType: 'box', pos: { x: 179.87, y: 0.00, z: 68.34 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: 50.6, y: 0, z: 20.1 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 23.4, h: 10.0, d: 7.6 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
     floors: [{ num: 4, desc: 'ห้องเรียนรวม' }, { num: 3, desc: 'ห้องบรรยาย' }, { num: 2, desc: 'ห้องปฏิบัติการสอน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
@@ -613,7 +126,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-17', num: '17', name: '17. คณะครุศาสตร์ (FE)', shortName: '17',
     sub: 'สำนักงานคณบดีคณะครุศาสตร์ คณะแห่งแรกและประวัติศาสตร์ของมหาวิทยาลัย (ปีกทิศใต้)',
     category: 'สำนักงานคณะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 226.79, y: 0.00, z: 108.80 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: 63.8, y: 0, z: 32.0 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 25.4, h: 10.0, d: 9.2 }, roofColor: 0x7f1d1d, accentColor: 0xdc2626,
     floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องประชุมครุศาสตร์' }, { num: 2, desc: 'ฝ่ายวิชาการ' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
@@ -621,7 +134,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-18', num: '18', name: '18. อาคารกองพัฒนานักศึกษา', shortName: '18',
     sub: 'กองพัฒนานักศึกษา, องค์การบริหารนักศึกษา, กองทุน กยศ., และงานแนะแนว',
     category: 'อาคารบริการนักศึกษา', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 241.72, y: 0.00, z: 102.00 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: 68.0, y: 0, z: 30.0 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 18.0, h: 9.0, d: 12.0 }, roofColor: 0x047857, accentColor: 0x059669,
     floors: [{ num: 3, desc: 'งานกองทุน กยศ.' }, { num: 2, desc: 'องค์การนักศึกษา' }, { num: 1, desc: 'จุดบริการนักศึกษา' }]
   },
@@ -629,7 +142,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-19', num: '19', name: '19. คณะวิทยาศาสตร์และเทคโนโลยี (FST)', shortName: '19',
     sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาศาสตร์และเทคโนโลยี อาคารแนวยาวฝั่งทิศเหนือ',
     category: 'สำนักงานคณะและวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 181.29, y: 0.00, z: -69.36 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: 51.0, y: 0, z: -20.4 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 61.2, h: 10.0, d: 12.4 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
     floors: [{ num: 4, desc: 'สำนักงานคณบดี' }, { num: 3, desc: 'ห้องปฏิบัติการคอมพิวเตอร์' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
@@ -637,7 +150,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-20', num: '20', name: '20. อาคารพยาบาล และร้านค้า', shortName: '20',
     sub: 'ศูนย์บริการสาธารณสุขและพยาบาลปฐมพยาบาล ร้านสะดวกซื้อ และตู้บริการอัตโนมัติ',
     category: 'อาคารบริการสุขภาพและชุมชน', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 191.96, y: 0.00, z: -27.20 }, rotY: 0, anchorHeight: 8,
+    archType: 'box', pos: { x: 54.0, y: 0, z: -8.0 }, rotY: 0, anchorHeight: 8,
     dimensions: { w: 16.0, h: 5.0, d: 10.0 }, roofColor: 0x0284c7, accentColor: 0x0ea5e9,
     floors: [{ num: 2, desc: 'ห้องพักฟื้นและปฐมพยาบาล' }, { num: 1, desc: 'ร้านค้าสะดวกซื้อ' }]
   },
@@ -645,7 +158,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-23', num: '23', name: '23. อาคาร 60 ปี วไลยอลงกรณ์', shortName: '23',
     sub: 'อาคาร 60 ปี วไลยอลงกรณ์ และศูนย์ฝึกปฏิบัติการคหกรรมศาสตร์',
     category: 'อาคารเรียนและปฏิบัติการ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: 78.20, y: 0.00, z: -71.40 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: 22.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 22.0, h: 9.0, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องปฏิบัติการคหกรรม' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงนิทรรศการ' }]
   },
@@ -653,7 +166,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-28', num: '28', name: '28. คณะวิทยาการจัดการ (FMS)', shortName: '28',
     sub: 'สำนักงานคณบดีและอาคารเรียนคณะวิทยาการจัดการ หลังคาสีแดงส้มฝั่งตะวันตก',
     category: 'สำนักงานคณะและเรียนรวม', status: 'เปิดทำการ 08:00 - 18:00 น.',
-    archType: 'box', pos: { x: -147.52, y: 0.00, z: -20.74 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: -41.5, y: 0, z: -6.1 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 16.3, h: 9.0, d: 12.2 }, roofColor: 0x991b1b, accentColor: 0xdc2626,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องเรียน MBA' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
@@ -661,7 +174,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-29', num: '29', name: '29. อาคารเรียนรวมวิทยาศาสตร์ (SCC2)', shortName: '29',
     sub: 'อาคารเรียนรวมวิทยาศาสตร์ SCC2 และห้องปฏิบัติการพื้นฐาน',
     category: 'อาคารเรียนรวม', status: 'เปิดทำการ 08:00 - 17:00 น.',
-    archType: 'box', pos: { x: 14.22, y: 0.00, z: -71.40 }, rotY: 0, anchorHeight: 12,
+    archType: 'box', pos: { x: 4.0, y: 0, z: -21.0 }, rotY: 0, anchorHeight: 12,
     dimensions: { w: 20.0, h: 9.0, d: 12.0 }, roofColor: 0x334155, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องบรรยาย' }, { num: 3, desc: 'ห้องปฏิบัติการ' }, { num: 2, desc: 'ห้องเรียน' }, { num: 1, desc: 'โถงอาคาร' }]
   },
@@ -669,7 +182,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-30', num: '30', name: '30. โรงเรียนสาธิตฯ (ฝ่ายมัธยม)', shortName: '30',
     sub: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (ฝ่ายมัธยม)',
     category: 'โรงเรียนสาธิต', status: 'เปิดทำการ 07:30 - 16:30 น.',
-    archType: 'box', pos: { x: -332.01, y: 0.00, z: 13.60 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: -93.4, y: 0, z: 4.0 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 26.0, h: 10.0, d: 16.0 }, roofColor: 0x166534, accentColor: 0x16a34a,
     floors: [{ num: 3, desc: 'ห้องเรียนมัธยมปลาย' }, { num: 2, desc: 'ห้องเรียนมัธยมต้น' }, { num: 1, desc: 'สำนักงานโรงเรียน' }]
   },
@@ -677,7 +190,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-31', num: '31', name: '31. สำนักวิทยบริการและเทคโนโลยีสารสนเทศ (หอสมุดกลาง)', shortName: '31',
     sub: 'หอสมุดกลาง อาคารหลังคาสีส้มพีชริมสระน้ำใหญ่ Co-Working Space ศูนย์การเรียนรู้ดิจิทัล',
     category: 'อาคารหอสมุดและวิทยบริการ', status: 'เปิดบริการ 08:00 - 20:00 น.',
-    archType: 'box', pos: { x: -20.97, y: 0.00, z: 121.04 }, rotY: 0, anchorHeight: 16,
+    archType: 'box', pos: { x: -5.9, y: 0, z: 35.6 }, rotY: 0, anchorHeight: 16,
     dimensions: { w: 34.6, h: 13.0, d: 28.5 }, roofColor: 0xea580c, accentColor: 0xf97316,
     floors: [{ num: 4, desc: 'ห้องศึกษาค้นคว้าเดี่ยว' }, { num: 3, desc: 'คลังหนังสือวิชาการ' }, { num: 2, desc: 'ห้องบริการมัลติมีเดีย' }, { num: 1, desc: 'โถงยืม-คืนหนังสือ' }]
   },
@@ -685,7 +198,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-36', num: '36', name: '36. เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)', shortName: '36',
     sub: 'เรือนไทยไม้สักประยุกต์ ศูนย์อนุรักษ์ศิลปวัฒนธรรม ตั้งตระหง่านกลางสระน้ำใหญ่',
     category: 'อาคารอนุรักษ์ศิลปวัฒนธรรม', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'thaiPavilion', pos: { x: -2.49, y: 0.00, z: -2.04 }, rotY: 0, anchorHeight: 9,
+    archType: 'thaiPavilion', pos: { x: -0.7, y: 0, z: -0.6 }, rotY: 0, anchorHeight: 9,
     dimensions: { w: 8.5, h: 6.5, d: 8.0 }, roofColor: 0xb45309, accentColor: 0xd97706,
     floors: [{ num: 2, desc: 'ชานเรือนและหอจัดแสดงพระราชประวัติ' }, { num: 1, desc: 'ใต้ถุนเรือนไทยริมสระบัว' }]
   },
@@ -693,7 +206,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-37', num: '37', name: '37. อาคารฝ่ายยานพาหนะ', shortName: '37',
     sub: 'ฝ่ายยานพาหนะ โรงจอดรถรางไฟฟ้า และศูนย์ซ่อมบำรุงรถส่วนกลาง',
     category: 'อาคารบริการและยานพาหนะ', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -156.41, y: 0.00, z: 54.40 }, rotY: 0, anchorHeight: 8,
+    archType: 'box', pos: { x: -44.0, y: 0, z: 16.0 }, rotY: 0, anchorHeight: 8,
     dimensions: { w: 18.0, h: 5.5, d: 12.0 }, roofColor: 0x475569, accentColor: 0x64748b,
     floors: [{ num: 2, desc: 'สำนักงานฝ่ายยานพาหนะ' }, { num: 1, desc: 'โรงจอดรถและสถานีชาร์จ EV' }]
   },
@@ -701,7 +214,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-38', num: '38', name: '38. อาคารปฏิบัติการเทคโนโลยีอุตสาหกรรม', shortName: '38',
     sub: 'อาคารปฏิบัติการทางวิศวกรรม โรงประลองเครื่องกล ไฟฟ้า และยานยนต์',
     category: 'โรงประลองและปฏิบัติการ', status: 'เปิดทำการ 08:30 - 17:00 น.',
-    archType: 'box', pos: { x: -305.00, y: 0.00, z: 47.60 }, rotY: 0, anchorHeight: 10,
+    archType: 'box', pos: { x: -85.8, y: 0, z: 14.0 }, rotY: 0, anchorHeight: 10,
     dimensions: { w: 24.0, h: 7.0, d: 7.0 }, roofColor: 0x9a3412, accentColor: 0xc2410c,
     floors: [{ num: 2, desc: 'ห้องปฏิบัติการ CAD/CAM' }, { num: 1, desc: 'โรงประลองเครื่องกล' }]
   },
@@ -709,7 +222,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-39', num: '39', name: '39. คณะเทคโนโลยีอุตสาหกรรม (FIT)', shortName: '39',
     sub: 'สำนักงานคณบดีคณะเทคโนโลยีอุตสาหกรรม และห้องปฏิบัติการวิศวกรรม',
     category: 'สำนักงานคณะและวิศวกรรม', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -305.00, y: 0.00, z: 88.40 }, rotY: 0, anchorHeight: 13,
+    archType: 'box', pos: { x: -85.8, y: 0, z: 26.0 }, rotY: 0, anchorHeight: 13,
     dimensions: { w: 24.0, h: 10.0, d: 9.0 }, roofColor: 0x7c2d12, accentColor: 0xc2410c,
     floors: [{ num: 3, desc: 'สำนักงานคณบดี' }, { num: 2, desc: 'ห้องปฏิบัติการไฟฟ้า' }, { num: 1, desc: 'โถงกิจกรรม' }]
   },
@@ -717,7 +230,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-40', num: '40', name: '40. หอพักโกเมน', shortName: '40',
     sub: 'หอพักนักศึกษาหญิงในกำกับมหาวิทยาลัย (อาคารโกเมน แถวกลางเหนือ)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -350.85, y: 0.00, z: 12.24 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -98.7, y: 0, z: 3.6 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 24.4, h: 12.0, d: 6.5 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับและร้านสะดวกซื้อ' }]
   },
@@ -725,7 +238,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-41', num: '41', name: '41. หอพักเพทาย', shortName: '41',
     sub: 'หอพักนักศึกษาหญิงในกำกับมหาวิทยาลัย (อาคารเพทาย แถวกลางใต้)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -347.65, y: 0.00, z: 32.64 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -97.8, y: 0, z: 9.6 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 26.3, h: 12.0, d: 5.4 }, roofColor: 0xd97706, accentColor: 0xf59e0b,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
@@ -733,7 +246,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-42', num: '42', name: '42. ยิมเนเซียม 2', shortName: '42',
     sub: 'อาคารพลศึกษาและสนามกีฬาในร่ม 2 ศูนย์ฝึกซ้อมนักกีฬา',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 08:00 - 21:00 น.',
-    archType: 'box', pos: { x: -376.80, y: 0.00, z: -17.00 }, rotY: 0, anchorHeight: 10,
+    archType: 'box', pos: { x: -106.0, y: 0, z: -5.0 }, rotY: 0, anchorHeight: 10,
     dimensions: { w: 16.5, h: 7.5, d: 5.5 }, roofColor: 0x0284c7, accentColor: 0x0284c7,
     floors: [{ num: 2, desc: 'อัฒจันทร์' }, { num: 1, desc: 'สนามฝึกซ้อม' }]
   },
@@ -741,7 +254,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-43', num: '43', name: '43. หอพักนักศึกษา 1', shortName: '43',
     sub: 'หอพักนักศึกษา อาคาร 1 (แถวบนสุด ทิศเหนือ)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -344.81, y: 0.00, z: -6.12 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -97.0, y: 0, z: -1.8 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 11.1, h: 12.0, d: 4.9 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
@@ -749,7 +262,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-44', num: '44', name: '44. หอพักนักศึกษา 2', shortName: '44',
     sub: 'หอพักนักศึกษา อาคาร 2 (แถวล่าง ฝั่งทิศตะวันตก)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -349.07, y: 0.00, z: 72.42 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -98.2, y: 0, z: 21.3 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 10.9, h: 12.0, d: 5.3 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
@@ -757,7 +270,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-45', num: '45', name: '45. หอพักนักศึกษา 3', shortName: '45',
     sub: 'หอพักนักศึกษา อาคาร 3 (แถวล่าง ฝั่งทิศตะวันออก)',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -296.11, y: 0.00, z: 75.82 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -83.3, y: 0, z: 22.3 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 10.9, h: 12.0, d: 5.4 }, roofColor: 0xf8fafc, accentColor: 0x0284c7,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงบริการ' }]
   },
@@ -765,7 +278,7 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-49', num: '49', name: '49. หอพักนักศึกษานานาชาติ', shortName: '49',
     sub: 'หอพักนักศึกษานานาชาติและนักศึกษาโครงการพิเศษ',
     category: 'หอพักนักศึกษา', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -327.04, y: 0.00, z: 95.20 }, rotY: 0, anchorHeight: 15,
+    archType: 'box', pos: { x: -92.0, y: 0, z: 28.0 }, rotY: 0, anchorHeight: 15,
     dimensions: { w: 20.0, h: 12.0, d: 14.0 }, roofColor: 0x475569, accentColor: 0x0ea5e9,
     floors: [{ num: 4, desc: 'ห้องพักชั้น 4' }, { num: 3, desc: 'ห้องพักชั้น 3' }, { num: 2, desc: 'ห้องพักชั้น 2' }, { num: 1, desc: 'โถงต้อนรับ' }]
   },
@@ -773,24 +286,24 @@ const HOSPITAL_BUILDINGS = [
     id: 'bld-53', num: '53', name: '53. ศูนย์ อพ.สธ.', shortName: '53',
     sub: 'ศูนย์ประสานงานโครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริ (อพ.สธ.)',
     category: 'ศูนย์อนุรักษ์และวิจัย', status: 'เปิดทำการ 08:30 - 16:30 น.',
-    archType: 'box', pos: { x: -497.66, y: 0.00, z: 115.60 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 18.0, h: 6.5, d: 12.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
+    archType: 'box', pos: { x: -135.0, y: 0, z: 45.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 18.0, h: 6.5, d: 10.0 }, roofColor: 0x15803d, accentColor: 0x16a34a,
     floors: [{ num: 2, desc: 'ห้องปฏิบัติการเพาะเลี้ยงเนื้อเยื่อ' }, { num: 1, desc: 'ศูนย์เรียนรู้พันธุ์พืช' }]
   },
   {
     id: 'bld-55', num: '55', name: '55. Valaya Hub & Resort', shortName: '55',
     sub: 'Valaya Hub ศูนย์นวัตกรรมการเรียนรู้และที่พักรีสอร์ทเพื่อการศึกษา',
     category: 'ศูนย์การเรียนรู้และที่พัก', status: 'เปิดบริการ 24 ชั่วโมง',
-    archType: 'box', pos: { x: -550.98, y: 0.00, z: 115.60 }, rotY: 0, anchorHeight: 9,
-    dimensions: { w: 18.0, h: 6.0, d: 12.0 }, roofColor: 0x92400e, accentColor: 0xd97706,
+    archType: 'box', pos: { x: -155.0, y: 0, z: 45.0 }, rotY: 0, anchorHeight: 9,
+    dimensions: { w: 18.0, h: 6.0, d: 10.0 }, roofColor: 0x92400e, accentColor: 0xd97706,
     floors: [{ num: 2, desc: 'ห้องพักรับรอง' }, { num: 1, desc: 'Co-Working Space & Cafe' }]
   },
   {
     id: 'bld-57', num: '57', name: '57. สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ', shortName: '57',
     sub: 'สนามฟุตบอลหญ้าจริง ลู่วิ่งสังเคราะห์มาตรฐาน 400 เมตร 8 ลู่ และอัฒจันทร์ประธาน',
     category: 'สนามกีฬาและนันทนาการ', status: 'เปิดบริการ 06:00 - 21:00 น.',
-    archType: 'stadium', pos: { x: -505.13, y: 0.00, z: 45.90 }, rotY: 0, anchorHeight: 8,
-    dimensions: { w: 27.3, h: 4.0, d: 49.0 }, roofColor: 0xdc2626, accentColor: 0x16a34a,
+    archType: 'stadium', pos: { x: -135.78, y: 0, z: 13.34 }, rotY: 0, anchorHeight: 8,
+    dimensions: { w: 39.3, h: 4.0, d: 48.1 }, roofColor: 0xc2410c, accentColor: 0x16a34a,
     floors: [{ num: 1, desc: 'สนามฟุตบอล ลู่วิ่ง 400 เมตร และอัฒจันทร์ประธาน' }]
   }
 ];
@@ -798,447 +311,1612 @@ const HOSPITAL_BUILDINGS = [
 const BUILDINGS_MAP = {};
 HOSPITAL_BUILDINGS.forEach(b => { BUILDINGS_MAP[b.id] = b; });
 
-// Three.js Core Globals
-let scene, camera, renderer, controls;
-let groundMesh, baseBlockMesh;
-let roadsGroup, waterGroup, buildingsGroup, treesGroup;
-let ambientLight, sunLight;
-const buildingMeshes = new Map();
-const labelElements = new Map();
-const emissiveMaterials = [];
+// View presets
+function getOverviewPreset() {
+  const isPortrait = window.innerHeight > window.innerWidth;
+  if (isPortrait) {
+    return { pos: { x: 35, y: 220, z: 175 }, target: { x: 25, y: 0, z: 18 } };
+  } else {
+    return { pos: { x: 35, y: 185, z: 160 }, target: { x: 25, y: 0, z: 18 } };
+  }
+}
 
-const state = {
-  selectedId: null,
-  dayMode: true,
-  turntable: false,
-  showLabels: true,
-  showWalkways: true,
-  viewMode: 'topographic'
+const VIEW_PRESETS = {
+  front: { pos: { x: 165, y: 65, z: 45 }, target: { x: 155, y: 6, z: 15 } },
+  academic: { pos: { x: 65, y: 75, z: 55 }, target: { x: 45, y: 5, z: 5 } },
+  thaiLake: { pos: { x: 20, y: 50, z: 30 }, target: { x: -1, y: 3, z: 0 } },
+  stadium: { pos: { x: -110, y: 65, z: 60 }, target: { x: -142, y: 4, z: 13.5 } }
 };
 
-// Initialize Three.js Scene
-function initScene() {
-  const canvasEl = document.getElementById('world');
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+let scene, camera, renderer, controls;
+let buildingsGroup, groundGroup, propsGroup;
+let ambientLight, sunLight, hemiLight;
+let sunTargetObj;
+let raycaster, mouse;
+const labelElements = new Map();
+const buildingMeshes = new Map();
+const emissiveMaterials = [];
+const sharedTextures = {};
 
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xF5F0EF); // Maps3D groundColor
+const state = {
+  dayMode: true,
+  showLabels: true,
+  isOrbiting: false,
+  selectedBuilding: null,
+  activeMapTab: 'floor'
+};
 
-  // Camera calibrated for 1480m x 408m campus view
-  camera = new THREE.PerspectiveCamera(40, w / h, 1.0, 5000);
-  window.camera = camera;
-
-  const isPortrait = h > w;
-  if (isPortrait) {
-    camera.position.set(120, 850, 680);
-  } else {
-    camera.position.set(120, 680, 520);
-  }
-
-  renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.shadowMap.enabled = false; // maps3d config: sun.shadows = false
-
-  // OrbitControls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  window.controls = controls;
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
-  controls.maxPolarAngle = Math.PI / 2 - 0.04;
-  controls.minDistance = 20;
-  controls.maxDistance = 2200;
-  controls.target.set(80, 0, 30);
-  controls.update();
-
-  // Lighting (Maps3D sun config: azimuth 134 deg, elevation 46 deg)
-  ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-  scene.add(ambientLight);
-
-  sunLight = new THREE.DirectionalLight(0xfff7ed, 1.3);
-  setSunLight(134, 46, 1.3, 0.9);
-  scene.add(sunLight);
-
-  // Groups
-  roadsGroup = new THREE.Group();
-  waterGroup = new THREE.Group();
-  buildingsGroup = new THREE.Group();
-  treesGroup = new THREE.Group();
-  scene.add(roadsGroup);
-  scene.add(waterGroup);
-  scene.add(buildingsGroup);
-  scene.add(treesGroup);
-
-  // Build the complete 3D scene from maps3d-project data
-  buildMaps3DBase();
-  buildMaps3DRoads();
-  buildMaps3DWater();
-  buildMaps3DBuildings();
-  buildMaps3DTrees();
-
-  // UI & Event Bindings
-  create3DLabels();
-  setupUI();
-  setupInteractivity();
-  setupSearch();
-  initClock();
-  dismissLoading();
-
-  window.addEventListener('resize', onWindowResize);
-}
-
-function dismissLoading() {
-  const loading = document.getElementById('loading');
-  const bar = document.getElementById('loadingBar');
-  if (bar) bar.style.width = '100%';
-  if (loading) {
-    setTimeout(() => {
-      loading.classList.add('hide');
-      setTimeout(() => { loading.style.display = 'none'; }, 600);
-    }, 150);
-  }
-}
-
-// 1. Scene Base Slab (1480.9m x 408.0m with Real 4K Drone Aerial Orthophoto Ground)
-function buildMaps3DBase() {
-  const bw = 1480.9;
-  const bd = 408.0;
-  const baseH = 31.0; // target model thickness from Maps3D
-
-  // Solid Extruded Base Block below ground (Dark architectural plinth)
-  const baseGeo = new THREE.BoxGeometry(bw, baseH, bd);
-  const baseMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Elegant slate base plinth
-    roughness: 0.8,
-    metalness: 0.1
-  });
-  baseBlockMesh = new THREE.Mesh(baseGeo, baseMat);
-  baseBlockMesh.position.set(0, -baseH / 2, 0);
-  baseBlockMesh.receiveShadow = true;
-  scene.add(baseBlockMesh);
-
-  // High-Resolution 4K Aerial Drone Texture
+// Procedural texture generators
+function initProceduralTextures() {
   const texLoader = new THREE.TextureLoader();
-  const droneTexture = texLoader.load('img/vru-drone-map-4k.jpg', (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
+  sharedTextures.droneMap = texLoader.load('img/vru-drone-map-4k.jpg', (tex) => {
+    tex.encoding = THREE.sRGBEncoding;
     tex.generateMipmaps = true;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
   });
 
-  // Top Surface Ground Plane with Real Drone Orthophoto Background
-  const groundGeo = new THREE.PlaneGeometry(bw, bd);
-  const groundMat = new THREE.MeshBasicMaterial({
-    map: droneTexture
-  });
-  groundMesh = new THREE.Mesh(groundGeo, groundMat);
-  groundMesh.rotation.x = -Math.PI / 2;
-  groundMesh.position.set(0, 0.01, 0);
-  groundMesh.receiveShadow = true;
-  scene.add(groundMesh);
-
-  // Surrounding Ambient Horizon Ground (Lush greenery surrounding the campus)
-  const horizonGeo = new THREE.PlaneGeometry(2400, 1200);
-  const horizonMat = new THREE.MeshStandardMaterial({
-    color: 0x27431e,
-    roughness: 0.95,
-    metalness: 0.0
-  });
-  const horizonMesh = new THREE.Mesh(horizonGeo, horizonMat);
-  horizonMesh.rotation.x = -Math.PI / 2;
-  horizonMesh.position.set(0, -0.05, 0);
-  scene.add(horizonMesh);
-
-  // Crisp Base Border Outline
-  const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(bw, 0.2, bd));
-  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
-  const borderLine = new THREE.LineSegments(edges, lineMat);
-  borderLine.position.set(0, 0.1, 0);
-  scene.add(borderLine);
+  sharedTextures.poolWater = createPoolTexture();
+  sharedTextures.water = createWaterTexture();
+  sharedTextures.solar = createSolarTexture();
 }
 
-// 2. Roads Layer (Real OSM road vectors extruded to height 3m with exact widths, color #B0B4C0)
-function buildMaps3DRoads() {
-  roadsGroup.clear();
+function createPoolTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0284c7';
+  ctx.fillRect(0, 0, 128, 128);
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i <= 128; i += 16) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 128); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(128, i); ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 4);
+  return tex;
+}
 
-  const roadMat = new THREE.MeshStandardMaterial({
-    color: 0xB0B4C0, // maps3d roads.color (#B0B4C0)
-    roughness: 0.75,
-    metalness: 0.05,
+function createWaterTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0d9488';
+  ctx.fillRect(0, 0, 128, 128);
+  ctx.fillStyle = '#14b8a6';
+  for (let i = 0; i < 40; i++) {
+    ctx.fillRect(Math.random() * 128, Math.random() * 128, 4, 2);
+  }
+  return new THREE.CanvasTexture(c);
+}
+
+function createSolarTexture() {
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#1e3a8a';
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.strokeStyle = '#60a5fa';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(2, 2, 60, 60);
+  ctx.strokeRect(16, 2, 32, 60);
+  ctx.strokeRect(2, 16, 60, 32);
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(4, 4);
+  return tex;
+}
+
+// Scene setup
+function initScene() {
+  const canvas = document.getElementById('world');
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xdce7f2);
+
+  const initPreset = getOverviewPreset();
+  camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.5, 1200);
+  camera.position.set(initPreset.pos.x, initPreset.pos.y, initPreset.pos.z);
+
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.target.set(initPreset.target.x, initPreset.target.y, initPreset.target.z);
+  controls.maxPolarAngle = Math.PI / 2 - 0.02;
+  controls.minPolarAngle = 0.04;
+  controls.minDistance = 2.0;
+  controls.maxDistance = 750;
+  controls.zoomSpeed = 1.35;
+  controls.screenSpacePanning = true;
+
+  window.scene = scene;
+  window.camera = camera;
+  window.renderer = renderer;
+  window.controls = controls;
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2();
+
+  groundGroup = new THREE.Group();
+  buildingsGroup = new THREE.Group();
+  propsGroup = new THREE.Group();
+  scene.add(groundGroup);
+  scene.add(buildingsGroup);
+  scene.add(propsGroup);
+
+  setupLighting();
+  buildGround();
+  buildBuildings();
+  create3DLabels();
+  setupUI();
+
+  window.addEventListener('resize', onWindowResize);
+  canvas.addEventListener('click', onCanvasClick);
+}
+
+function setupLighting() {
+  ambientLight = new THREE.AmbientLight(0xfff7ed, 0.75);
+  scene.add(ambientLight);
+
+  hemiLight = new THREE.HemisphereLight(0xdce7f2, 0x475569, 0.45);
+  scene.add(hemiLight);
+
+  sunLight = new THREE.DirectionalLight(0xffedd5, 1.4);
+  sunLight.position.set(80, 220, 140);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.width = 2048;
+  sunLight.shadow.mapSize.height = 2048;
+  sunLight.shadow.bias = -0.00035;
+  sunLight.shadow.camera.near = 10;
+  sunLight.shadow.camera.far = 600;
+  const shadowDist = 220;
+  sunLight.shadow.camera.left = -shadowDist;
+  sunLight.shadow.camera.right = shadowDist;
+  sunLight.shadow.camera.top = shadowDist;
+  sunLight.shadow.camera.bottom = -shadowDist;
+
+  sunTargetObj = new THREE.Object3D();
+  sunTargetObj.position.set(0, 0, 0);
+  scene.add(sunTargetObj);
+  sunLight.target = sunTargetObj;
+  scene.add(sunLight);
+}
+
+function buildGround() {
+  // Aerial Drone Orthophoto Masterplane (416.6 x 120.0 m)
+  const droneGeo = new THREE.PlaneGeometry(416.6, 120.0);
+  const droneMat = new THREE.MeshBasicMaterial({
+    map: sharedTextures.droneMap
+  });
+  const droneMesh = new THREE.Mesh(droneGeo, droneMat);
+  droneMesh.rotation.x = -Math.PI / 2;
+  droneMesh.position.set(0, 0.01, 0);
+  droneMesh.receiveShadow = true;
+  groundGroup.add(droneMesh);
+
+  // Outer Surrounding Horizon Plane
+  const outerGeo = new THREE.PlaneGeometry(900, 900);
+  const outerMat = new THREE.MeshStandardMaterial({ color: 0x3d6339, roughness: 0.95 });
+  const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+  outerMesh.rotation.x = -Math.PI / 2;
+  outerMesh.position.set(0, -0.05, 0);
+  outerMesh.receiveShadow = true;
+  groundGroup.add(outerMesh);
+}
+
+function createAuditorium80Mesh() {
+  const group = new THREE.Group();
+
+  // === Master Materials (100% Matching Real Photographic Architecture) ===
+  const whiteArchMat = new THREE.MeshStandardMaterial({
+    color: 0xf5f7fa,
+    roughness: 0.28,
+    metalness: 0.08
+  });
+  const darkFasciaMat = new THREE.MeshStandardMaterial({
+    color: 0x1f2327,
+    roughness: 0.45,
+    metalness: 0.35
+  });
+  const emeraldGlassMat = new THREE.MeshStandardMaterial({
+    color: 0x1a4a42,
+    roughness: 0.04,
+    metalness: 0.90,
     transparent: true,
-    opacity: 0.45 // Semitransparent so real drone photo roads and details shine through!
+    opacity: 0.88,
+    emissive: new THREE.Color(0x1a4a42),
+    emissiveIntensity: 0.15
+  });
+  emissiveMaterials.push(emeraldGlassMat);
+
+  const mullionMat = new THREE.MeshStandardMaterial({
+    color: 0x141619,
+    roughness: 0.25,
+    metalness: 0.88
+  });
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0xd9dde2,
+    roughness: 0.82,
+    metalness: 0.03
+  });
+  const lampGlowMat = new THREE.MeshStandardMaterial({
+    color: 0xfff3e0,
+    emissive: new THREE.Color(0xfff3e0),
+    emissiveIntensity: 1.0
   });
 
+  // Architectural Dimensions (Facing East toward +X)
+  // X: West (-X) to East (+X, front facade facing road)
+  // Z: North (-Z) to South (+Z, total facade span ~32.89m)
+  const hallWidth = 26.0;   // West-East depth of enclosed auditorium
+  const hallLength = 32.89; // North-South facade span
+  const floor1H = 4.5;      // Open undercroft height (ground to 2nd floor terrace)
+  const floor2H = 7.8;      // 2nd floor grand hall height
+  const totalH = floor1H + floor2H; // 12.3m
+  const colonnadeX = 13.5;  // Front freestanding colonnade plane (+X)
+  const glassX = 10.8;      // Recessed glass curtain wall plane (2.7m behind colonnade!)
+
+  // NO WATER PLANE / NO POND: Natural drone ground surface
+
+  // --- 1. Ground Floor: Half Enclosed Conference Room (Rear) & Half Open Undercroft (Front) ---
+  // Ground foundation slab
+  const groundSlab = new THREE.Mesh(new THREE.BoxGeometry(hallWidth + 4.0, 0.6, hallLength + 2.0), concreteMat);
+  groundSlab.position.set(0, 0.3, 0);
+  groundSlab.receiveShadow = true;
+  group.add(groundSlab);
+
+  // 1.1 Enclosed Lower Conference Hall (ครึ่งหลังฝั่งทิศตะวันตก: ห้องประชุมชั้นล่าง)
+  const confRoomW = 14.5; // Rear half width along X
+  const confRoomD = hallLength * 0.92; // Along Z
+  const confRoomX = -hallWidth / 2 + confRoomW / 2 + 0.5; // X: ~ -5.25
+  const confRoom = new THREE.Mesh(new THREE.BoxGeometry(confRoomW, floor1H, confRoomD), whiteArchMat);
+  confRoom.position.set(confRoomX, floor1H / 2 + 0.6, 0);
+  confRoom.castShadow = true;
+  confRoom.receiveShadow = true;
+  group.add(confRoom);
+
+  // Conference room window ribbon & doors along its front and sides
+  const confWin = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.4, confRoomD * 0.8), darkFasciaMat);
+  confWin.position.set(confRoomX + confRoomW / 2 + 0.05, floor1H * 0.55 + 0.6, 0);
+  group.add(confWin);
+
+  // 1.2 Open Undercroft with Pilotis Columns (ครึ่งหน้าฝั่งทิศตะวันออก: โถงเสาเปิดโล่ง)
+  // Grid columns supporting the 2nd floor terrace in the open front section
+  for (let xi of [confRoomX + confRoomW / 2 + 1.2, confRoomX + confRoomW / 2 + 4.8, colonnadeX - 1.2]) {
+    for (let zi = -hallLength / 2 + 2.2; zi <= hallLength / 2 - 2.2; zi += 4.2) {
+      const col = new THREE.Mesh(new THREE.BoxGeometry(0.85, floor1H, 0.85), concreteMat);
+      col.position.set(xi, floor1H / 2 + 0.6, zi);
+      col.castShadow = true;
+      col.receiveShadow = true;
+      group.add(col);
+    }
+  }
+
+  // --- 2. Main Enclosed Auditorium Hall (West / Rear Massing) ---
+  const rearHallWidth = 21.5;
+  const rearHall = new THREE.Mesh(new THREE.BoxGeometry(rearHallWidth, floor2H, hallLength * 0.94), whiteArchMat);
+  rearHall.position.set(-3.2, floor1H + 0.6 + floor2H / 2, 0);
+  rearHall.castShadow = true;
+  rearHall.receiveShadow = true;
+  group.add(rearHall);
+
+  const fasciaBand = new THREE.Mesh(new THREE.BoxGeometry(rearHallWidth + 0.2, 1.2, hallLength * 0.95), darkFasciaMat);
+  fasciaBand.position.set(-3.2, totalH + 0.6 - 0.6, 0);
+  group.add(fasciaBand);
+
+  // --- 3. Recessed Emerald Green Curtain Wall (ผนังกระจกมรกตถอยร่น 2.7m หลังแนวเสา) ---
+  const curtainW = hallLength * 0.92;
+  const curtainH = floor2H - 0.5;
+  const curtainGlass = new THREE.Mesh(new THREE.BoxGeometry(0.2, curtainH, curtainW), emeraldGlassMat);
+  curtainGlass.position.set(glassX, floor1H + 0.6 + curtainH / 2 + 0.2, 0);
+  curtainGlass.castShadow = true;
+  group.add(curtainGlass);
+
+  const numMullions = 26;
+  const mullionStepZ = curtainW / numMullions;
+  for (let i = 0; i <= numMullions; i++) {
+    const mz = -curtainW / 2 + i * mullionStepZ;
+    const mulV = new THREE.Mesh(new THREE.BoxGeometry(0.28, curtainH, 0.12), mullionMat);
+    mulV.position.set(glassX + 0.08, floor1H + 0.6 + curtainH / 2 + 0.2, mz);
+    group.add(mulV);
+  }
+  for (let ty of [floor1H + 0.6 + curtainH * 0.33, floor1H + 0.6 + curtainH * 0.67]) {
+    const transom = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.12, curtainW), mullionMat);
+    transom.position.set(glassX + 0.08, ty, 0);
+    group.add(transom);
+  }
+
+  // --- 4. The 9 Freestanding Flaring Pointed Arches Colonnade (เสาซุ้มโค้งผาย 9 ซุ้มด้านหน้า) ---
+  const colonnadeGroup = new THREE.Group();
+  colonnadeGroup.position.set(colonnadeX, floor1H + 0.6, 0);
+
+  const archSpan = 3.65;
+  const archDepth = 1.2;
+  const colBaseThick = 0.55;
+
+  function createFlaringPillarArch(span, height) {
+    const pGroup = new THREE.Group();
+    const pHeight = height * 0.68;
+    for (let side of [-1, 1]) {
+      const pz = side * (span / 2 - colBaseThick / 2);
+      const stem = new THREE.Mesh(new THREE.BoxGeometry(archDepth, pHeight, colBaseThick), whiteArchMat);
+      stem.position.set(0, pHeight / 2, pz);
+      stem.castShadow = true;
+      pGroup.add(stem);
+
+      const groove = new THREE.Mesh(new THREE.BoxGeometry(0.1, pHeight, 0.14), darkFasciaMat);
+      groove.position.set(archDepth / 2 + 0.02, pHeight / 2, pz);
+      pGroup.add(groove);
+
+      const branchH = height - pHeight;
+      const branch = new THREE.Mesh(new THREE.BoxGeometry(archDepth, branchH, colBaseThick * 0.9), whiteArchMat);
+      branch.position.set(0, pHeight + branchH / 2 - 0.2, pz + side * (span * 0.18));
+      branch.rotation.x = side * -0.32;
+      branch.castShadow = true;
+      pGroup.add(branch);
+    }
+
+    const peakCurve = new THREE.Mesh(
+      new THREE.CylinderGeometry(span * 0.45, span * 0.45, archDepth, 16, 1, false, 0, Math.PI),
+      whiteArchMat
+    );
+    peakCurve.rotation.z = Math.PI / 2;
+    peakCurve.rotation.y = Math.PI / 2;
+    peakCurve.position.set(0, height - 0.2, 0);
+    peakCurve.castShadow = true;
+    pGroup.add(peakCurve);
+
+    const keelFin = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.8, 4), whiteArchMat);
+    keelFin.position.set(0, height + 0.45, 0);
+    keelFin.rotation.y = Math.PI / 4;
+    keelFin.castShadow = true;
+    pGroup.add(keelFin);
+
+    return pGroup;
+  }
+
+  for (let bay = -4; bay <= 4; bay++) {
+    const isCenter = (bay === 0);
+    const isCentralSpan = (Math.abs(bay) <= 2);
+    const bHeight = isCenter ? (floor2H + 0.8) : isCentralSpan ? floor2H : (floor2H - 1.2);
+    const arch = createFlaringPillarArch(archSpan, bHeight);
+    arch.position.set(0, 0, bay * archSpan);
+    colonnadeGroup.add(arch);
+  }
+
+  const portal = new THREE.Mesh(new THREE.BoxGeometry(0.9, floor2H + 1.2, 4.2), whiteArchMat);
+  portal.position.set(0.4, (floor2H + 1.2) / 2, 0);
+  portal.castShadow = true;
+  colonnadeGroup.add(portal);
+
+  const emblemGold = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.15, 24), new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    metalness: 0.85,
+    roughness: 0.2
+  }));
+  emblemGold.rotation.z = Math.PI / 2;
+  emblemGold.position.set(0.9, floor2H + 0.5, 0);
+  colonnadeGroup.add(emblemGold);
+
+  group.add(colonnadeGroup);
+
+  // --- 5. Tiered Cantilevered Modern Flat Roof with 45-Degree Inverted Chamfered Soffit ---
+  const roofOverhangX = colonnadeX + 4.5;
+  const centralRoofW = hallWidth + 9.5;
+  const centralRoofD = 18.5;
+  const centralRoofH = 1.4;
+  const roofY = totalH + 0.6 + 0.7;
+
+  const centralRoof = new THREE.Mesh(new THREE.BoxGeometry(centralRoofW, centralRoofH, centralRoofD), whiteArchMat);
+  centralRoof.position.set((roofOverhangX - hallWidth / 2) / 2, roofY, 0);
+  centralRoof.castShadow = true;
+  group.add(centralRoof);
+
+  const frontSoffit = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.9, centralRoofD), whiteArchMat);
+  frontSoffit.position.set(roofOverhangX - 1.4, roofY - 0.9, 0);
+  frontSoffit.rotation.z = -0.785;
+  group.add(frontSoffit);
+
+  for (let s of [-1, 1]) {
+    const wingW = centralRoofW - 1.5;
+    const wingD = 8.2;
+    const wingRoof = new THREE.Mesh(new THREE.BoxGeometry(wingW, 1.0, wingD), whiteArchMat);
+    wingRoof.position.set((roofOverhangX - hallWidth / 2) / 2 - 0.75, roofY - 1.2, s * (centralRoofD / 2 + wingD / 2 - 0.2));
+    wingRoof.castShadow = true;
+    group.add(wingRoof);
+  }
+
+  // --- 6. Front Grand Entrance Terrace Concourse (Connecting Building to Ramps) ---
+  // In world coords: extends from building facade at X=13.5 out to ramp line at X=24.8
+  // Along Z: spans from North ramp start (Z = -9.06) to South ramp start (Z = +7.58)
+  const terraceStartX = colonnadeX; // 13.5
+  const terraceEndX = 24.8;
+  const terraceWidth = terraceEndX - terraceStartX; // 11.3m
+  const terraceMidX = (terraceStartX + terraceEndX) / 2; // 19.15
+  const terraceZ_North = -9.06;
+  const terraceZ_South = 7.58;
+  const terraceDepth = terraceZ_South - terraceZ_North; // 16.64m
+  const terraceMidZ = (terraceZ_North + terraceZ_South) / 2; // -0.74
+
+  const terraceConcourse = new THREE.Mesh(new THREE.BoxGeometry(terraceWidth, 0.8, terraceDepth), concreteMat);
+  terraceConcourse.position.set(terraceMidX, floor1H + 0.6 + 0.4, terraceMidZ);
+  terraceConcourse.castShadow = true;
+  terraceConcourse.receiveShadow = true;
+  group.add(terraceConcourse);
+
+  // Front Parapet along East edge of Terrace (NO FRONT STAIRS - ขอบระเบียงทึบตรง ไม่ยื่นบันไดลงพื้น)
+  const terraceParapet = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, terraceDepth), whiteArchMat);
+  terraceParapet.position.set(terraceEndX - 0.18, floor1H + 0.6 + 0.8 + 0.55, terraceMidZ);
+  terraceParapet.castShadow = true;
+  group.add(terraceParapet);
+
+  // --- 7. EXACT CALIBRATED NORTH & SOUTH ELEVATED RAMPS (ตรงตามรอยคอนกรีตจริงในภาพโดรน 100%) ---
+  // 7.1 South Ramp: Runs strictly North-to-South along Z axis from Z=7.58 to Z=23.09 at X=24.8!
+  const southRampX = 24.8;
+  const southRampZ_Start = 7.58;
+  const southRampZ_End = 23.09;
+  const southRampLen = southRampZ_End - southRampZ_Start; // 15.51m
+  const southRampMidZ = (southRampZ_Start + southRampZ_End) / 2; // 15.335
+  const southRampW = 3.6;
+  const southRampTopY = floor1H + 0.6 + 0.8; // 5.9m (level with terrace)
+
+  const southSlope = Math.atan2(southRampTopY, southRampLen);
+  const southDeckLen = Math.sqrt(southRampLen * southRampLen + southRampTopY * southRampTopY);
+
+  const southRamp = new THREE.Mesh(new THREE.BoxGeometry(southRampW, 0.5, southDeckLen), concreteMat);
+  southRamp.position.set(southRampX, southRampTopY / 2, southRampMidZ);
+  southRamp.rotation.x = southSlope;
+  southRamp.castShadow = true;
+  southRamp.receiveShadow = true;
+  group.add(southRamp);
+
+  for (let sw of [-1, 1]) {
+    const sp = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, southDeckLen), whiteArchMat);
+    sp.position.set(southRampX + sw * (southRampW / 2 - 0.15), southRampTopY / 2 + 0.55, southRampMidZ);
+    sp.rotation.x = southSlope;
+    sp.castShadow = true;
+    group.add(sp);
+  }
+
+  // Support piers under South Ramp
+  for (let f of [0.3, 0.65]) {
+    const pz = southRampZ_Start + f * southRampLen;
+    const curH = (1 - f) * southRampTopY;
+    if (curH > 0.8) {
+      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.7, curH, 0.7), concreteMat);
+      pier.position.set(southRampX, curH / 2, pz);
+      pier.castShadow = true;
+      group.add(pier);
+    }
+  }
+
+  // 7.2 North Bridge / Ramp: Runs strictly South-to-North along Z axis from Z=-9.06 to Z=-22.36 at X=24.0!
+  const northBridgeX = 24.0;
+  const northZ_Start = -9.06;
+  const northZ_End = -22.36;
+  const northBridgeLen = Math.abs(northZ_End - northZ_Start); // 13.30m
+  const northMidZ = (northZ_Start + northZ_End) / 2; // -15.71
+  const northBridgeW = 3.2;
+  const northTopY = floor1H + 0.6 + 0.8; // 5.9m (level with terrace)
+
+  const northSlope = -Math.atan2(northTopY, northBridgeLen);
+  const northDeckLen = Math.sqrt(northBridgeLen * northBridgeLen + northTopY * northTopY);
+
+  const northBridge = new THREE.Mesh(new THREE.BoxGeometry(northBridgeW, 0.5, northDeckLen), concreteMat);
+  northBridge.position.set(northBridgeX, northTopY / 2, northMidZ);
+  northBridge.rotation.x = northSlope;
+  northBridge.castShadow = true;
+  northBridge.receiveShadow = true;
+  group.add(northBridge);
+
+  for (let nw of [-1, 1]) {
+    const np = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.1, northDeckLen), whiteArchMat);
+    np.position.set(northBridgeX + nw * (northBridgeW / 2 - 0.15), northTopY / 2 + 0.55, northMidZ);
+    np.rotation.x = northSlope;
+    np.castShadow = true;
+    group.add(np);
+  }
+
+  // Support piers under North Bridge
+  for (let f of [0.3, 0.65]) {
+    const pz = northZ_Start - f * northBridgeLen;
+    const curH = (1 - f) * northTopY;
+    if (curH > 0.8) {
+      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.65, curH, 0.65), concreteMat);
+      pier.position.set(northBridgeX, curH / 2, pz);
+      pier.castShadow = true;
+      group.add(pier);
+    }
+  }
+
+  // --- 8. Night Illumination Engine ---
+  const nightLightsGroup = new THREE.Group();
+  nightLightsGroup.name = 'auditorium80Lighting';
+
+  for (let z of [-7.2, 0, 7.2]) {
+    const intLight = new THREE.PointLight(0xffa726, 2.5, 25, 1.6);
+    intLight.position.set(glassX - 3.5, floor1H + floor2H * 0.55, z);
+    nightLightsGroup.add(intLight);
+  }
+
+  for (let bay = -4; bay <= 4; bay += 2) {
+    const uplight = new THREE.PointLight(0xfff3e0, 1.8, 14, 1.5);
+    uplight.position.set(colonnadeX + 0.5, floor1H + 1.2, bay * archSpan);
+    nightLightsGroup.add(uplight);
+  }
+
+  const pylonSpot = new THREE.SpotLight(0xffe082, 3.5, 20, Math.PI / 4, 0.5, 1.5);
+  pylonSpot.position.set(colonnadeX + 6.0, floor1H + 1.5, 0);
+  pylonSpot.target.position.set(colonnadeX, floor1H + floor2H * 0.8, 0);
+  nightLightsGroup.add(pylonSpot);
+  nightLightsGroup.add(pylonSpot.target);
+
+  group.add(nightLightsGroup);
+
+  return group;
+}
+
+// 3D Building Geometries (All others wiped - building anew one by one)
+// === Building 2 (อาคาร 100 ปี สมเด็จพระศรีนครินทร์ - SPB) - 9-Story Architectural Model ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ - อาคาร 9 ชั้น ทรงระเบียงโค้ง) - Exact 1:1 Match ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - West Wing 1:1 + North Parking Lot) ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - สัดส่วนปีกตะวันตก 1:1 + ลานจอดรถติดถนนทิศเหนือ) ===
+// === Building 10 (อาคารเรียนรวมทิศใต้ 9 ชั้น - สัดส่วนปีกตะวันตก 1:1 ครบวงจร + ลานจอดรถติดถนนทิศเหนือ) ===
+function createBuilding10Mesh() {
+  const group = new THREE.Group();
+
+  // Materials
+  const whiteWallMat = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.35,
+    metalness: 0.08
+  });
+  const darkTrimMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.45,
+    metalness: 0.4
+  });
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0xd9dde2,
+    roughness: 0.8,
+    metalness: 0.03
+  });
+  const greenDeckMat = new THREE.MeshStandardMaterial({
+    color: 0x2e7d32, // Waterproof green deck coating on West Wing roof
+    roughness: 0.6,
+    metalness: 0.05
+  });
+  const shedRoofMat = new THREE.MeshStandardMaterial({
+    color: 0xebedf0,
+    roughness: 0.35,
+    metalness: 0.15
+  });
+  const windowGlassMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.08,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.85,
+    emissive: new THREE.Color(0xffbf69),
+    emissiveIntensity: 0.1
+  });
+  emissiveMaterials.push(windowGlassMat);
+
+  const asphaltMat = new THREE.MeshStandardMaterial({
+    color: 0x222a36, // Dark rich asphalt for parking lot
+    roughness: 0.92,
+    metalness: 0.02
+  });
   const curbMat = new THREE.MeshStandardMaterial({
-    color: 0x94a3b8,
+    color: 0xe2e8f0,
+    roughness: 0.75,
+    metalness: 0.05
+  });
+  const whiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const hedgeMat = new THREE.MeshStandardMaterial({
+    color: 0x15803d,
+    roughness: 0.9,
+    metalness: 0.0
+  });
+  const beaconMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+
+  const numFloors = 9;
+  const floorHeight = 3.0; // 9 * 3.0m = 27.0m
+  const podiumH = 0.8;
+  const totalHeight = podiumH + numFloors * floorHeight; // 27.8m
+
+  // Entire complex spans 49.5m along X (x: -24.75 to +24.75)
+  // Depth is 12.0m along Z (z: -6.0 to +6.0)
+  const totalSpanX = 49.5;
+  const totalDepthZ = 12.0;
+
+  // =========================================================================
+  // 1. BASE FOUNDATION PODIUM (Spanning 49.5m East-West)
+  // =========================================================================
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(totalSpanX + 0.6, podiumH, totalDepthZ + 0.6), concreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  podium.receiveShadow = true;
+  group.add(podium);
+
+  // =========================================================================
+  // 2. CENTRAL 9-STORY ATRIUM & NORTH ENTRANCE PORCH (X in [-3.0 .. +3.0])
+  // =========================================================================
+  const atriumW = 6.0;
+  const atriumD = totalDepthZ * 0.75;
+  const atriumTower = new THREE.Mesh(new THREE.BoxGeometry(atriumW, numFloors * floorHeight, atriumD), whiteWallMat);
+  atriumTower.position.set(0, podiumH + (numFloors * floorHeight) / 2, 0);
+  atriumTower.castShadow = true;
+  atriumTower.receiveShadow = true;
+  group.add(atriumTower);
+
+  // North Curved Entrance & Drop-off Canopy (Facing North -Z at Z = -atriumD/2)
+  const porchRadius = 3.2;
+  const porchH = 4.5;
+  const porchGeo = new THREE.CylinderGeometry(porchRadius, porchRadius, porchH, 24, 1, false, -Math.PI / 2, Math.PI);
+  const porch = new THREE.Mesh(porchGeo, whiteWallMat);
+  porch.position.set(0, podiumH + porchH / 2, -atriumD / 2);
+  porch.castShadow = true;
+  group.add(porch);
+
+  // Glass entrance doors on curved porch
+  const porchGlassGeo = new THREE.CylinderGeometry(porchRadius + 0.05, porchRadius + 0.05, 3.2, 20, 1, false, -Math.PI * 0.45, Math.PI * 0.9);
+  const porchGlass = new THREE.Mesh(porchGlassGeo, windowGlassMat);
+  porchGlass.position.set(0, podiumH + 1.6, -atriumD / 2);
+  group.add(porchGlass);
+
+  // Stepped Barrel Vaults / Curved Skylight on Atrium Roof
+  const vaultRadius = 2.6;
+  const vaultL = atriumD * 0.85;
+  const vaultGeo = new THREE.CylinderGeometry(vaultRadius, vaultRadius, vaultL, 16, 1, false, 0, Math.PI);
+  const vault = new THREE.Mesh(vaultGeo, windowGlassMat);
+  vault.rotation.x = Math.PI / 2;
+  vault.position.set(0, totalHeight + 0.6, 0);
+  vault.castShadow = true;
+  group.add(vault);
+
+  // Central Elevator Penthouse & Aviation Beacon
+  const pentH = 3.4;
+  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(4.2, pentH, 3.8), whiteWallMat);
+  penthouse.position.set(0, totalHeight + pentH / 2 + 0.4, 2.0);
+  penthouse.castShadow = true;
+  group.add(penthouse);
+
+  const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.6, 8), beaconMat);
+  beacon.position.set(0, totalHeight + pentH + 0.7, 2.0);
+  group.add(beacon);
+
+  // =========================================================================
+  // 3. WEST WING (1:1 FULL EXTENT: X in [-24.75 .. -3.0], Width = 21.75m)
+  // =========================================================================
+  // 3A. Mid-West 9-Story Main Wing (X in [-14.0 .. -3.0], Width = 11.0m)
+  const midWestW = 11.0;
+  const midWestCenterX = -3.0 - midWestW / 2; // -8.5
+  const midWestD = 8.5;
+
+  const midWestTower = new THREE.Mesh(new THREE.BoxGeometry(midWestW, numFloors * floorHeight, midWestD), whiteWallMat);
+  midWestTower.position.set(midWestCenterX, podiumH + (numFloors * floorHeight) / 2, 0);
+  midWestTower.castShadow = true;
+  midWestTower.receiveShadow = true;
+  group.add(midWestTower);
+
+  // Ribbon windows for Mid-West Wing
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winY = floorY + floorHeight * 0.55;
+
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(midWestW * 0.9, 1.35, 0.2), windowGlassMat);
+    winN.position.set(midWestCenterX, winY, -midWestD / 2 - 0.05);
+    group.add(winN);
+
+    const winS = new THREE.Mesh(new THREE.BoxGeometry(midWestW * 0.9, 1.35, 0.2), windowGlassMat);
+    winS.position.set(midWestCenterX, winY, midWestD / 2 + 0.05);
+    group.add(winS);
+
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(midWestW + 0.2, 0.35, midWestD + 0.2), darkTrimMat);
+    spandrel.position.set(midWestCenterX, floorY, 0);
+    group.add(spandrel);
+  }
+
+  // Waterproof Green Roof Deck on Mid-West Roof
+  const midWestGreenDeck = new THREE.Mesh(new THREE.BoxGeometry(midWestW - 0.4, 0.15, midWestD - 0.4), greenDeckMat);
+  midWestGreenDeck.position.set(midWestCenterX, totalHeight + 0.08, 0);
+  group.add(midWestGreenDeck);
+
+  const midWestParapet = new THREE.Mesh(new THREE.BoxGeometry(midWestW, 0.8, midWestD), darkTrimMat);
+  midWestParapet.position.set(midWestCenterX, totalHeight + 0.4, 0);
+  group.add(midWestParapet);
+
+  // Mid-wing Small Gabled Roof Pavilion on Deck
+  const midGable = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, 3.2), whiteWallMat);
+  midGable.position.set(midWestCenterX, totalHeight + 0.7, 0.5);
+  midGable.castShadow = true;
+  group.add(midGable);
+
+  // 3B. Far-West Laboratory & Engineering Complex (X in [-24.75 .. -14.0], Width = 10.75m)
+  const farWestW = 10.75;
+  const farWestCenterX = -14.0 - farWestW / 2; // -19.375
+  const farWestH = 14.5; // ~4-5 stories
+  const farWestD = totalDepthZ * 0.85;
+
+  const farWestTower = new THREE.Mesh(new THREE.BoxGeometry(farWestW, farWestH, farWestD), whiteWallMat);
+  farWestTower.position.set(farWestCenterX, podiumH + farWestH / 2, 0);
+  farWestTower.castShadow = true;
+  farWestTower.receiveShadow = true;
+  group.add(farWestTower);
+
+  // Far-West Gabled White Roof Pavilion on North half
+  const farGableW = farWestW * 0.85;
+  const farGableD = farWestD * 0.45;
+  const farGable = new THREE.Mesh(new THREE.BoxGeometry(farGableW, 1.2, farGableD), shedRoofMat);
+  farGable.position.set(farWestCenterX, podiumH + farWestH + 0.6, -farWestD * 0.22);
+  farGable.castShadow = true;
+  group.add(farGable);
+
+  // HVAC Chillers and mechanical duct units on Far-West flat deck
+  for (let ox of [-2.2, 0, 2.2]) {
+    const chiller = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 2.0), darkTrimMat);
+    chiller.position.set(farWestCenterX + ox, podiumH + farWestH + 0.6, farWestD * 0.24);
+    chiller.castShadow = true;
+    group.add(chiller);
+  }
+
+  // Far-West Diagonal Structural Brise-Soleil Fins (at X = -24.75)
+  const farWestX = -totalSpanX / 2; // -24.75
+  for (let z = -farWestD / 2 + 1.0; z <= farWestD / 2 - 1.0; z += 1.8) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.8, farWestH * 0.9, 0.15), whiteWallMat);
+    fin.position.set(farWestX + 0.4, podiumH + farWestH / 2, z);
+    fin.rotation.y = 0.45;
+    fin.castShadow = true;
+    group.add(fin);
+  }
+
+  // =========================================================================
+  // 4. EAST WING (X in [+3.0 .. +24.75], Width = 21.75m)
+  // =========================================================================
+  const eastW = 21.75;
+  const eastCenterX = 3.0 + eastW / 2; // +13.875
+
+  // 4A. North 9-Story Classroom Tower
+  const eastNorthD = 5.8;
+  const eastNorthTower = new THREE.Mesh(new THREE.BoxGeometry(eastW, numFloors * floorHeight, eastNorthD), whiteWallMat);
+  eastNorthTower.position.set(eastCenterX, podiumH + (numFloors * floorHeight) / 2, -totalDepthZ / 2 + eastNorthD / 2);
+  eastNorthTower.castShadow = true;
+  eastNorthTower.receiveShadow = true;
+  group.add(eastNorthTower);
+
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winY = floorY + floorHeight * 0.55;
+
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(eastW * 0.92, 1.35, 0.2), windowGlassMat);
+    winN.position.set(eastCenterX, winY, -totalDepthZ / 2 - 0.05);
+    group.add(winN);
+
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(eastW + 0.2, 0.35, eastNorthD + 0.2), darkTrimMat);
+    spandrel.position.set(eastCenterX, floorY, -totalDepthZ / 2 + eastNorthD / 2);
+    group.add(spandrel);
+  }
+
+  // 4B. South Grand Lecture Auditorium Hall (Large Pitched White Metal Roof)
+  const audW = eastW * 0.88;
+  const audD = totalDepthZ * 0.5;
+  const audH = 14.5;
+  const audCenterZ = totalDepthZ / 2 - audD / 2;
+
+  const audBlock = new THREE.Mesh(new THREE.BoxGeometry(audW, audH, audD), whiteWallMat);
+  audBlock.position.set(eastCenterX - 1.0, podiumH + audH / 2, audCenterZ);
+  audBlock.castShadow = true;
+  audBlock.receiveShadow = true;
+  group.add(audBlock);
+
+  const audRoof = new THREE.Mesh(new THREE.BoxGeometry(audW + 0.6, 0.6, audD + 0.6), shedRoofMat);
+  audRoof.position.set(eastCenterX - 1.0, podiumH + audH + 0.8, audCenterZ);
+  audRoof.rotation.x = -0.16; // sloped down to south
+  audRoof.castShadow = true;
+  group.add(audRoof);
+
+  // Far-East Diagonal Structural Fins (at X = +24.75)
+  const farEastX = totalSpanX / 2; // +24.75
+  for (let z = -totalDepthZ / 2 + 1.0; z <= totalDepthZ / 2 - 1.0; z += 1.8) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.8, numFloors * floorHeight * 0.9, 0.15), whiteWallMat);
+    fin.position.set(farEastX - 0.4, podiumH + (numFloors * floorHeight) / 2, z);
+    fin.rotation.y = -0.45;
+    fin.castShadow = true;
+    group.add(fin);
+  }
+
+  // =========================================================================
+  // 5. NORTH PARKING LOT (ติดถนนทางทิศเหนือ พอดี 0-GAP FLUSH)
+  // =========================================================================
+  // Extending from Z = -11.82 (touching the main North Road flush) down to Z = -6.84
+  const parkW = totalSpanX; // 49.5m wide spanning the whole front
+  const parkD = 4.98;
+  const parkX = 0;
+  const parkZ = -9.33; // Centered at -9.33, extends from -11.82 (road) to -6.84
+
+  // Full Asphalt Paved Parking Surface
+  const parkGround = new THREE.Mesh(new THREE.BoxGeometry(parkW, 0.12, parkD), asphaltMat);
+  parkGround.position.set(parkX, 0.06, parkZ);
+  parkGround.receiveShadow = true;
+  group.add(parkGround);
+
+  // Concrete Curbs along the perimeter (North, South, West, East)
+  const curbN = new THREE.Mesh(new THREE.BoxGeometry(parkW + 0.4, 0.22, 0.22), curbMat);
+  curbN.position.set(parkX, 0.11, parkZ - parkD / 2);
+  group.add(curbN);
+
+  const curbS = new THREE.Mesh(new THREE.BoxGeometry(parkW + 0.4, 0.22, 0.22), curbMat);
+  curbS.position.set(parkX, 0.11, parkZ + parkD / 2);
+  group.add(curbS);
+
+  const curbW = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, parkD), curbMat);
+  curbW.position.set(parkX - parkW / 2, 0.11, parkZ);
+  group.add(curbW);
+
+  const curbE = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, parkD), curbMat);
+  curbE.position.set(parkX + parkW / 2, 0.11, parkZ);
+  group.add(curbE);
+
+  // White Painted Parking Stall Dividing Stripes (Every 2.4m along width: 20 stalls)
+  const stallStep = 2.4;
+  for (let x = -parkW / 2 + 1.2; x <= parkW / 2 - 1.2; x += stallStep) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, parkD * 0.88), whiteLineMat);
+    line.position.set(parkX + x, 0.13, parkZ);
+    group.add(line);
+  }
+
+  // Access Entrance / Drop-off Driveway connecting Parking directly to Main Entrance
+  const driveW = 6.0;
+  const driveD = Math.abs(parkZ - (-atriumD / 2));
+  const driveway = new THREE.Mesh(new THREE.BoxGeometry(driveW, 0.1, driveD + 0.4), asphaltMat);
+  driveway.position.set(0, 0.05, (parkZ + (-atriumD / 2)) / 2);
+  driveway.receiveShadow = true;
+  group.add(driveway);
+
+  // Low decorative hedge shrubs separating parking lot from entrance concourse
+  const hedgeW = parkW * 0.44;
+  for (let side of [-1, 1]) {
+    const hedge = new THREE.Mesh(new THREE.BoxGeometry(hedgeW, 0.55, 0.45), hedgeMat);
+    hedge.position.set(parkX + side * (parkW * 0.27), 0.28, parkZ + parkD / 2 + 0.35);
+    group.add(hedge);
+  }
+
+  return group;
+}
+
+
+
+// =========================================================================
+// GISTDA GeoTwin LOD1 3D Smart Campus Engine
+// Procedural LOD1 Building Massing, Highway & Campus Roads, Parking,
+// Hydrology (Canals & Ponds), Paddy Fields, Thai House, Monument, Stadium
+// =========================================================================
+
+// Shared GISTDA Materials
+const gistdaWallMat = new THREE.MeshStandardMaterial({
+  color: 0xf8fafc,
+  roughness: 0.35,
+  metalness: 0.08
+});
+const gistdaTrimMat = new THREE.MeshStandardMaterial({
+  color: 0x1e293b,
+  roughness: 0.45,
+  metalness: 0.4
+});
+const gistdaConcreteMat = new THREE.MeshStandardMaterial({
+  color: 0xd9dde2,
+  roughness: 0.8,
+  metalness: 0.03
+});
+const gistdaGlassMat = new THREE.MeshStandardMaterial({
+  color: 0x0284c7,
+  roughness: 0.08,
+  metalness: 0.85,
+  transparent: true,
+  opacity: 0.85,
+  emissive: new THREE.Color(0xffbf69),
+  emissiveIntensity: 0.1
+});
+emissiveMaterials.push(gistdaGlassMat);
+
+const gistdaWaterMat = new THREE.MeshStandardMaterial({
+  color: 0x0284c7,
+  roughness: 0.1,
+  metalness: 0.9,
+  transparent: true,
+  opacity: 0.82
+});
+const gistdaAsphaltMat = new THREE.MeshStandardMaterial({
+  color: 0x1e293b,
+  roughness: 0.92,
+  metalness: 0.02
+});
+const gistdaHighwayMat = new THREE.MeshStandardMaterial({
+  color: 0x0f172a,
+  roughness: 0.95,
+  metalness: 0.01
+});
+const gistdaCurbMat = new THREE.MeshStandardMaterial({
+  color: 0xe2e8f0,
+  roughness: 0.75,
+  metalness: 0.05
+});
+const gistdaWhiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const gistdaYellowLineMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+const gistdaTrackMat = new THREE.MeshStandardMaterial({
+  color: 0xd946ef, // Synthetic athletic track
+  roughness: 0.8,
+  metalness: 0.02
+});
+const gistdaGrassPitchMat = new THREE.MeshStandardMaterial({
+  color: 0x15803d,
+  roughness: 0.9,
+  metalness: 0.0
+});
+const gistdaPaddyMat = new THREE.MeshStandardMaterial({
+  color: 0x65a30d, // Rice paddy green
+  roughness: 0.95,
+  metalness: 0.0
+});
+const gistdaEarthMat = new THREE.MeshStandardMaterial({
+  color: 0x78350f, // Earth bunds / คันนาดิน
+  roughness: 0.95,
+  metalness: 0.0
+});
+const gistdaThaiWoodMat = new THREE.MeshStandardMaterial({
+  color: 0x78350f, // Teak wood
+  roughness: 0.7,
+  metalness: 0.1
+});
+const gistdaThaiRoofMat = new THREE.MeshStandardMaterial({
+  color: 0xb45309, // Orange-brown terracotta Thai tile
+  roughness: 0.4,
+  metalness: 0.15
+});
+
+// --- Standard GISTDA GeoTwin LOD1 Building Generator ---
+function createGistdaLOD1Mesh(bld) {
+  const group = new THREE.Group();
+  const w = bld.dimensions.w;
+  const h = bld.dimensions.h;
+  const d = bld.dimensions.d;
+  const numFloors = Math.max(1, Math.round(h / 3.0));
+  const floorHeight = h / numFloors;
+  const podiumH = 0.5;
+
+  // Base Concrete Podium
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(w + 0.6, podiumH, d + 0.6), gistdaConcreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  podium.receiveShadow = true;
+  group.add(podium);
+
+  // Main LOD1 Tower Mass
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gistdaWallMat);
+  tower.position.set(0, podiumH + h / 2, 0);
+  tower.castShadow = true;
+  tower.receiveShadow = true;
+  group.add(tower);
+
+  // Ribbon Windows & Floor Bands
+  for (let f = 1; f <= numFloors; f++) {
+    const floorY = podiumH + (f - 1) * floorHeight;
+    const winY = floorY + floorHeight * 0.55;
+
+    // North & South Windows
+    const winN = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, floorHeight * 0.45, 0.15), gistdaGlassMat);
+    winN.position.set(0, winY, -d / 2 - 0.03);
+    group.add(winN);
+
+    const winS = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, floorHeight * 0.45, 0.15), gistdaGlassMat);
+    winS.position.set(0, winY, d / 2 + 0.03);
+    group.add(winS);
+
+    // East & West Windows
+    const winE = new THREE.Mesh(new THREE.BoxGeometry(0.15, floorHeight * 0.45, d * 0.82), gistdaGlassMat);
+    winE.position.set(w / 2 + 0.03, winY, 0);
+    group.add(winE);
+
+    const winW = new THREE.Mesh(new THREE.BoxGeometry(0.15, floorHeight * 0.45, d * 0.82), gistdaGlassMat);
+    winW.position.set(-w / 2 - 0.03, winY, 0);
+    group.add(winW);
+
+    // Spandrel band
+    const spandrel = new THREE.Mesh(new THREE.BoxGeometry(w + 0.15, 0.25, d + 0.15), gistdaTrimMat);
+    spandrel.position.set(0, floorY, 0);
+    group.add(spandrel);
+  }
+
+  // Rooftop Parapet Wall
+  const roofY = podiumH + h;
+  const parapet = new THREE.Mesh(new THREE.BoxGeometry(w, 0.7, d), gistdaTrimMat);
+  parapet.position.set(0, roofY + 0.35, 0);
+  group.add(parapet);
+
+  // Rooftop Flat Deck Inner (Slightly sunken)
+  const deckMat = new THREE.MeshStandardMaterial({
+    color: bld.roofColor || 0x475569,
     roughness: 0.6,
     metalness: 0.1
   });
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(w - 0.4, 0.1, d - 0.4), deckMat);
+  deck.position.set(0, roofY + 0.1, 0);
+  group.add(deck);
 
-  const roadHeight = 0.6; // subtle raised road surface
+  // Rooftop Elevator Penthouse & Mechanical Room
+  const pentW = Math.min(w * 0.35, 5.0);
+  const pentD = Math.min(d * 0.35, 4.0);
+  const pentH = 2.4;
+  const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), gistdaWallMat);
+  penthouse.position.set(w * 0.15, roofY + pentH / 2 + 0.2, -d * 0.15);
+  penthouse.castShadow = true;
+  group.add(penthouse);
 
-  MAPS3D_VECTORS.roads.forEach(r => {
-    const pts = r.pts;
-    if (pts.length < 2) return;
-    const w = r.width || 4.0;
+  // AC Condenser Chiller Units
+  if (w > 12 && d > 8) {
+    const chW = 1.6;
+    const chD = 1.2;
+    const chH = 1.0;
+    const chiller = new THREE.Mesh(new THREE.BoxGeometry(chW, chH, chD), gistdaTrimMat);
+    chiller.position.set(-w * 0.2, roofY + chH / 2 + 0.2, d * 0.2);
+    chiller.castShadow = true;
+    group.add(chiller);
+  }
 
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p1 = new THREE.Vector2(pts[i][0], pts[i][1]);
-      const p2 = new THREE.Vector2(pts[i+1][0], pts[i+1][1]);
-      const len = p1.distanceTo(p2);
-      if (len < 0.5) continue;
-
-      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-      const midX = (p1.x + p2.x) / 2;
-      const midZ = (p1.y + p2.y) / 2;
-
-      // Road Segment Box
-      const segGeo = new THREE.BoxGeometry(len, roadHeight, w);
-      const seg = new THREE.Mesh(segGeo, roadMat);
-      seg.position.set(midX, roadHeight / 2 + 0.02, midZ);
-      seg.rotation.y = -angle;
-      seg.receiveShadow = true;
-      roadsGroup.add(seg);
-
-      // Curbs on arterial / collector
-      if (w >= 6.0) {
-        for (let side of [-1, 1]) {
-          const curb = new THREE.Mesh(new THREE.BoxGeometry(len, roadHeight + 0.15, 0.3), curbMat);
-          curb.position.set(midX, (roadHeight + 0.15) / 2 + 0.02, midZ + side * (w / 2));
-          curb.rotation.y = -angle;
-          roadsGroup.add(curb);
-        }
-      }
-    }
-  });
+  return group;
 }
 
-// 3. Water Layer (Canals & ponds from OSM, color #98DCFF, opacity 0.7)
-function buildMaps3DWater() {
-  waterGroup.clear();
+// --- Building 2: อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB 100) ---
+function createSPB100Mesh() {
+  const group = new THREE.Group();
+  const w = 22.5;
+  const h = 18.0; // 6-story monumental administrative tower
+  const d = 14.0;
+  const podiumH = 0.8;
 
-  const waterMat = new THREE.MeshStandardMaterial({
-    color: 0x98DCFF, // maps3d water.color (#98DCFF)
-    roughness: 0.15,
-    metalness: 0.85,
-    transparent: true,
-    opacity: 0.70 // maps3d water.opacity: 0.7
+  // Base
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(w + 1.2, podiumH, d + 1.2), gistdaConcreteMat);
+  podium.position.set(0, podiumH / 2, 0);
+  group.add(podium);
+
+  // Main Tower
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gistdaWallMat);
+  tower.position.set(0, podiumH + h / 2, 0);
+  tower.castShadow = true;
+  tower.receiveShadow = true;
+  group.add(tower);
+
+  // Front Blue Tinted Curtain Wall Atrium
+  const curtnW = w * 0.6;
+  const curtnH = h * 0.85;
+  const curtain = new THREE.Mesh(new THREE.BoxGeometry(curtnW, curtnH, 0.4), gistdaGlassMat);
+  curtain.position.set(0, podiumH + curtnH / 2 + 0.8, -d / 2 - 0.1);
+  group.add(curtain);
+
+  // Architectural Crown Parapet
+  const crown = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 1.2, d + 0.4), gistdaTrimMat);
+  crown.position.set(0, podiumH + h + 0.6, 0);
+  crown.castShadow = true;
+  group.add(crown);
+
+  // Helipad / Rooftop Platform
+  const heli = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 0.3, 24), gistdaConcreteMat);
+  heli.position.set(0, podiumH + h + 1.3, 0);
+  group.add(heli);
+
+  return group;
+}
+
+// --- Building 8: พระอนุสาวรีย์สมเด็จเจ้าฟ้าวไลยอลงกรณ์ฯ ---
+function createMonumentMesh() {
+  const group = new THREE.Group();
+  // 3-Tier Marble Plinth
+  const tier1 = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 5.2, 0.4, 32), gistdaConcreteMat);
+  tier1.position.y = 0.2;
+  tier1.receiveShadow = true;
+  group.add(tier1);
+
+  const tier2 = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.8, 0.4, 32), gistdaWallMat);
+  tier2.position.y = 0.6;
+  group.add(tier2);
+
+  const tier3 = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.4, 0.8, 32), gistdaWallMat);
+  tier3.position.y = 1.2;
+  tier3.castShadow = true;
+  group.add(tier3);
+
+  // Pedestal & Bronze Statue
+  const pedestalMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3, metalness: 0.5 });
+  const pedestal = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.6, 1.4), pedestalMat);
+  pedestal.position.y = 2.4;
+  pedestal.castShadow = true;
+  group.add(pedestal);
+
+  const bronzeMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.85 });
+  const statue = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.8, 16), bronzeMat);
+  statue.position.y = 4.1;
+  statue.castShadow = true;
+  group.add(statue);
+
+  // Landscaped Floral Ring
+  const flowerRing = new THREE.Mesh(new THREE.RingGeometry(5.5, 7.2, 32), gistdaGrassPitchMat);
+  flowerRing.rotation.x = -Math.PI / 2;
+  flowerRing.position.y = 0.05;
+  flowerRing.receiveShadow = true;
+  group.add(flowerRing);
+
+  return group;
+}
+
+// --- Building 36: เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์) ---
+function createThaiPavilionMesh() {
+  const group = new THREE.Group();
+  const w = 8.5;
+  const d = 8.0;
+  const stiltH = 2.4; // ยกใต้ถุนสูง
+
+  // Wooden Stilts / Pillars (ใต้ถุน)
+  for (let x of [-w / 2 + 0.8, 0, w / 2 - 0.8]) {
+    for (let z of [-d / 2 + 0.8, 0, d / 2 - 0.8]) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, stiltH, 8), gistdaThaiWoodMat);
+      col.position.set(x, stiltH / 2, z);
+      col.castShadow = true;
+      group.add(col);
+    }
+  }
+
+  // Wooden Floor Veranda (ชานเรือน)
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(w, 0.25, d), gistdaThaiWoodMat);
+  floor.position.set(0, stiltH, 0);
+  floor.castShadow = true;
+  group.add(floor);
+
+  // House Body
+  const houseW = w * 0.75;
+  const houseD = d * 0.75;
+  const houseH = 2.8;
+  const house = new THREE.Mesh(new THREE.BoxGeometry(houseW, houseH, houseD), gistdaThaiWoodMat);
+  house.position.set(0, stiltH + houseH / 2, 0);
+  house.castShadow = true;
+  group.add(house);
+
+  // Traditional Pitched Thai Roof (ทรงจั่ว)
+  const roofGeo = new THREE.ConeGeometry(houseW * 0.85, 2.6, 4);
+  const roof = new THREE.Mesh(roofGeo, gistdaThaiRoofMat);
+  roof.rotation.y = Math.PI / 4;
+  roof.position.set(0, stiltH + houseH + 1.3, 0);
+  roof.castShadow = true;
+  group.add(roof);
+
+  return group;
+}
+
+// --- Building 57: สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ ---
+function createStadiumMesh() {
+  const group = new THREE.Group();
+  const trackW = 42.0;
+  const trackD = 52.0;
+
+  // Invisible click hitbox on the field for raycasting
+  const hitGeo = new THREE.PlaneGeometry(trackW, trackD);
+  const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+  const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+  hitMesh.rotation.x = -Math.PI / 2;
+  hitMesh.position.y = 0.05;
+  group.add(hitMesh);
+
+  // 1. Covered Grandstand on West Side (-X) exactly over real grandstand in drone photo
+  const standW = 5.2;
+  const standD = 32.0;
+  const standH = 5.5;
+  const stand = new THREE.Mesh(new THREE.BoxGeometry(standW, standH, standD), gistdaConcreteMat);
+  stand.position.set(-trackW / 2 - standW / 2 + 1.0, standH / 2, 0);
+  stand.castShadow = true;
+  group.add(stand);
+
+  // Grandstand Cantilever Roof
+  const canopy = new THREE.Mesh(new THREE.BoxGeometry(standW + 2.5, 0.4, standD + 1.2), gistdaTrimMat);
+  canopy.position.set(-trackW / 2 - standW / 2 + 2.2, standH + 0.6, 0);
+  canopy.rotation.z = -0.15;
+  canopy.castShadow = true;
+  group.add(canopy);
+
+  // 2. 4 Floodlight Spotlight Towers at the 4 exact corners of the 400m track
+  const cornerCoords = [
+    { x: -trackW / 2 - 1.5, z: -trackD / 2 + 2.0 },
+    { x: trackW / 2 + 1.5,  z: -trackD / 2 + 2.0 },
+    { x: -trackW / 2 - 1.5, z: trackD / 2 - 2.0 },
+    { x: trackW / 2 + 1.5,  z: trackD / 2 - 2.0 }
+  ];
+
+  cornerCoords.forEach(c => {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.38, 15.0, 8), gistdaTrimMat);
+    pole.position.set(c.x, 7.5, c.z);
+    pole.castShadow = true;
+    group.add(pole);
+
+    const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.2, 1.0), gistdaWallMat);
+    lamp.position.set(c.x, 15.4, c.z);
+    group.add(lamp);
   });
 
-  const waterHeight = 0.3;
+  return group;
+}
 
-  MAPS3D_VECTORS.water.forEach(wt => {
-    const pts = wt.pts;
-    if (pts.length < 2) return;
-    const w = 5.0; // canal width
+// --- Building 5: อาคารศูนย์ส่งเสริมสุขภาพ / สระว่ายน้ำ 50 เมตร ---
+function createHealthPoolMesh() {
+  const group = new THREE.Group();
+  const bldW = 16.0;
+  const bldD = 14.0;
+  const bldH = 5.0;
 
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p1 = new THREE.Vector2(pts[i][0], pts[i][1]);
-      const p2 = new THREE.Vector2(pts[i+1][0], pts[i+1][1]);
-      const len = p1.distanceTo(p2);
-      if (len < 0.5) continue;
+  // Gym Building
+  const bld = new THREE.Mesh(new THREE.BoxGeometry(bldW, bldH, bldD), gistdaWallMat);
+  bld.position.set(0, bldH / 2, 0);
+  bld.castShadow = true;
+  group.add(bld);
 
-      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-      const midX = (p1.x + p2.x) / 2;
-      const midZ = (p1.y + p2.y) / 2;
+  // 50m Swimming Pool Deck next to building (+Z)
+  const poolW = 12.0;
+  const poolD = 18.0;
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(poolW + 2.0, 0.2, poolD + 2.0), gistdaConcreteMat);
+  deck.position.set(0, 0.1, bldD / 2 + poolD / 2 + 1.0);
+  deck.receiveShadow = true;
+  group.add(deck);
 
-      const seg = new THREE.Mesh(new THREE.BoxGeometry(len, waterHeight, w), waterMat);
-      seg.position.set(midX, waterHeight / 2 + 0.02, midZ);
-      seg.rotation.y = -angle;
-      waterGroup.add(seg);
+  // Blue Water Surface
+  const water = new THREE.Mesh(new THREE.BoxGeometry(poolW, 0.22, poolD), gistdaWaterMat);
+  water.position.set(0, 0.12, bldD / 2 + poolD / 2 + 1.0);
+  group.add(water);
+
+  return group;
+}
+
+// --- GISTDA Infrastructure: Roads, Highway, Parking, Canals, Paddy, Housing ---
+function createGistdaInfrastructure() {
+  const infraGroup = new THREE.Group();
+
+  // =========================================================================
+  // 1. PHAHONYOTHIN HIGHWAY (ถนนพหลโยธิน - ทล.1 ด้านหน้า ม. ฝั่งทิศตะวันออก)
+  // =========================================================================
+  const hwW = 18.0; // 8 lanes wide
+  const hwL = 118.0; // spanning full north-south length of campus
+  const hwX = 196.0;
+  const hwZ = 0;
+
+  const highway = new THREE.Mesh(new THREE.BoxGeometry(hwW, 0.12, hwL), gistdaHighwayMat);
+  highway.position.set(hwX, 0.06, hwZ);
+  highway.receiveShadow = true;
+  infraGroup.add(highway);
+
+  // Central Median Barrier (เกาะกลางถนน)
+  const median = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, hwL), gistdaConcreteMat);
+  median.position.set(hwX, 0.3, hwZ);
+  infraGroup.add(median);
+
+  // Highway Lane Divider Stripes
+  for (let laneOffset of [-6.0, -3.0, 3.0, 6.0]) {
+    for (let z = -hwL / 2 + 2.5; z <= hwL / 2 - 2.5; z += 5.0) {
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 3.0), gistdaWhiteLineMat);
+      stripe.position.set(hwX + laneOffset, 0.14, z);
+      infraGroup.add(stripe);
+    }
+  }
+
+  // =========================================================================
+  // 2. MAIN CAMPUS INTERNAL ROADS (ถนนหลักภายในมหาวิทยาลัย)
+  // =========================================================================
+  const roadMat = gistdaAsphaltMat;
+  const roadW = 6.0;
+
+  // 2A. Main East-West Spine Road (เชื่อมจากซุ้มประตูหน้า ถึงขอบสนามกีฬาหน้าอาคาร 42)
+  const mainSpineL = 296.0; // Ends at X = -114 right before the stadium!
+  const mainSpineX = 34.0;  // Spans from +182 down to -114
+  const mainSpine = new THREE.Mesh(new THREE.BoxGeometry(mainSpineL, 0.1, roadW), roadMat);
+  mainSpine.position.set(mainSpineX, 0.05, 0);
+  mainSpine.receiveShadow = true;
+  infraGroup.add(mainSpine);
+
+  // Dashed Centerline for Main Spine (stopping cleanly before stadium)
+  for (let x = -110; x <= 180; x += 4.5) {
+    const dash = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.02, 0.15), gistdaWhiteLineMat);
+    dash.position.set(x, 0.12, 0);
+    infraGroup.add(dash);
+  }
+
+  // 2B. North Ring Road (เลียบแนวอาคาร 19, 20, 29, 30)
+  const northRoadL = 280.0;
+  const northRoad = new THREE.Mesh(new THREE.BoxGeometry(northRoadL, 0.1, roadW), roadMat);
+  northRoad.position.set(20.0, 0.05, -34.0);
+  northRoad.receiveShadow = true;
+  infraGroup.add(northRoad);
+
+  // 2C. South Ring Road (ผ่านหน้าตึก 10, คณะครุศาสตร์, หอสมุด, ถึงสนามกีฬา)
+  const southRoadL = 310.0;
+  const southRoad = new THREE.Mesh(new THREE.BoxGeometry(southRoadL, 0.1, roadW), roadMat);
+  southRoad.position.set(10.0, 0.05, 42.0);
+  southRoad.receiveShadow = true;
+  infraGroup.add(southRoad);
+
+  // 2D. North-South Connecting Cross Avenues
+  for (let crossX of [138.0, 68.0, -10.0, -85.0]) {
+    const crossAve = new THREE.Mesh(new THREE.BoxGeometry(roadW, 0.09, 82.0), roadMat);
+    crossAve.position.set(crossX, 0.045, 4.0);
+    crossAve.receiveShadow = true;
+    infraGroup.add(crossAve);
+  }
+
+  // =========================================================================
+  // 3. GISTDA PARKING LOTS (ลานจอดรถตามผัง GIS)
+  // =========================================================================
+  const parkingConfigs = [
+    { x: 135.0, z: 14.0, w: 14.0, d: 18.0, name: 'SPB 100 Parking' },
+    { x: -6.0, z: 20.0, w: 22.0, d: 10.0, name: 'Library Parking' },
+    { x: 51.0, z: -10.0, w: 24.0, d: 8.0, name: 'Science Faculty Parking' },
+    { x: -120.0, z: 14.0, w: 16.0, d: 24.0, name: 'Stadium Parking' }
+  ];
+
+  parkingConfigs.forEach(pk => {
+    const lot = new THREE.Mesh(new THREE.BoxGeometry(pk.w, 0.12, pk.d), gistdaAsphaltMat);
+    lot.position.set(pk.x, 0.06, pk.z);
+    lot.receiveShadow = true;
+    infraGroup.add(lot);
+
+    // Curbs
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(pk.w + 0.4, 0.22, pk.d + 0.4), gistdaCurbMat);
+    curb.position.set(pk.x, 0.1, pk.z);
+    infraGroup.add(curb);
+
+    // Stalls
+    const step = 2.4;
+    for (let ox = -pk.w / 2 + 1.2; ox <= pk.w / 2 - 1.2; ox += step) {
+      const line = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, pk.d * 0.85), gistdaWhiteLineMat);
+      line.position.set(pk.x + ox, 0.14, pk.z);
+      infraGroup.add(line);
     }
   });
 
-  // Natural Lotus Pond at Thai House (bld-36 at x=-2.5, z=27.2)
-  const pond = new THREE.Mesh(new THREE.CylinderGeometry(28, 28, waterHeight, 32), waterMat);
-  pond.position.set(-2.5, waterHeight / 2 + 0.02, 27.2);
-  waterGroup.add(pond);
+  // =========================================================================
+  // 4. HYDROLOGY: CANALS & NATURAL PONDS (ระบบคูคลองและสระน้ำ)
+  // =========================================================================
+  // 4A. North Drainage Canal (คลองเชียงรากน้อย - คลองระบายน้ำทิศเหนือเลียบแนวรั้วจริง)
+  const canalW = 4.8;
+  const canalL = 340.0; // Spanning full length of northern boundary
+  const canalX = 15.0;
+  const canalZ = -49.5; // Exactly on Chiang Rak Noi canal in drone photograph!
 
-  // Sports Center Swimming Pool (bld-5 at x=558.8, z=-75.5)
-  const pool = new THREE.Mesh(new THREE.BoxGeometry(25, waterHeight, 52), waterMat);
-  pool.position.set(558.8, waterHeight / 2 + 0.02, -75.5);
-  waterGroup.add(pool);
+  const canalBed = new THREE.Mesh(new THREE.BoxGeometry(canalL, 0.25, canalW + 0.8), gistdaConcreteMat);
+  canalBed.position.set(canalX, 0.05, canalZ);
+  infraGroup.add(canalBed);
+
+  const canalWater = new THREE.Mesh(new THREE.BoxGeometry(canalL, 0.22, canalW), gistdaWaterMat);
+  canalWater.position.set(canalX, 0.14, canalZ);
+  infraGroup.add(canalWater);
+
+  // 4B. Natural Lotus Pond at Thai House (สระบัวเรือนเจ้าฟ้า)
+  const pondGeo = new THREE.CylinderGeometry(11.0, 11.0, 0.2, 32);
+  const pond = new THREE.Mesh(pondGeo, gistdaWaterMat);
+  pond.position.set(-0.7, 0.1, 8.0);
+  infraGroup.add(pond);
+
+  const pondBank = new THREE.Mesh(new THREE.CylinderGeometry(11.8, 12.0, 0.18, 32), gistdaConcreteMat);
+  pondBank.position.set(-0.7, 0.05, 8.0);
+  infraGroup.add(pondBank);
+
+  // =========================================================================
+  // 5. AGRICULTURAL DEMONSTRATION PADDY FIELDS (ทุ่งนาและแปลงเกษตรสาธิต)
+  // =========================================================================
+  // Located at X in [15..45], Z in [22..40] near Faculty of Agriculture
+  const paddyW = 32.0;
+  const paddyD = 18.0;
+  const paddyX = 30.0;
+  const paddyZ = 32.0;
+
+  const paddyBase = new THREE.Mesh(new THREE.BoxGeometry(paddyW, 0.15, paddyD), gistdaPaddyMat);
+  paddyBase.position.set(paddyX, 0.08, paddyZ);
+  paddyBase.receiveShadow = true;
+  infraGroup.add(paddyBase);
+
+  // Earth bund dikes (คันนาดิน) dividing the fields into plots
+  for (let ox of [-10.0, 0.0, 10.0]) {
+    const bund = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.3, paddyD), gistdaEarthMat);
+    bund.position.set(paddyX + ox, 0.2, paddyZ);
+    infraGroup.add(bund);
+  }
+  for (let oz of [-4.5, 4.5]) {
+    const bund = new THREE.Mesh(new THREE.BoxGeometry(paddyW, 0.3, 0.6), gistdaEarthMat);
+    bund.position.set(paddyX, 0.2, paddyZ + oz);
+    infraGroup.add(bund);
+  }
+
+  // =========================================================================
+  // 6. STAFF RESIDENTIAL HOUSING (โซนบ้านพักอาจารย์/บุคลากร ท้าย ม.)
+  // =========================================================================
+  // Grid layout of detached 1-2 story cottages with pitched hip roofs
+  const houseMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, roughness: 0.5 });
+  const houseRoofMat = new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.4 });
+
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 5; c++) {
+      const hx = -105.0 - c * 7.5;
+      const hz = -15.0 - r * 8.0;
+
+      const houseBody = new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.5, 5.0), houseMat);
+      houseBody.position.set(hx, 1.75, hz);
+      houseBody.castShadow = true;
+      infraGroup.add(houseBody);
+
+      const roofCone = new THREE.ConeGeometry(4.2, 1.8, 4);
+      const hRoof = new THREE.Mesh(roofCone, houseRoofMat);
+      hRoof.rotation.y = Math.PI / 4;
+      hRoof.position.set(hx, 4.4, hz);
+      hRoof.castShadow = true;
+      infraGroup.add(hRoof);
+    }
+  }
+
+  
+  // =========================================================================
+  // 7. REAL TREE LINEAR ROWS & GROVES (ต้นไม้ 3 มิติ วางตรงตามพุ่มไม้จริงในภาพถ่ายโดรน)
+  // =========================================================================
+  const treeMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.9, metalness: 0.0 });
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9, metalness: 0.0 });
+  const treeCone = new THREE.ConeGeometry(2.2, 5.5, 6);
+  const trunkCyl = new THREE.CylinderGeometry(0.3, 0.4, 2.0, 6);
+
+  function addTree(tx, tz, s = 1.0) {
+    const tg = new THREE.Group();
+    tg.position.set(tx, 0, tz);
+    tg.scale.setScalar(s);
+    const tr = new THREE.Mesh(trunkCyl, trunkMat);
+    tr.position.y = 1.0;
+    tg.add(tr);
+    const cr = new THREE.Mesh(treeCone, treeMat);
+    cr.position.y = 2.0 + 2.75;
+    cr.castShadow = true;
+    tg.add(cr);
+    infraGroup.add(tg);
+  }
+
+  // Trees along North Canal buffer (Z = -44.0, every 14m from X = -140 to +160)
+  for (let x = -140; x <= 160; x += 14) {
+    addTree(x, -44.0, 0.9 + (Math.abs(x) % 3) * 0.1);
+  }
+
+  // Trees along Monument Plaza circle (X = 184.0, Z = 14.5)
+  for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+    addTree(184.0 + Math.cos(a) * 8.5, 14.5 + Math.sin(a) * 8.5, 0.85);
+  }
+
+  // Trees around Thai House lotus pond (X = -0.7, Z = 8.0)
+  for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+    addTree(-0.7 + Math.cos(a) * 14.0, 8.0 + Math.sin(a) * 14.0, 0.95);
+  }
+
+  // Trees along Building 10 parking buffer (Z = 43.5, X in [115..165])
+  for (let x = 115; x <= 165; x += 10) {
+    addTree(x, 43.5, 0.85);
+  }
+
+  // Trees along southern natural boundary (Z = 53.0, every 12m)
+  for (let x = -130; x <= 130; x += 12) {
+    addTree(x, 53.0, 1.0 + (Math.abs(x) % 2) * 0.15);
+  }
+
+  return infraGroup;
 }
 
-// 4. Buildings Layer (Extruded raised blocks, color #F1ECE1, edge rendering #475569)
-// 336 Buildings Extracted Exactly from Maps3D / OSM Footprint Map
-const MAPS3D_ALL_BUILDINGS = [{"id": "bld-auto-1", "x": -680.36, "z": -202.77, "w": 69.34, "d": 3.0, "h": 8.0, "area": 718}, {"id": "bld-auto-2", "x": -613.96, "z": -203.38, "w": 8.82, "d": 3.0, "h": 5.5, "area": 65}, {"id": "bld-auto-3", "x": -135.74, "z": -204.0, "w": 10.51, "d": 3.0, "h": 5.5, "area": 25}, {"id": "bld-auto-4", "x": -208.65, "z": -203.59, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-5", "x": -732.05, "z": -199.27, "w": 10.51, "d": 8.22, "h": 5.5, "area": 449}, {"id": "bld-auto-6", "x": -193.94, "z": -202.77, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-7", "x": -705.57, "z": -197.02, "w": 29.84, "d": 9.45, "h": 8.0, "area": 1184}, {"id": "bld-auto-8", "x": 361.82, "z": -198.25, "w": 11.35, "d": 3.0, "h": 5.5, "area": 27}, {"id": "bld-auto-9", "x": -204.86, "z": -197.84, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-10", "x": 286.81, "z": -197.84, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-11", "x": -117.24, "z": -197.43, "w": 10.51, "d": 3.0, "h": 5.5, "area": 25}, {"id": "bld-auto-12", "x": 211.8, "z": -197.43, "w": 11.35, "d": 3.0, "h": 5.5, "area": 27}, {"id": "bld-auto-13", "x": -190.16, "z": -197.02, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-14", "x": 29.21, "z": -197.02, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-15", "x": 109.68, "z": -197.02, "w": 12.19, "d": 3.0, "h": 5.5, "area": 29}, {"id": "bld-auto-16", "x": 136.58, "z": -197.02, "w": 11.35, "d": 3.0, "h": 5.5, "area": 27}, {"id": "bld-auto-17", "x": 301.94, "z": -197.02, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-18", "x": 226.72, "z": -196.6, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-19", "x": 44.33, "z": -196.19, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-20", "x": 92.66, "z": -196.19, "w": 9.25, "d": 3.0, "h": 5.5, "area": 22}, {"id": "bld-auto-21", "x": 151.91, "z": -196.19, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-22", "x": -697.38, "z": -194.14, "w": 13.45, "d": 3.0, "h": 5.5, "area": 159}, {"id": "bld-auto-23", "x": -358.46, "z": -194.55, "w": 31.52, "d": 3.0, "h": 5.5, "area": 75}, {"id": "bld-auto-24", "x": -315.59, "z": -193.73, "w": 23.95, "d": 3.0, "h": 5.5, "area": 57}, {"id": "bld-auto-25", "x": -651.57, "z": -192.5, "w": 21.01, "d": 3.0, "h": 5.5, "area": 53}, {"id": "bld-auto-26", "x": 365.81, "z": -192.5, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-27", "x": -688.13, "z": -191.47, "w": 5.88, "d": 3.0, "h": 5.5, "area": 56}, {"id": "bld-auto-28", "x": 290.59, "z": -192.08, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-29", "x": -680.57, "z": -191.47, "w": 5.88, "d": 3.0, "h": 5.5, "area": 28}, {"id": "bld-auto-30", "x": -649.26, "z": -185.31, "w": 25.63, "d": 13.15, "h": 8.0, "area": 1846}, {"id": "bld-auto-31", "x": 215.79, "z": -191.67, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-32", "x": 32.99, "z": -191.26, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-33", "x": 105.27, "z": -191.26, "w": 9.25, "d": 3.0, "h": 5.5, "area": 22}, {"id": "bld-auto-34", "x": 140.57, "z": -191.26, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-35", "x": 305.72, "z": -191.26, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-36", "x": 230.71, "z": -190.85, "w": 11.35, "d": 3.0, "h": 5.5, "area": 27}, {"id": "bld-auto-37", "x": 48.12, "z": -190.44, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-38", "x": 88.25, "z": -190.44, "w": 12.19, "d": 3.0, "h": 5.5, "area": 29}, {"id": "bld-auto-39", "x": 155.7, "z": -190.44, "w": 10.93, "d": 3.0, "h": 5.5, "area": 26}, {"id": "bld-auto-40", "x": -687.92, "z": -183.87, "w": 6.3, "d": 12.74, "h": 5.5, "area": 426}, {"id": "bld-auto-41", "x": -680.78, "z": -184.28, "w": 6.3, "d": 11.92, "h": 5.5, "area": 428}, {"id": "bld-auto-42", "x": -698.22, "z": -171.13, "w": 13.45, "d": 37.39, "h": 10.5, "area": 2557}, {"id": "bld-auto-43", "x": -728.05, "z": -180.79, "w": 12.61, "d": 16.44, "h": 8.0, "area": 872}, {"id": "bld-auto-44", "x": -347.53, "z": -188.8, "w": 23.95, "d": 3.0, "h": 5.5, "area": 57}, {"id": "bld-auto-45", "x": -304.25, "z": -187.98, "w": 31.52, "d": 3.0, "h": 5.5, "area": 75}, {"id": "bld-auto-46", "x": -739.19, "z": -183.46, "w": 3.0, "d": 8.63, "h": 5.5, "area": 110}, {"id": "bld-auto-47", "x": -670.06, "z": -179.35, "w": 14.29, "d": 16.85, "h": 8.0, "area": 1257}, {"id": "bld-auto-48", "x": -617.32, "z": -175.65, "w": 8.82, "d": 10.27, "h": 5.5, "area": 294}, {"id": "bld-auto-49", "x": 622.99, "z": -173.39, "w": 11.77, "d": 14.79, "h": 8.0, "area": 865}, {"id": "bld-auto-50", "x": 594.0, "z": -173.18, "w": 11.77, "d": 14.38, "h": 8.0, "area": 894}, {"id": "bld-auto-51", "x": 606.4, "z": -172.57, "w": 13.03, "d": 14.79, "h": 8.0, "area": 992}, {"id": "bld-auto-52", "x": 635.6, "z": -172.57, "w": 13.45, "d": 14.79, "h": 8.0, "area": 1020}, {"id": "bld-auto-53", "x": -620.47, "z": -174.21, "w": 5.04, "d": 9.04, "h": 5.5, "area": 69}, {"id": "bld-auto-54", "x": -684.35, "z": -172.77, "w": 13.45, "d": 9.45, "h": 8.0, "area": 650}, {"id": "bld-auto-55", "x": -639.17, "z": -167.02, "w": 28.16, "d": 13.56, "h": 8.0, "area": 1880}, {"id": "bld-auto-56", "x": -736.88, "z": -167.43, "w": 7.56, "d": 11.09, "h": 5.5, "area": 339}, {"id": "bld-auto-57", "x": 346.9, "z": -151.61, "w": 21.85, "d": 35.34, "h": 10.5, "area": 4472}, {"id": "bld-auto-58", "x": 121.45, "z": -166.2, "w": 4.62, "d": 3.7, "h": 5.5, "area": 91}, {"id": "bld-auto-59", "x": 63.46, "z": -161.27, "w": 3.0, "d": 9.45, "h": 5.5, "area": 23}, {"id": "bld-auto-60", "x": -685.82, "z": -163.32, "w": 3.78, "d": 4.52, "h": 5.5, "area": 87}, {"id": "bld-auto-61", "x": -263.49, "z": -161.89, "w": 26.47, "d": 7.4, "h": 8.0, "area": 892}, {"id": "bld-auto-62", "x": 129.85, "z": -162.3, "w": 8.82, "d": 5.75, "h": 5.5, "area": 274}, {"id": "bld-auto-63", "x": -298.58, "z": -157.37, "w": 22.69, "d": 5.75, "h": 8.0, "area": 649}, {"id": "bld-auto-64", "x": 240.79, "z": -149.76, "w": 7.98, "d": 19.31, "h": 8.0, "area": 793}, {"id": "bld-auto-65", "x": 187.21, "z": -150.59, "w": 37.82, "d": 16.85, "h": 10.5, "area": 3165}, {"id": "bld-auto-66", "x": 215.37, "z": -143.81, "w": 5.04, "d": 21.37, "h": 5.5, "area": 540}, {"id": "bld-auto-67", "x": 679.73, "z": -153.46, "w": 8.4, "d": 3.0, "h": 5.5, "area": 20}, {"id": "bld-auto-68", "x": -264.54, "z": -146.27, "w": 23.53, "d": 7.4, "h": 8.0, "area": 828}, {"id": "bld-auto-69", "x": -38.45, "z": -143.4, "w": 10.09, "d": 13.15, "h": 8.0, "area": 768}, {"id": "bld-auto-70", "x": -296.68, "z": -145.86, "w": 25.63, "d": 7.4, "h": 8.0, "area": 937}, {"id": "bld-auto-71", "x": -233.23, "z": -143.81, "w": 12.19, "d": 9.04, "h": 8.0, "area": 626}, {"id": "bld-auto-72", "x": -736.46, "z": -138.47, "w": 8.4, "d": 13.15, "h": 5.5, "area": 437}, {"id": "bld-auto-73", "x": 113.04, "z": -125.11, "w": 84.47, "d": 30.82, "h": 14.0, "area": 12230}, {"id": "bld-auto-74", "x": 189.74, "z": -129.84, "w": 31.94, "d": 15.61, "h": 10.5, "area": 2773}, {"id": "bld-auto-75", "x": -729.52, "z": -131.48, "w": 13.03, "d": 11.5, "h": 5.5, "area": 508}, {"id": "bld-auto-76", "x": -719.65, "z": -127.17, "w": 12.61, "d": 11.92, "h": 5.5, "area": 523}, {"id": "bld-auto-77", "x": 635.39, "z": -123.26, "w": 13.03, "d": 14.79, "h": 8.0, "area": 962}, {"id": "bld-auto-78", "x": -238.69, "z": -122.65, "w": 25.63, "d": 11.92, "h": 8.0, "area": 1589}, {"id": "bld-auto-79", "x": -238.48, "z": -115.05, "w": 24.37, "d": 3.0, "h": 5.5, "area": 191}, {"id": "bld-auto-80", "x": -733.73, "z": -100.87, "w": 13.87, "d": 27.53, "h": 10.5, "area": 2169}, {"id": "bld-auto-81", "x": -339.34, "z": -98.61, "w": 21.85, "d": 23.01, "h": 8.0, "area": 1519}, {"id": "bld-auto-82", "x": 284.5, "z": -107.85, "w": 13.87, "d": 3.0, "h": 5.5, "area": 33}, {"id": "bld-auto-83", "x": 469.4, "z": -107.44, "w": 47.49, "d": 3.0, "h": 5.5, "area": 113}, {"id": "bld-auto-84", "x": 404.05, "z": -106.62, "w": 36.14, "d": 3.0, "h": 5.5, "area": 86}, {"id": "bld-auto-85", "x": -369.59, "z": -103.13, "w": 7.56, "d": 5.75, "h": 5.5, "area": 252}, {"id": "bld-auto-86", "x": 452.38, "z": -101.69, "w": 36.14, "d": 3.0, "h": 5.5, "area": 86}, {"id": "bld-auto-87", "x": 538.53, "z": -88.54, "w": 44.54, "d": 24.24, "h": 10.5, "area": 3629}, {"id": "bld-auto-88", "x": -264.96, "z": -95.73, "w": 5.88, "d": 6.57, "h": 5.5, "area": 185}, {"id": "bld-auto-89", "x": 181.96, "z": -85.26, "w": 171.88, "d": 22.6, "h": 18.0, "area": 20500}, {"id": "bld-auto-90", "x": 362.45, "z": -83.2, "w": 12.61, "d": 25.89, "h": 8.0, "area": 1493}, {"id": "bld-auto-91", "x": -321.9, "z": -92.86, "w": 7.14, "d": 4.93, "h": 5.5, "area": 204}, {"id": "bld-auto-92", "x": 287.65, "z": -85.05, "w": 37.82, "d": 20.54, "h": 10.5, "area": 3820}, {"id": "bld-auto-93", "x": 434.1, "z": -92.24, "w": 24.79, "d": 6.16, "h": 8.0, "area": 859}, {"id": "bld-auto-94", "x": 394.81, "z": -91.63, "w": 27.74, "d": 5.75, "h": 8.0, "area": 871}, {"id": "bld-auto-95", "x": 617.32, "z": -86.28, "w": 60.09, "d": 15.61, "h": 10.5, "area": 4677}, {"id": "bld-auto-96", "x": 332.4, "z": -82.59, "w": 13.87, "d": 19.72, "h": 8.0, "area": 1229}, {"id": "bld-auto-97", "x": -233.23, "z": -90.6, "w": 18.91, "d": 3.0, "h": 5.5, "area": 45}, {"id": "bld-auto-98", "x": -395.44, "z": -84.85, "w": 13.03, "d": 11.09, "h": 8.0, "area": 724}, {"id": "bld-auto-99", "x": 687.08, "z": -84.85, "w": 3.0, "d": 10.27, "h": 5.5, "area": 25}, {"id": "bld-auto-100", "x": 441.24, "z": -82.18, "w": 14.71, "d": 13.97, "h": 8.0, "area": 1156}, {"id": "bld-auto-101", "x": -557.86, "z": -83.2, "w": 14.29, "d": 10.27, "h": 8.0, "area": 649}, {"id": "bld-auto-102", "x": -517.52, "z": -81.76, "w": 11.77, "d": 13.15, "h": 8.0, "area": 863}, {"id": "bld-auto-103", "x": -540.21, "z": -83.61, "w": 9.25, "d": 8.63, "h": 5.5, "area": 462}, {"id": "bld-auto-104", "x": -316.65, "z": -81.97, "w": 12.61, "d": 11.92, "h": 8.0, "area": 812}, {"id": "bld-auto-105", "x": -620.26, "z": -82.59, "w": 11.35, "d": 9.86, "h": 5.5, "area": 517}, {"id": "bld-auto-106", "x": -641.91, "z": -80.74, "w": 15.97, "d": 12.74, "h": 8.0, "area": 1040}, {"id": "bld-auto-107", "x": -732.26, "z": -76.63, "w": 16.81, "d": 20.13, "h": 8.0, "area": 1929}, {"id": "bld-auto-108", "x": -475.07, "z": -81.97, "w": 12.61, "d": 9.45, "h": 8.0, "area": 690}, {"id": "bld-auto-109", "x": -497.98, "z": -80.74, "w": 13.87, "d": 10.27, "h": 8.0, "area": 766}, {"id": "bld-auto-110", "x": -423.8, "z": -81.15, "w": 13.45, "d": 9.45, "h": 8.0, "area": 727}, {"id": "bld-auto-111", "x": -207.38, "z": -85.67, "w": 18.49, "d": 3.0, "h": 5.5, "area": 44}, {"id": "bld-auto-112", "x": -446.71, "z": -81.15, "w": 18.07, "d": 8.63, "h": 8.0, "area": 888}, {"id": "bld-auto-113", "x": -371.07, "z": -80.94, "w": 13.03, "d": 9.04, "h": 8.0, "area": 680}, {"id": "bld-auto-114", "x": -579.92, "z": -80.33, "w": 13.03, "d": 9.45, "h": 8.0, "area": 713}, {"id": "bld-auto-115", "x": -685.82, "z": -78.27, "w": 65.98, "d": 12.74, "h": 10.5, "area": 4319}, {"id": "bld-auto-116", "x": -600.72, "z": -79.92, "w": 12.61, "d": 9.45, "h": 8.0, "area": 686}, {"id": "bld-auto-117", "x": -74.8, "z": -80.12, "w": 27.32, "d": 4.93, "h": 8.0, "area": 680}, {"id": "bld-auto-118", "x": -98.54, "z": -76.22, "w": 10.93, "d": 9.45, "h": 5.5, "area": 598}, {"id": "bld-auto-119", "x": 622.36, "z": -79.3, "w": 44.96, "d": 3.0, "h": 5.5, "area": 179}, {"id": "bld-auto-120", "x": -156.75, "z": -61.84, "w": 4.62, "d": 35.75, "h": 8.0, "area": 842}, {"id": "bld-auto-121", "x": 542.52, "z": -70.47, "w": 44.12, "d": 11.09, "h": 10.5, "area": 2628}, {"id": "bld-auto-122", "x": 553.03, "z": -75.81, "w": 10.51, "d": 3.0, "h": 5.5, "area": 25}, {"id": "bld-auto-123", "x": 166.2, "z": -69.44, "w": 22.69, "d": 9.86, "h": 8.0, "area": 1249}, {"id": "bld-auto-124", "x": 698.85, "z": -66.36, "w": 3.0, "d": 11.92, "h": 5.5, "area": 29}, {"id": "bld-auto-125", "x": -636.86, "z": -71.29, "w": 12.61, "d": 3.0, "h": 5.5, "area": 30}, {"id": "bld-auto-126", "x": -522.14, "z": -70.88, "w": 12.61, "d": 3.0, "h": 5.5, "area": 30}, {"id": "bld-auto-127", "x": -427.8, "z": -70.47, "w": 8.82, "d": 3.0, "h": 5.5, "area": 21}, {"id": "bld-auto-128", "x": 5.88, "z": -65.33, "w": 8.82, "d": 9.04, "h": 5.5, "area": 442}, {"id": "bld-auto-129", "x": -100.02, "z": -59.17, "w": 15.55, "d": 19.72, "h": 8.0, "area": 1703}, {"id": "bld-auto-130", "x": -732.26, "z": -57.52, "w": 16.81, "d": 17.26, "h": 8.0, "area": 1667}, {"id": "bld-auto-131", "x": -504.7, "z": -65.95, "w": 13.03, "d": 3.0, "h": 5.5, "area": 31}, {"id": "bld-auto-132", "x": -292.69, "z": -43.96, "w": 29.42, "d": 41.91, "h": 10.5, "area": 3158}, {"id": "bld-auto-133", "x": 231.34, "z": -61.84, "w": 10.09, "d": 3.0, "h": 5.5, "area": 24}, {"id": "bld-auto-134", "x": 144.14, "z": -61.43, "w": 9.67, "d": 3.0, "h": 5.5, "area": 23}, {"id": "bld-auto-135", "x": -574.67, "z": -51.98, "w": 24.37, "d": 16.85, "h": 10.5, "area": 2306}, {"id": "bld-auto-136", "x": -679.31, "z": -54.03, "w": 10.93, "d": 8.63, "h": 5.5, "area": 522}, {"id": "bld-auto-137", "x": 673.63, "z": -54.65, "w": 7.14, "d": 5.75, "h": 5.5, "area": 229}, {"id": "bld-auto-138", "x": 218.31, "z": -56.91, "w": 10.09, "d": 3.0, "h": 5.5, "area": 24}, {"id": "bld-auto-139", "x": 131.11, "z": -56.5, "w": 9.67, "d": 3.0, "h": 5.5, "area": 23}, {"id": "bld-auto-140", "x": -641.49, "z": -51.15, "w": 14.29, "d": 9.45, "h": 8.0, "area": 716}, {"id": "bld-auto-141", "x": -660.82, "z": -50.95, "w": 11.77, "d": 9.04, "h": 5.5, "area": 592}, {"id": "bld-auto-142", "x": 115.77, "z": -50.13, "w": 22.69, "d": 9.86, "h": 8.0, "area": 802}, {"id": "bld-auto-143", "x": -477.59, "z": -49.92, "w": 15.13, "d": 4.52, "h": 5.5, "area": 363}, {"id": "bld-auto-144", "x": 150.02, "z": -35.54, "w": 43.28, "d": 29.17, "h": 14.0, "area": 7138}, {"id": "bld-auto-145", "x": 278.82, "z": -40.88, "w": 11.77, "d": 17.67, "h": 8.0, "area": 1159}, {"id": "bld-auto-146", "x": 289.33, "z": -39.03, "w": 9.25, "d": 21.37, "h": 8.0, "area": 1029}, {"id": "bld-auto-147", "x": 91.19, "z": -28.35, "w": 10.51, "d": 40.27, "h": 10.5, "area": 2310}, {"id": "bld-auto-148", "x": 333.87, "z": -32.25, "w": 4.2, "d": 29.99, "h": 8.0, "area": 671}, {"id": "bld-auto-149", "x": -731.84, "z": -37.6, "w": 17.65, "d": 16.85, "h": 8.0, "area": 1699}, {"id": "bld-auto-150", "x": -97.49, "z": -45.81, "w": 9.67, "d": 3.0, "h": 5.5, "area": 23}, {"id": "bld-auto-151", "x": 599.67, "z": -15.41, "w": 7.98, "d": 59.58, "h": 8.0, "area": 1989}, {"id": "bld-auto-152", "x": -84.89, "z": -40.88, "w": 9.67, "d": 3.0, "h": 5.5, "area": 23}, {"id": "bld-auto-153", "x": 125.86, "z": -39.03, "w": 3.36, "d": 4.11, "h": 5.5, "area": 67}, {"id": "bld-auto-154", "x": -650.1, "z": -36.36, "w": 32.36, "d": 7.81, "h": 8.0, "area": 1281}, {"id": "bld-auto-155", "x": -720.7, "z": -32.46, "w": 3.0, "d": 14.79, "h": 5.5, "area": 36}, {"id": "bld-auto-156", "x": 248.15, "z": -31.84, "w": 10.93, "d": 14.38, "h": 8.0, "area": 866}, {"id": "bld-auto-157", "x": -77.74, "z": -32.66, "w": 29.84, "d": 11.92, "h": 8.0, "area": 1995}, {"id": "bld-auto-158", "x": 111.78, "z": -32.25, "w": 19.75, "d": 11.92, "h": 8.0, "area": 1343}, {"id": "bld-auto-159", "x": 229.45, "z": -32.05, "w": 19.75, "d": 12.33, "h": 8.0, "area": 1410}, {"id": "bld-auto-160", "x": 736.25, "z": -30.4, "w": 3.0, "d": 9.86, "h": 5.5, "area": 24}, {"id": "bld-auto-161", "x": 505.54, "z": -29.58, "w": 6.3, "d": 8.22, "h": 5.5, "area": 300}, {"id": "bld-auto-162", "x": -128.38, "z": -22.6, "w": 21.01, "d": 20.54, "h": 10.5, "area": 2080}, {"id": "bld-auto-163", "x": -148.97, "z": -20.54, "w": 10.93, "d": 23.83, "h": 8.0, "area": 1443}, {"id": "bld-auto-164", "x": -165.36, "z": -21.98, "w": 21.01, "d": 20.13, "h": 10.5, "area": 2090}, {"id": "bld-auto-165", "x": 278.4, "z": -23.83, "w": 9.25, "d": 11.5, "h": 5.5, "area": 593}, {"id": "bld-auto-166", "x": -648.63, "z": -21.78, "w": 30.26, "d": 13.15, "h": 8.0, "area": 1853}, {"id": "bld-auto-167", "x": -732.05, "z": -16.85, "w": 17.23, "d": 19.72, "h": 8.0, "area": 1829}, {"id": "bld-auto-168", "x": 132.16, "z": -14.38, "w": 57.15, "d": 23.01, "h": 10.5, "area": 4468}, {"id": "bld-auto-169", "x": 231.13, "z": -21.78, "w": 9.67, "d": 7.4, "h": 5.5, "area": 414}, {"id": "bld-auto-170", "x": -714.82, "z": -14.18, "w": 3.0, "d": 16.02, "h": 5.5, "area": 39}, {"id": "bld-auto-171", "x": -73.75, "z": -15.41, "w": 26.89, "d": 10.27, "h": 8.0, "area": 1586}, {"id": "bld-auto-172", "x": 254.24, "z": -12.94, "w": 25.63, "d": 13.56, "h": 8.0, "area": 1996}, {"id": "bld-auto-173", "x": 10.3, "z": -6.57, "w": 24.37, "d": 25.47, "h": 10.5, "area": 2992}, {"id": "bld-auto-174", "x": 213.48, "z": -12.53, "w": 53.37, "d": 10.27, "h": 10.5, "area": 3175}, {"id": "bld-auto-175", "x": -310.76, "z": -6.16, "w": 41.18, "d": 13.15, "h": 10.5, "area": 2827}, {"id": "bld-auto-176", "x": 547.77, "z": 37.18, "w": 52.11, "d": 94.91, "h": 18.0, "area": 26486}, {"id": "bld-auto-177", "x": -73.54, "z": -8.22, "w": 26.47, "d": 3.0, "h": 5.5, "area": 299}, {"id": "bld-auto-178", "x": -730.57, "z": 1.85, "w": 20.17, "d": 16.85, "h": 8.0, "area": 1940}, {"id": "bld-auto-179", "x": -719.44, "z": 2.05, "w": 3.0, "d": 16.44, "h": 5.5, "area": 76}, {"id": "bld-auto-180", "x": -412.04, "z": 2.26, "w": 21.01, "d": 13.56, "h": 8.0, "area": 1491}, {"id": "bld-auto-181", "x": -392.92, "z": 3.08, "w": 18.07, "d": 13.56, "h": 8.0, "area": 1308}, {"id": "bld-auto-182", "x": 335.98, "z": 10.27, "w": 47.07, "d": 27.94, "h": 14.0, "area": 7195}, {"id": "bld-auto-183", "x": -73.75, "z": 4.31, "w": 38.66, "d": 11.09, "h": 10.5, "area": 2419}, {"id": "bld-auto-184", "x": -317.49, "z": 13.56, "w": 97.49, "d": 17.26, "h": 14.0, "area": 8153}, {"id": "bld-auto-185", "x": -133.84, "z": 10.68, "w": 19.33, "d": 8.22, "h": 8.0, "area": 838}, {"id": "bld-auto-186", "x": 284.92, "z": 23.63, "w": 15.55, "d": 29.99, "h": 10.5, "area": 2336}, {"id": "bld-auto-187", "x": -75.01, "z": 16.64, "w": 32.78, "d": 12.74, "h": 8.0, "area": 1918}, {"id": "bld-auto-188", "x": -732.89, "z": 34.31, "w": 15.55, "d": 41.5, "h": 10.5, "area": 3737}, {"id": "bld-auto-189", "x": -704.1, "z": 20.54, "w": 12.61, "d": 9.04, "h": 8.0, "area": 645}, {"id": "bld-auto-190", "x": 204.86, "z": 25.06, "w": 10.93, "d": 17.26, "h": 8.0, "area": 1054}, {"id": "bld-auto-191", "x": 736.67, "z": 22.6, "w": 3.0, "d": 11.5, "h": 5.5, "area": 28}, {"id": "bld-auto-192", "x": -685.4, "z": 21.78, "w": 13.87, "d": 9.04, "h": 8.0, "area": 711}, {"id": "bld-auto-193", "x": -404.47, "z": 24.65, "w": 38.66, "d": 14.79, "h": 10.5, "area": 2863}, {"id": "bld-auto-194", "x": 192.47, "z": 25.89, "w": 12.19, "d": 16.44, "h": 8.0, "area": 1126}, {"id": "bld-auto-195", "x": -646.11, "z": 22.6, "w": 12.61, "d": 9.04, "h": 8.0, "area": 643}, {"id": "bld-auto-196", "x": -110.73, "z": 28.35, "w": 38.66, "d": 12.33, "h": 10.5, "area": 2472}, {"id": "bld-auto-197", "x": 409.31, "z": 42.73, "w": 74.38, "d": 37.8, "h": 14.0, "area": 11469}, {"id": "bld-auto-198", "x": -313.91, "z": 32.05, "w": 102.12, "d": 15.61, "h": 14.0, "area": 7171}, {"id": "bld-auto-199", "x": 349.84, "z": 25.68, "w": 19.33, "d": 3.0, "h": 5.5, "area": 79}, {"id": "bld-auto-200", "x": 582.65, "z": 34.92, "w": 8.4, "d": 8.22, "h": 5.5, "area": 213}, {"id": "bld-auto-201", "x": 676.78, "z": 33.49, "w": 4.2, "d": 5.34, "h": 5.5, "area": 130}, {"id": "bld-auto-202", "x": -712.29, "z": 36.16, "w": 3.0, "d": 8.22, "h": 5.5, "area": 140}, {"id": "bld-auto-203", "x": -702.42, "z": 38.01, "w": 15.13, "d": 11.92, "h": 8.0, "area": 906}, {"id": "bld-auto-204", "x": 336.4, "z": 47.05, "w": 41.18, "d": 29.99, "h": 14.0, "area": 6689}, {"id": "bld-auto-205", "x": -683.93, "z": 37.6, "w": 12.61, "d": 10.27, "h": 8.0, "area": 606}, {"id": "bld-auto-206", "x": -107.79, "z": 33.28, "w": 5.04, "d": 3.0, "h": 5.5, "area": 36}, {"id": "bld-auto-207", "x": 180.91, "z": 36.36, "w": 6.72, "d": 7.81, "h": 5.5, "area": 303}, {"id": "bld-auto-208", "x": -646.32, "z": 38.62, "w": 13.03, "d": 9.86, "h": 8.0, "area": 676}, {"id": "bld-auto-209", "x": -665.65, "z": 41.29, "w": 13.03, "d": 10.27, "h": 8.0, "area": 670}, {"id": "bld-auto-210", "x": 258.86, "z": 46.02, "w": 52.53, "d": 13.97, "h": 10.5, "area": 4018}, {"id": "bld-auto-211", "x": -413.93, "z": 46.22, "w": 21.43, "d": 13.56, "h": 8.0, "area": 1528}, {"id": "bld-auto-212", "x": -394.81, "z": 47.05, "w": 17.65, "d": 13.56, "h": 8.0, "area": 1290}, {"id": "bld-auto-213", "x": 99.17, "z": 47.46, "w": 24.79, "d": 11.92, "h": 8.0, "area": 1668}, {"id": "bld-auto-214", "x": 205.49, "z": 46.63, "w": 11.35, "d": 8.63, "h": 5.5, "area": 567}, {"id": "bld-auto-215", "x": 135.95, "z": 49.31, "w": 11.77, "d": 11.5, "h": 8.0, "area": 737}, {"id": "bld-auto-216", "x": 172.3, "z": 52.8, "w": 46.65, "d": 18.49, "h": 10.5, "area": 4878}, {"id": "bld-auto-217", "x": -73.75, "z": 52.39, "w": 42.02, "d": 13.56, "h": 10.5, "area": 3079}, {"id": "bld-auto-218", "x": -646.95, "z": 51.77, "w": 11.77, "d": 9.86, "h": 8.0, "area": 619}, {"id": "bld-auto-219", "x": -704.73, "z": 53.0, "w": 11.35, "d": 10.68, "h": 8.0, "area": 682}, {"id": "bld-auto-220", "x": -666.7, "z": 54.44, "w": 13.45, "d": 9.45, "h": 8.0, "area": 657}, {"id": "bld-auto-221", "x": -171.67, "z": 60.4, "w": 18.49, "d": 13.97, "h": 8.0, "area": 714}, {"id": "bld-auto-222", "x": 210.54, "z": 56.7, "w": 11.35, "d": 3.0, "h": 5.5, "area": 54}, {"id": "bld-auto-223", "x": 210.54, "z": 58.76, "w": 11.35, "d": 3.0, "h": 5.5, "area": 99}, {"id": "bld-auto-224", "x": -414.98, "z": 67.38, "w": 21.01, "d": 13.97, "h": 8.0, "area": 1490}, {"id": "bld-auto-225", "x": 207.38, "z": 67.79, "w": 21.85, "d": 14.79, "h": 8.0, "area": 908}, {"id": "bld-auto-226", "x": -395.65, "z": 68.21, "w": 17.65, "d": 13.97, "h": 8.0, "area": 1331}, {"id": "bld-auto-227", "x": -162.84, "z": 66.36, "w": 9.25, "d": 8.63, "h": 5.5, "area": 235}, {"id": "bld-auto-228", "x": -309.08, "z": 70.67, "w": 39.5, "d": 13.97, "h": 10.5, "area": 2909}, {"id": "bld-auto-229", "x": 154.65, "z": 84.85, "w": 18.91, "d": 42.32, "h": 10.5, "area": 3645}, {"id": "bld-auto-230", "x": -704.52, "z": 69.44, "w": 12.61, "d": 9.04, "h": 8.0, "area": 619}, {"id": "bld-auto-231", "x": -666.91, "z": 70.67, "w": 11.35, "d": 9.86, "h": 5.5, "area": 596}, {"id": "bld-auto-232", "x": -254.87, "z": 72.52, "w": 42.02, "d": 13.56, "h": 10.5, "area": 2720}, {"id": "bld-auto-233", "x": -686.03, "z": 73.14, "w": 13.45, "d": 9.86, "h": 8.0, "area": 755}, {"id": "bld-auto-234", "x": 268.53, "z": 78.27, "w": 22.27, "d": 18.49, "h": 10.5, "area": 2285}, {"id": "bld-auto-235", "x": -649.05, "z": 73.96, "w": 10.09, "d": 9.04, "h": 5.5, "area": 478}, {"id": "bld-auto-236", "x": -160.74, "z": 76.01, "w": 11.77, "d": 10.68, "h": 5.5, "area": 346}, {"id": "bld-auto-237", "x": 364.76, "z": 103.13, "w": 3.0, "d": 52.59, "h": 5.5, "area": 128}, {"id": "bld-auto-238", "x": 107.79, "z": 88.95, "w": 14.29, "d": 19.31, "h": 8.0, "area": 1455}, {"id": "bld-auto-239", "x": -647.58, "z": 85.05, "w": 13.03, "d": 9.86, "h": 8.0, "area": 686}, {"id": "bld-auto-240", "x": -703.26, "z": 85.26, "w": 10.09, "d": 7.81, "h": 5.5, "area": 427}, {"id": "bld-auto-241", "x": 210.96, "z": 89.57, "w": 68.5, "d": 14.79, "h": 10.5, "area": 4642}, {"id": "bld-auto-242", "x": -667.12, "z": 87.11, "w": 12.61, "d": 9.04, "h": 8.0, "area": 611}, {"id": "bld-auto-243", "x": -51.06, "z": 97.38, "w": 37.82, "d": 27.12, "h": 10.5, "area": 5840}, {"id": "bld-auto-244", "x": -5.04, "z": 93.06, "w": 13.03, "d": 13.56, "h": 8.0, "area": 1013}, {"id": "bld-auto-245", "x": -667.33, "z": 92.86, "w": 12.19, "d": 3.0, "h": 5.5, "area": 74}, {"id": "bld-auto-246", "x": -700.95, "z": 95.53, "w": 10.51, "d": 3.0, "h": 5.5, "area": 96}, {"id": "bld-auto-247", "x": -701.58, "z": 102.51, "w": 10.09, "d": 11.09, "h": 8.0, "area": 621}, {"id": "bld-auto-248", "x": 212.85, "z": 101.28, "w": 40.34, "d": 8.63, "h": 10.5, "area": 2016}, {"id": "bld-auto-249", "x": -4.62, "z": 123.88, "w": 38.24, "d": 47.25, "h": 14.0, "area": 9382}, {"id": "bld-auto-250", "x": -687.71, "z": 105.39, "w": 13.45, "d": 9.45, "h": 8.0, "area": 657}, {"id": "bld-auto-251", "x": -668.17, "z": 106.42, "w": 13.03, "d": 9.86, "h": 8.0, "area": 701}, {"id": "bld-auto-252", "x": 285.97, "z": 107.85, "w": 56.31, "d": 12.74, "h": 10.5, "area": 3877}, {"id": "bld-auto-253", "x": -649.05, "z": 107.24, "w": 12.61, "d": 9.86, "h": 8.0, "area": 669}, {"id": "bld-auto-254", "x": -239.11, "z": 119.98, "w": 16.39, "d": 32.05, "h": 10.5, "area": 2797}, {"id": "bld-auto-255", "x": 102.33, "z": 109.5, "w": 8.4, "d": 10.27, "h": 5.5, "area": 475}, {"id": "bld-auto-256", "x": 114.3, "z": 109.5, "w": 4.62, "d": 10.27, "h": 5.5, "area": 253}, {"id": "bld-auto-257", "x": 91.19, "z": 109.91, "w": 5.46, "d": 9.45, "h": 5.5, "area": 289}, {"id": "bld-auto-258", "x": -720.28, "z": 113.4, "w": 3.0, "d": 13.15, "h": 5.5, "area": 32}, {"id": "bld-auto-259", "x": 212.85, "z": 108.68, "w": 11.77, "d": 3.0, "h": 5.5, "area": 28}, {"id": "bld-auto-260", "x": 258.86, "z": 112.37, "w": 3.0, "d": 3.7, "h": 5.5, "area": 32}, {"id": "bld-auto-261", "x": 197.93, "z": 113.61, "w": 11.35, "d": 3.0, "h": 5.5, "area": 27}, {"id": "bld-auto-262", "x": 102.12, "z": 120.18, "w": 29.0, "d": 3.0, "h": 5.5, "area": 311}, {"id": "bld-auto-263", "x": 68.92, "z": 123.88, "w": 8.82, "d": 4.52, "h": 5.5, "area": 212}, {"id": "bld-auto-264", "x": 102.12, "z": 123.06, "w": 29.0, "d": 3.0, "h": 5.5, "area": 288}, {"id": "bld-auto-265", "x": -680.78, "z": 143.81, "w": 16.39, "d": 34.51, "h": 10.5, "area": 3101}, {"id": "bld-auto-266", "x": -690.44, "z": 144.63, "w": 4.62, "d": 35.34, "h": 5.5, "area": 514}, {"id": "bld-auto-267", "x": -656.4, "z": 144.63, "w": 13.03, "d": 27.12, "h": 10.5, "area": 2046}, {"id": "bld-auto-268", "x": 506.8, "z": 134.15, "w": 23.95, "d": 3.0, "h": 5.5, "area": 57}, {"id": "bld-auto-269", "x": 375.06, "z": 147.71, "w": 9.25, "d": 22.6, "h": 8.0, "area": 1158}, {"id": "bld-auto-270", "x": -77.11, "z": 144.01, "w": 7.56, "d": 5.34, "h": 5.5, "area": 195}, {"id": "bld-auto-271", "x": -179.23, "z": 147.09, "w": 16.81, "d": 9.86, "h": 8.0, "area": 897}, {"id": "bld-auto-272", "x": 637.91, "z": 150.79, "w": 30.68, "d": 17.26, "h": 10.5, "area": 2729}, {"id": "bld-auto-273", "x": -196.88, "z": 147.5, "w": 13.45, "d": 9.86, "h": 8.0, "area": 768}, {"id": "bld-auto-274", "x": -235.96, "z": 147.71, "w": 15.13, "d": 9.45, "h": 8.0, "area": 800}, {"id": "bld-auto-275", "x": -215.79, "z": 147.71, "w": 13.45, "d": 9.45, "h": 8.0, "area": 736}, {"id": "bld-auto-276", "x": -294.37, "z": 150.59, "w": 14.29, "d": 14.38, "h": 8.0, "area": 933}, {"id": "bld-auto-277", "x": -274.83, "z": 148.12, "w": 13.87, "d": 9.45, "h": 8.0, "area": 747}, {"id": "bld-auto-278", "x": -255.71, "z": 147.92, "w": 13.45, "d": 9.04, "h": 8.0, "area": 694}, {"id": "bld-auto-279", "x": -413.09, "z": 148.94, "w": 13.03, "d": 10.27, "h": 8.0, "area": 719}, {"id": "bld-auto-280", "x": -393.13, "z": 148.74, "w": 14.29, "d": 9.86, "h": 8.0, "area": 795}, {"id": "bld-auto-281", "x": -354.26, "z": 148.53, "w": 14.71, "d": 9.45, "h": 8.0, "area": 805}, {"id": "bld-auto-282", "x": -313.91, "z": 148.53, "w": 13.87, "d": 9.45, "h": 8.0, "area": 759}, {"id": "bld-auto-283", "x": 478.22, "z": 149.56, "w": 4.62, "d": 11.5, "h": 5.5, "area": 283}, {"id": "bld-auto-284", "x": -334.08, "z": 148.74, "w": 13.87, "d": 9.04, "h": 8.0, "area": 726}, {"id": "bld-auto-285", "x": 235.12, "z": 147.92, "w": 5.88, "d": 6.57, "h": 5.5, "area": 210}, {"id": "bld-auto-286", "x": 259.28, "z": 149.56, "w": 4.62, "d": 6.57, "h": 5.5, "area": 157}, {"id": "bld-auto-287", "x": 137.42, "z": 158.19, "w": 73.54, "d": 22.19, "h": 14.0, "area": 8789}, {"id": "bld-auto-288", "x": 440.19, "z": 158.19, "w": 43.7, "d": 20.54, "h": 10.5, "area": 4376}, {"id": "bld-auto-289", "x": 272.94, "z": 154.69, "w": 20.17, "d": 11.92, "h": 8.0, "area": 1293}, {"id": "bld-auto-290", "x": 323.79, "z": 156.75, "w": 57.15, "d": 16.02, "h": 10.5, "area": 5299}, {"id": "bld-auto-291", "x": 590.01, "z": 156.95, "w": 3.78, "d": 9.04, "h": 5.5, "area": 168}, {"id": "bld-auto-292", "x": 234.91, "z": 155.31, "w": 6.3, "d": 3.29, "h": 5.5, "area": 111}, {"id": "bld-auto-293", "x": 700.53, "z": 161.68, "w": 3.0, "d": 16.02, "h": 5.5, "area": 39}, {"id": "bld-auto-294", "x": 519.62, "z": 161.47, "w": 51.27, "d": 13.15, "h": 10.5, "area": 3819}, {"id": "bld-auto-295", "x": 689.6, "z": 165.99, "w": 3.0, "d": 21.37, "h": 5.5, "area": 52}, {"id": "bld-auto-296", "x": 205.7, "z": 168.87, "w": 10.93, "d": 25.47, "h": 8.0, "area": 1257}, {"id": "bld-auto-297", "x": 243.52, "z": 162.91, "w": 16.81, "d": 8.63, "h": 8.0, "area": 776}, {"id": "bld-auto-298", "x": 258.86, "z": 164.56, "w": 12.19, "d": 6.16, "h": 5.5, "area": 426}, {"id": "bld-auto-299", "x": -174.4, "z": 171.54, "w": 12.19, "d": 13.56, "h": 8.0, "area": 751}, {"id": "bld-auto-300", "x": 357.41, "z": 173.18, "w": 36.98, "d": 16.85, "h": 10.5, "area": 2826}, {"id": "bld-auto-301", "x": -665.86, "z": 166.61, "w": 10.09, "d": 3.0, "h": 5.5, "area": 24}, {"id": "bld-auto-302", "x": -112.83, "z": 173.8, "w": 31.94, "d": 13.97, "h": 10.5, "area": 2028}, {"id": "bld-auto-303", "x": 86.57, "z": 173.6, "w": 19.75, "d": 13.56, "h": 8.0, "area": 1272}, {"id": "bld-auto-304", "x": -85.52, "z": 174.83, "w": 20.17, "d": 15.2, "h": 8.0, "area": 1656}, {"id": "bld-auto-305", "x": 634.97, "z": 174.01, "w": 19.75, "d": 13.56, "h": 8.0, "area": 1229}, {"id": "bld-auto-306", "x": -333.66, "z": 174.83, "w": 13.03, "d": 14.38, "h": 8.0, "area": 916}, {"id": "bld-auto-307", "x": 233.02, "z": 172.77, "w": 13.45, "d": 9.45, "h": 8.0, "area": 713}, {"id": "bld-auto-308", "x": -691.28, "z": 176.68, "w": 8.82, "d": 14.79, "h": 8.0, "area": 740}, {"id": "bld-auto-309", "x": -154.86, "z": 174.21, "w": 23.53, "d": 9.86, "h": 8.0, "area": 1139}, {"id": "bld-auto-310", "x": -658.08, "z": 175.65, "w": 41.6, "d": 11.09, "h": 10.5, "area": 2447}, {"id": "bld-auto-311", "x": -490.41, "z": 174.83, "w": 13.03, "d": 6.98, "h": 5.5, "area": 466}, {"id": "bld-auto-312", "x": 252.56, "z": 175.03, "w": 24.79, "d": 6.57, "h": 8.0, "area": 890}, {"id": "bld-auto-313", "x": -569.21, "z": 177.09, "w": 12.61, "d": 9.86, "h": 8.0, "area": 638}, {"id": "bld-auto-314", "x": -510.37, "z": 177.09, "w": 11.77, "d": 9.86, "h": 8.0, "area": 635}, {"id": "bld-auto-315", "x": -215.79, "z": 177.09, "w": 13.45, "d": 9.86, "h": 8.0, "area": 685}, {"id": "bld-auto-316", "x": -195.83, "z": 177.09, "w": 13.87, "d": 9.86, "h": 8.0, "area": 751}, {"id": "bld-auto-317", "x": -315.8, "z": 177.5, "w": 17.65, "d": 9.86, "h": 8.0, "area": 945}, {"id": "bld-auto-318", "x": -264.54, "z": 177.29, "w": 32.78, "d": 9.45, "h": 8.0, "area": 1737}, {"id": "bld-auto-319", "x": -234.91, "z": 177.29, "w": 13.03, "d": 9.45, "h": 8.0, "area": 679}, {"id": "bld-auto-320", "x": 71.86, "z": 176.68, "w": 7.98, "d": 7.4, "h": 5.5, "area": 276}, {"id": "bld-auto-321", "x": -294.16, "z": 177.91, "w": 13.03, "d": 9.04, "h": 8.0, "area": 622}, {"id": "bld-auto-322", "x": -432.42, "z": 179.96, "w": 13.03, "d": 12.33, "h": 8.0, "area": 871}, {"id": "bld-auto-323", "x": -373.17, "z": 178.53, "w": 24.79, "d": 9.45, "h": 8.0, "area": 1271}, {"id": "bld-auto-324", "x": -353.84, "z": 178.32, "w": 13.87, "d": 9.04, "h": 8.0, "area": 712}, {"id": "bld-auto-325", "x": -471.71, "z": 178.94, "w": 14.29, "d": 9.45, "h": 8.0, "area": 773}, {"id": "bld-auto-326", "x": -451.96, "z": 179.14, "w": 12.61, "d": 9.86, "h": 8.0, "area": 689}, {"id": "bld-auto-327", "x": -412.25, "z": 178.94, "w": 15.55, "d": 9.45, "h": 8.0, "area": 834}, {"id": "bld-auto-328", "x": -392.92, "z": 178.73, "w": 13.87, "d": 9.04, "h": 8.0, "area": 700}, {"id": "bld-auto-329", "x": -608.29, "z": 179.96, "w": 15.13, "d": 9.86, "h": 8.0, "area": 864}, {"id": "bld-auto-330", "x": -626.99, "z": 180.37, "w": 17.23, "d": 9.04, "h": 8.0, "area": 902}, {"id": "bld-auto-331", "x": -589.8, "z": 180.58, "w": 13.45, "d": 9.45, "h": 8.0, "area": 700}, {"id": "bld-auto-332", "x": 142.46, "z": 181.61, "w": 11.35, "d": 9.04, "h": 5.5, "area": 562}, {"id": "bld-auto-333", "x": 252.56, "z": 179.14, "w": 24.79, "d": 3.0, "h": 5.5, "area": 183}, {"id": "bld-auto-334", "x": 699.69, "z": 193.73, "w": 3.0, "d": 20.13, "h": 5.5, "area": 49}, {"id": "bld-auto-335", "x": 688.76, "z": 197.22, "w": 3.0, "d": 13.15, "h": 5.5, "area": 32}, {"id": "bld-auto-336", "x": 596.73, "z": 201.74, "w": 29.84, "d": 4.11, "h": 5.5, "area": 558}];
 
-function buildMaps3DBuildings() {
-  buildingsGroup.clear();
-  buildingMeshes.clear();
+// 336 Campus Buildings aligned 1:1 to Drone Orthophoto pixels
+const DRONE_ALIGNED_BUILDINGS = [{"id": "bld-grid-1", "x": -187.73, "z": -54.21, "w": 19.29, "d": 3.0, "h": 7.0, "area": 718}, {"id": "bld-grid-2", "x": -169.26, "z": -54.38, "w": 3.0, "d": 3.0, "h": 4.5, "area": 65}, {"id": "bld-grid-3", "x": -36.25, "z": -54.56, "w": 3.0, "d": 3.0, "h": 4.5, "area": 25}, {"id": "bld-grid-4", "x": -56.53, "z": -54.44, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-5", "x": -202.1, "z": -53.2, "w": 3.0, "d": 3.0, "h": 4.5, "area": 449}, {"id": "bld-grid-6", "x": -52.44, "z": -54.21, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-7", "x": -194.74, "z": -52.55, "w": 8.3, "d": 3.0, "h": 7.0, "area": 1184}, {"id": "bld-grid-8", "x": 102.14, "z": -52.91, "w": 3.16, "d": 3.0, "h": 4.5, "area": 27}, {"id": "bld-grid-9", "x": -55.48, "z": -52.79, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-10", "x": 81.27, "z": -52.79, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-11", "x": -31.11, "z": -52.67, "w": 3.0, "d": 3.0, "h": 4.5, "area": 25}, {"id": "bld-grid-12", "x": 60.41, "z": -52.67, "w": 3.16, "d": 3.0, "h": 4.5, "area": 27}, {"id": "bld-grid-13", "x": -51.39, "z": -52.55, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-14", "x": 9.63, "z": -52.55, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-15", "x": 32.01, "z": -52.55, "w": 3.39, "d": 3.0, "h": 4.5, "area": 29}, {"id": "bld-grid-16", "x": 39.49, "z": -52.55, "w": 3.16, "d": 3.0, "h": 4.5, "area": 27}, {"id": "bld-grid-17", "x": 85.48, "z": -52.55, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-18", "x": 64.56, "z": -52.43, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-19", "x": 13.83, "z": -52.31, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-20", "x": 27.27, "z": -52.31, "w": 3.0, "d": 3.0, "h": 4.5, "area": 22}, {"id": "bld-grid-21", "x": 43.75, "z": -52.31, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-22", "x": -192.46, "z": -51.72, "w": 3.74, "d": 3.0, "h": 4.5, "area": 159}, {"id": "bld-grid-23", "x": -98.2, "z": -51.84, "w": 8.77, "d": 3.0, "h": 4.5, "area": 75}, {"id": "bld-grid-24", "x": -86.27, "z": -51.61, "w": 6.66, "d": 3.0, "h": 4.5, "area": 57}, {"id": "bld-grid-25", "x": -179.72, "z": -51.25, "w": 5.84, "d": 3.0, "h": 4.5, "area": 53}, {"id": "bld-grid-26", "x": 103.25, "z": -51.25, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-27", "x": -189.89, "z": -50.96, "w": 3.0, "d": 3.0, "h": 4.5, "area": 56}, {"id": "bld-grid-28", "x": 82.33, "z": -51.13, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-29", "x": -187.78, "z": -50.96, "w": 3.0, "d": 3.0, "h": 4.5, "area": 28}, {"id": "bld-grid-30", "x": -179.08, "z": -49.18, "w": 7.13, "d": 3.78, "h": 7.0, "area": 1846}, {"id": "bld-grid-31", "x": 61.52, "z": -51.01, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-32", "x": 10.68, "z": -50.9, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-33", "x": 30.78, "z": -50.9, "w": 3.0, "d": 3.0, "h": 4.5, "area": 22}, {"id": "bld-grid-34", "x": 40.6, "z": -50.9, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-35", "x": 86.53, "z": -50.9, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-36", "x": 65.67, "z": -50.78, "w": 3.16, "d": 3.0, "h": 4.5, "area": 27}, {"id": "bld-grid-37", "x": 14.89, "z": -50.66, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-38", "x": 26.05, "z": -50.66, "w": 3.39, "d": 3.0, "h": 4.5, "area": 29}, {"id": "bld-grid-39", "x": 44.81, "z": -50.66, "w": 3.04, "d": 3.0, "h": 4.5, "area": 26}, {"id": "bld-grid-40", "x": -189.83, "z": -48.77, "w": 3.0, "d": 3.66, "h": 4.5, "area": 426}, {"id": "bld-grid-41", "x": -187.84, "z": -48.89, "w": 3.0, "d": 3.43, "h": 4.5, "area": 428}, {"id": "bld-grid-42", "x": -192.69, "z": -45.1, "w": 3.74, "d": 10.76, "h": 9.5, "area": 2557}, {"id": "bld-grid-43", "x": -200.99, "z": -47.88, "w": 3.51, "d": 4.73, "h": 7.0, "area": 872}, {"id": "bld-grid-44", "x": -95.16, "z": -50.19, "w": 6.66, "d": 3.0, "h": 4.5, "area": 57}, {"id": "bld-grid-45", "x": -83.12, "z": -49.95, "w": 8.77, "d": 3.0, "h": 4.5, "area": 75}, {"id": "bld-grid-46", "x": -204.09, "z": -48.65, "w": 3.0, "d": 3.0, "h": 4.5, "area": 110}, {"id": "bld-grid-47", "x": -184.86, "z": -47.47, "w": 3.97, "d": 4.85, "h": 7.0, "area": 1257}, {"id": "bld-grid-48", "x": -170.19, "z": -46.41, "w": 3.0, "d": 3.0, "h": 4.5, "area": 294}, {"id": "bld-grid-49", "x": 174.78, "z": -45.75, "w": 3.27, "d": 4.25, "h": 7.0, "area": 865}, {"id": "bld-grid-50", "x": 166.71, "z": -45.7, "w": 3.27, "d": 4.14, "h": 7.0, "area": 894}, {"id": "bld-grid-51", "x": 170.16, "z": -45.52, "w": 3.62, "d": 4.25, "h": 7.0, "area": 992}, {"id": "bld-grid-52", "x": 178.28, "z": -45.52, "w": 3.74, "d": 4.25, "h": 7.0, "area": 1020}, {"id": "bld-grid-53", "x": -171.07, "z": -45.99, "w": 3.0, "d": 3.0, "h": 4.5, "area": 69}, {"id": "bld-grid-54", "x": -188.84, "z": -45.58, "w": 3.74, "d": 3.0, "h": 7.0, "area": 650}, {"id": "bld-grid-55", "x": -176.27, "z": -43.92, "w": 7.83, "d": 3.9, "h": 7.0, "area": 1880}, {"id": "bld-grid-56", "x": -203.45, "z": -44.04, "w": 3.0, "d": 3.19, "h": 4.5, "area": 339}, {"id": "bld-grid-57", "x": 97.99, "z": -39.49, "w": 6.08, "d": 10.16, "h": 9.5, "area": 4472}, {"id": "bld-grid-58", "x": 35.28, "z": -43.69, "w": 3.0, "d": 3.0, "h": 4.5, "area": 91}, {"id": "bld-grid-59", "x": 19.15, "z": -42.27, "w": 3.0, "d": 3.0, "h": 4.5, "area": 23}, {"id": "bld-grid-60", "x": -189.25, "z": -42.86, "w": 3.0, "d": 3.0, "h": 4.5, "area": 87}, {"id": "bld-grid-61", "x": -71.78, "z": -42.45, "w": 7.36, "d": 3.0, "h": 7.0, "area": 892}, {"id": "bld-grid-62", "x": 37.62, "z": -42.56, "w": 3.0, "d": 3.0, "h": 4.5, "area": 274}, {"id": "bld-grid-63", "x": -81.54, "z": -41.15, "w": 6.31, "d": 3.0, "h": 7.0, "area": 649}, {"id": "bld-grid-64", "x": 68.47, "z": -38.96, "w": 3.0, "d": 5.55, "h": 7.0, "area": 793}, {"id": "bld-grid-65", "x": 53.57, "z": -39.2, "w": 10.52, "d": 4.85, "h": 9.5, "area": 3165}, {"id": "bld-grid-66", "x": 61.4, "z": -37.25, "w": 3.0, "d": 6.15, "h": 4.5, "area": 540}, {"id": "bld-grid-67", "x": 190.56, "z": -40.02, "w": 3.0, "d": 3.0, "h": 4.5, "area": 20}, {"id": "bld-grid-68", "x": -72.07, "z": -37.95, "w": 6.55, "d": 3.0, "h": 7.0, "area": 828}, {"id": "bld-grid-69", "x": -9.19, "z": -37.13, "w": 3.0, "d": 3.78, "h": 7.0, "area": 768}, {"id": "bld-grid-70", "x": -81.01, "z": -37.84, "w": 7.13, "d": 3.0, "h": 7.0, "area": 937}, {"id": "bld-grid-71", "x": -63.37, "z": -37.25, "w": 3.39, "d": 3.0, "h": 7.0, "area": 626}, {"id": "bld-grid-72", "x": -203.33, "z": -35.71, "w": 3.0, "d": 3.78, "h": 4.5, "area": 437}, {"id": "bld-grid-73", "x": 32.94, "z": -31.87, "w": 23.49, "d": 8.86, "h": 12.0, "area": 12230}, {"id": "bld-grid-74", "x": 54.27, "z": -33.23, "w": 8.88, "d": 4.49, "h": 9.5, "area": 2773}, {"id": "bld-grid-75", "x": -201.4, "z": -33.7, "w": 3.62, "d": 3.31, "h": 4.5, "area": 508}, {"id": "bld-grid-76", "x": -198.65, "z": -32.46, "w": 3.51, "d": 3.43, "h": 4.5, "area": 523}, {"id": "bld-grid-77", "x": 178.23, "z": -31.34, "w": 3.62, "d": 4.25, "h": 7.0, "area": 962}, {"id": "bld-grid-78", "x": -64.89, "z": -31.16, "w": 7.13, "d": 3.43, "h": 7.0, "area": 1589}, {"id": "bld-grid-79", "x": -64.83, "z": -28.97, "w": 6.78, "d": 3.0, "h": 4.5, "area": 191}, {"id": "bld-grid-80", "x": -202.57, "z": -24.89, "w": 3.86, "d": 7.92, "h": 9.5, "area": 2169}, {"id": "bld-grid-81", "x": -92.88, "z": -24.24, "w": 6.08, "d": 6.62, "h": 7.0, "area": 1519}, {"id": "bld-grid-82", "x": 80.63, "z": -26.9, "w": 3.86, "d": 3.0, "h": 4.5, "area": 33}, {"id": "bld-grid-83", "x": 132.06, "z": -26.79, "w": 13.21, "d": 3.0, "h": 4.5, "area": 113}, {"id": "bld-grid-84", "x": 113.88, "z": -26.55, "w": 10.05, "d": 3.0, "h": 4.5, "area": 86}, {"id": "bld-grid-85", "x": -101.29, "z": -25.54, "w": 3.0, "d": 3.0, "h": 4.5, "area": 252}, {"id": "bld-grid-86", "x": 127.32, "z": -25.13, "w": 10.05, "d": 3.0, "h": 4.5, "area": 86}, {"id": "bld-grid-87", "x": 151.28, "z": -21.35, "w": 12.39, "d": 6.97, "h": 9.5, "area": 3629}, {"id": "bld-grid-88", "x": -72.19, "z": -23.42, "w": 3.0, "d": 3.0, "h": 4.5, "area": 185}, {"id": "bld-grid-89", "x": 52.11, "z": -20.4, "w": 47.8, "d": 6.5, "h": 16.0, "area": 20500}, {"id": "bld-grid-90", "x": 102.31, "z": -19.81, "w": 3.51, "d": 7.45, "h": 7.0, "area": 1493}, {"id": "bld-grid-91", "x": -88.03, "z": -22.59, "w": 3.0, "d": 3.0, "h": 4.5, "area": 204}, {"id": "bld-grid-92", "x": 81.51, "z": -20.34, "w": 10.52, "d": 5.91, "h": 9.5, "area": 3820}, {"id": "bld-grid-93", "x": 122.24, "z": -22.41, "w": 6.9, "d": 3.0, "h": 7.0, "area": 859}, {"id": "bld-grid-94", "x": 111.31, "z": -22.24, "w": 7.71, "d": 3.0, "h": 7.0, "area": 871}, {"id": "bld-grid-95", "x": 173.2, "z": -20.7, "w": 16.71, "d": 4.49, "h": 9.5, "area": 4677}, {"id": "bld-grid-96", "x": 93.95, "z": -19.64, "w": 3.86, "d": 5.67, "h": 7.0, "area": 1229}, {"id": "bld-grid-97", "x": -63.37, "z": -21.94, "w": 5.26, "d": 3.0, "h": 4.5, "area": 45}, {"id": "bld-grid-98", "x": -108.48, "z": -20.29, "w": 3.62, "d": 3.19, "h": 7.0, "area": 724}, {"id": "bld-grid-99", "x": 192.6, "z": -20.29, "w": 3.0, "d": 3.0, "h": 4.5, "area": 25}, {"id": "bld-grid-100", "x": 124.23, "z": -19.52, "w": 4.09, "d": 4.02, "h": 7.0, "area": 1156}, {"id": "bld-grid-101", "x": -153.66, "z": -19.81, "w": 3.97, "d": 3.0, "h": 7.0, "area": 649}, {"id": "bld-grid-102", "x": -142.44, "z": -19.4, "w": 3.27, "d": 3.78, "h": 7.0, "area": 863}, {"id": "bld-grid-103", "x": -148.75, "z": -19.93, "w": 3.0, "d": 3.0, "h": 4.5, "area": 462}, {"id": "bld-grid-104", "x": -86.57, "z": -19.46, "w": 3.51, "d": 3.43, "h": 7.0, "area": 812}, {"id": "bld-grid-105", "x": -171.01, "z": -19.64, "w": 3.16, "d": 3.0, "h": 4.5, "area": 517}, {"id": "bld-grid-106", "x": -177.03, "z": -19.1, "w": 4.44, "d": 3.66, "h": 7.0, "area": 1040}, {"id": "bld-grid-107", "x": -202.16, "z": -17.92, "w": 4.68, "d": 5.79, "h": 7.0, "area": 1929}, {"id": "bld-grid-108", "x": -130.63, "z": -19.46, "w": 3.51, "d": 3.0, "h": 7.0, "area": 690}, {"id": "bld-grid-109", "x": -137.0, "z": -19.1, "w": 3.86, "d": 3.0, "h": 7.0, "area": 766}, {"id": "bld-grid-110", "x": -116.37, "z": -19.22, "w": 3.74, "d": 3.0, "h": 7.0, "area": 727}, {"id": "bld-grid-111", "x": -56.18, "z": -20.52, "w": 5.14, "d": 3.0, "h": 4.5, "area": 44}, {"id": "bld-grid-112", "x": -122.74, "z": -19.22, "w": 5.03, "d": 3.0, "h": 7.0, "area": 888}, {"id": "bld-grid-113", "x": -101.7, "z": -19.16, "w": 3.62, "d": 3.0, "h": 7.0, "area": 680}, {"id": "bld-grid-114", "x": -159.79, "z": -18.99, "w": 3.62, "d": 3.0, "h": 7.0, "area": 713}, {"id": "bld-grid-115", "x": -189.25, "z": -18.39, "w": 18.35, "d": 3.66, "h": 9.5, "area": 4319}, {"id": "bld-grid-116", "x": -165.58, "z": -18.87, "w": 3.51, "d": 3.0, "h": 7.0, "area": 686}, {"id": "bld-grid-117", "x": -19.3, "z": -18.93, "w": 7.6, "d": 3.0, "h": 7.0, "area": 680}, {"id": "bld-grid-118", "x": -25.91, "z": -17.8, "w": 3.04, "d": 3.0, "h": 4.5, "area": 598}, {"id": "bld-grid-119", "x": 174.6, "z": -18.69, "w": 12.51, "d": 3.0, "h": 4.5, "area": 179}, {"id": "bld-grid-120", "x": -42.09, "z": -13.67, "w": 3.0, "d": 10.28, "h": 7.0, "area": 842}, {"id": "bld-grid-121", "x": 152.39, "z": -16.15, "w": 12.27, "d": 3.19, "h": 9.5, "area": 2628}, {"id": "bld-grid-122", "x": 155.32, "z": -17.69, "w": 3.0, "d": 3.0, "h": 4.5, "area": 25}, {"id": "bld-grid-123", "x": 47.73, "z": -15.85, "w": 6.31, "d": 3.0, "h": 7.0, "area": 1249}, {"id": "bld-grid-124", "x": 195.87, "z": -14.97, "w": 3.0, "d": 3.43, "h": 4.5, "area": 29}, {"id": "bld-grid-125", "x": -175.63, "z": -16.39, "w": 3.51, "d": 3.0, "h": 4.5, "area": 30}, {"id": "bld-grid-126", "x": -143.72, "z": -16.27, "w": 3.51, "d": 3.0, "h": 4.5, "area": 30}, {"id": "bld-grid-127", "x": -117.48, "z": -16.15, "w": 3.0, "d": 3.0, "h": 4.5, "area": 21}, {"id": "bld-grid-128", "x": 3.14, "z": -14.67, "w": 3.0, "d": 3.0, "h": 4.5, "area": 442}, {"id": "bld-grid-129", "x": -26.31, "z": -12.9, "w": 4.32, "d": 5.67, "h": 7.0, "area": 1703}, {"id": "bld-grid-130", "x": -202.16, "z": -12.43, "w": 4.68, "d": 4.96, "h": 7.0, "area": 1667}, {"id": "bld-grid-131", "x": -138.87, "z": -14.85, "w": 3.62, "d": 3.0, "h": 4.5, "area": 31}, {"id": "bld-grid-132", "x": -79.9, "z": -8.53, "w": 8.18, "d": 12.06, "h": 9.5, "area": 3158}, {"id": "bld-grid-133", "x": 65.84, "z": -13.67, "w": 3.0, "d": 3.0, "h": 4.5, "area": 24}, {"id": "bld-grid-134", "x": 41.59, "z": -13.55, "w": 3.0, "d": 3.0, "h": 4.5, "area": 23}, {"id": "bld-grid-135", "x": -158.33, "z": -10.83, "w": 6.78, "d": 4.85, "h": 9.5, "area": 2306}, {"id": "bld-grid-136", "x": -187.43, "z": -11.42, "w": 3.04, "d": 3.0, "h": 4.5, "area": 522}, {"id": "bld-grid-137", "x": 188.86, "z": -11.6, "w": 3.0, "d": 3.0, "h": 4.5, "area": 229}, {"id": "bld-grid-138", "x": 62.22, "z": -12.25, "w": 3.0, "d": 3.0, "h": 4.5, "area": 24}, {"id": "bld-grid-139", "x": 37.97, "z": -12.13, "w": 3.0, "d": 3.0, "h": 4.5, "area": 23}, {"id": "bld-grid-140", "x": -176.91, "z": -10.59, "w": 3.97, "d": 3.0, "h": 7.0, "area": 716}, {"id": "bld-grid-141", "x": -182.29, "z": -10.53, "w": 3.27, "d": 3.0, "h": 4.5, "area": 592}, {"id": "bld-grid-142", "x": 33.7, "z": -10.3, "w": 6.31, "d": 3.0, "h": 7.0, "area": 802}, {"id": "bld-grid-143", "x": -131.33, "z": -10.24, "w": 4.21, "d": 3.0, "h": 4.5, "area": 363}, {"id": "bld-grid-144", "x": 43.23, "z": -6.1, "w": 12.04, "d": 8.39, "h": 12.0, "area": 7138}, {"id": "bld-grid-145", "x": 79.05, "z": -7.64, "w": 3.27, "d": 5.08, "h": 7.0, "area": 1159}, {"id": "bld-grid-146", "x": 81.97, "z": -7.11, "w": 3.0, "d": 6.15, "h": 7.0, "area": 1029}, {"id": "bld-grid-147", "x": 26.87, "z": -4.03, "w": 3.0, "d": 11.58, "h": 9.5, "area": 2310}, {"id": "bld-grid-148", "x": 94.36, "z": -5.16, "w": 3.0, "d": 8.63, "h": 7.0, "area": 671}, {"id": "bld-grid-149", "x": -202.04, "z": -6.69, "w": 4.91, "d": 4.85, "h": 7.0, "area": 1699}, {"id": "bld-grid-150", "x": -25.61, "z": -9.06, "w": 3.0, "d": 3.0, "h": 4.5, "area": 23}, {"id": "bld-grid-151", "x": 168.29, "z": -0.31, "w": 3.0, "d": 17.14, "h": 7.0, "area": 1989}, {"id": "bld-grid-152", "x": -22.11, "z": -7.64, "w": 3.0, "d": 3.0, "h": 4.5, "area": 23}, {"id": "bld-grid-153", "x": 36.51, "z": -7.11, "w": 3.0, "d": 3.0, "h": 4.5, "area": 67}, {"id": "bld-grid-154", "x": -179.31, "z": -6.34, "w": 9.0, "d": 3.0, "h": 7.0, "area": 1281}, {"id": "bld-grid-155", "x": -198.95, "z": -5.22, "w": 3.0, "d": 4.25, "h": 4.5, "area": 36}, {"id": "bld-grid-156", "x": 70.52, "z": -5.04, "w": 3.04, "d": 4.14, "h": 7.0, "area": 866}, {"id": "bld-grid-157", "x": -20.12, "z": -5.28, "w": 8.3, "d": 3.43, "h": 7.0, "area": 1995}, {"id": "bld-grid-158", "x": 32.59, "z": -5.16, "w": 5.49, "d": 3.43, "h": 7.0, "area": 1343}, {"id": "bld-grid-159", "x": 65.32, "z": -5.1, "w": 5.49, "d": 3.55, "h": 7.0, "area": 1410}, {"id": "bld-grid-160", "x": 206.28, "z": -4.63, "w": 3.0, "d": 3.0, "h": 4.5, "area": 24}, {"id": "bld-grid-161", "x": 142.11, "z": -4.39, "w": 3.0, "d": 3.0, "h": 4.5, "area": 300}, {"id": "bld-grid-162", "x": -34.2, "z": -2.38, "w": 5.84, "d": 5.91, "h": 9.5, "area": 2080}, {"id": "bld-grid-163", "x": -39.93, "z": -1.79, "w": 3.04, "d": 6.85, "h": 7.0, "area": 1443}, {"id": "bld-grid-164", "x": -44.49, "z": -2.2, "w": 5.84, "d": 5.79, "h": 9.5, "area": 2090}, {"id": "bld-grid-165", "x": 78.94, "z": -2.73, "w": 3.0, "d": 3.31, "h": 4.5, "area": 593}, {"id": "bld-grid-166", "x": -178.9, "z": -2.14, "w": 8.42, "d": 3.78, "h": 7.0, "area": 1853}, {"id": "bld-grid-167", "x": -202.1, "z": -0.73, "w": 4.79, "d": 5.67, "h": 7.0, "area": 1829}, {"id": "bld-grid-168", "x": 38.26, "z": -0.02, "w": 15.9, "d": 6.62, "h": 9.5, "area": 4468}, {"id": "bld-grid-169", "x": 65.79, "z": -2.14, "w": 3.0, "d": 3.0, "h": 4.5, "area": 414}, {"id": "bld-grid-170", "x": -197.31, "z": 0.04, "w": 3.0, "d": 4.61, "h": 4.5, "area": 39}, {"id": "bld-grid-171", "x": -19.01, "z": -0.31, "w": 7.48, "d": 3.0, "h": 7.0, "area": 1586}, {"id": "bld-grid-172", "x": 72.21, "z": 0.4, "w": 7.13, "d": 3.9, "h": 7.0, "area": 1996}, {"id": "bld-grid-173", "x": 4.37, "z": 2.23, "w": 6.78, "d": 7.33, "h": 9.5, "area": 2992}, {"id": "bld-grid-174", "x": 60.88, "z": 0.52, "w": 14.84, "d": 3.0, "h": 9.5, "area": 3175}, {"id": "bld-grid-175", "x": -84.93, "z": 2.35, "w": 11.45, "d": 3.78, "h": 9.5, "area": 2827}, {"id": "bld-grid-176", "x": 153.86, "z": 14.82, "w": 14.49, "d": 27.3, "h": 16.0, "area": 26486}, {"id": "bld-grid-177", "x": -18.95, "z": 1.76, "w": 7.36, "d": 3.0, "h": 4.5, "area": 299}, {"id": "bld-grid-178", "x": -201.69, "z": 4.65, "w": 5.61, "d": 4.85, "h": 7.0, "area": 1940}, {"id": "bld-grid-179", "x": -198.6, "z": 4.71, "w": 3.0, "d": 4.73, "h": 4.5, "area": 76}, {"id": "bld-grid-180", "x": -113.1, "z": 4.77, "w": 5.84, "d": 3.9, "h": 7.0, "area": 1491}, {"id": "bld-grid-181", "x": -107.78, "z": 5.01, "w": 5.03, "d": 3.9, "h": 7.0, "area": 1308}, {"id": "bld-grid-182", "x": 94.95, "z": 7.08, "w": 13.09, "d": 8.04, "h": 12.0, "area": 7195}, {"id": "bld-grid-183", "x": -19.01, "z": 5.36, "w": 10.75, "d": 3.19, "h": 9.5, "area": 2419}, {"id": "bld-grid-184", "x": -86.8, "z": 8.02, "w": 27.12, "d": 4.96, "h": 12.0, "area": 8153}, {"id": "bld-grid-185", "x": -35.72, "z": 7.19, "w": 5.38, "d": 3.0, "h": 7.0, "area": 838}, {"id": "bld-grid-186", "x": 80.75, "z": 10.92, "w": 4.32, "d": 8.63, "h": 9.5, "area": 2336}, {"id": "bld-grid-187", "x": -19.36, "z": 8.91, "w": 9.12, "d": 3.66, "h": 7.0, "area": 1918}, {"id": "bld-grid-188", "x": -202.34, "z": 13.99, "w": 4.32, "d": 11.94, "h": 9.5, "area": 3737}, {"id": "bld-grid-189", "x": -194.33, "z": 10.03, "w": 3.51, "d": 3.0, "h": 7.0, "area": 645}, {"id": "bld-grid-190", "x": 58.48, "z": 11.33, "w": 3.04, "d": 4.96, "h": 7.0, "area": 1054}, {"id": "bld-grid-191", "x": 206.39, "z": 10.62, "w": 3.0, "d": 3.31, "h": 4.5, "area": 28}, {"id": "bld-grid-192", "x": -189.13, "z": 10.38, "w": 3.86, "d": 3.0, "h": 7.0, "area": 711}, {"id": "bld-grid-193", "x": -110.99, "z": 11.21, "w": 10.75, "d": 4.25, "h": 9.5, "area": 2863}, {"id": "bld-grid-194", "x": 55.03, "z": 11.57, "w": 3.39, "d": 4.73, "h": 7.0, "area": 1126}, {"id": "bld-grid-195", "x": -178.2, "z": 10.62, "w": 3.51, "d": 3.0, "h": 7.0, "area": 643}, {"id": "bld-grid-196", "x": -29.3, "z": 12.28, "w": 10.75, "d": 3.55, "h": 9.5, "area": 2472}, {"id": "bld-grid-197", "x": 115.34, "z": 16.41, "w": 20.69, "d": 10.87, "h": 12.0, "area": 11469}, {"id": "bld-grid-198", "x": -85.81, "z": 13.34, "w": 28.4, "d": 4.49, "h": 12.0, "area": 7171}, {"id": "bld-grid-199", "x": 98.81, "z": 11.51, "w": 5.38, "d": 3.0, "h": 4.5, "area": 79}, {"id": "bld-grid-200", "x": 163.56, "z": 14.17, "w": 3.0, "d": 3.0, "h": 4.5, "area": 213}, {"id": "bld-grid-201", "x": 189.74, "z": 13.75, "w": 3.0, "d": 3.0, "h": 4.5, "area": 130}, {"id": "bld-grid-202", "x": -196.61, "z": 14.52, "w": 3.0, "d": 3.0, "h": 4.5, "area": 140}, {"id": "bld-grid-203", "x": -193.86, "z": 15.05, "w": 4.21, "d": 3.43, "h": 7.0, "area": 906}, {"id": "bld-grid-204", "x": 95.06, "z": 17.65, "w": 11.45, "d": 8.63, "h": 12.0, "area": 6689}, {"id": "bld-grid-205", "x": -188.72, "z": 14.93, "w": 3.51, "d": 3.0, "h": 7.0, "area": 606}, {"id": "bld-grid-206", "x": -28.48, "z": 13.69, "w": 3.0, "d": 3.0, "h": 4.5, "area": 36}, {"id": "bld-grid-207", "x": 51.82, "z": 14.58, "w": 3.0, "d": 3.0, "h": 4.5, "area": 303}, {"id": "bld-grid-208", "x": -178.26, "z": 15.23, "w": 3.62, "d": 3.0, "h": 7.0, "area": 676}, {"id": "bld-grid-209", "x": -183.64, "z": 16.0, "w": 3.62, "d": 3.0, "h": 7.0, "area": 670}, {"id": "bld-grid-210", "x": 73.5, "z": 17.36, "w": 14.61, "d": 4.02, "h": 9.5, "area": 4018}, {"id": "bld-grid-211", "x": -113.62, "z": 17.42, "w": 5.96, "d": 3.9, "h": 7.0, "area": 1528}, {"id": "bld-grid-212", "x": -108.31, "z": 17.65, "w": 4.91, "d": 3.9, "h": 7.0, "area": 1290}, {"id": "bld-grid-213", "x": 29.09, "z": 17.77, "w": 6.9, "d": 3.43, "h": 7.0, "area": 1668}, {"id": "bld-grid-214", "x": 58.66, "z": 17.53, "w": 3.16, "d": 3.0, "h": 4.5, "area": 567}, {"id": "bld-grid-215", "x": 39.31, "z": 18.3, "w": 3.27, "d": 3.31, "h": 7.0, "area": 737}, {"id": "bld-grid-216", "x": 49.42, "z": 19.31, "w": 12.97, "d": 5.32, "h": 9.5, "area": 4878}, {"id": "bld-grid-217", "x": -19.01, "z": 19.19, "w": 11.69, "d": 3.9, "h": 9.5, "area": 3079}, {"id": "bld-grid-218", "x": -178.43, "z": 19.01, "w": 3.27, "d": 3.0, "h": 7.0, "area": 619}, {"id": "bld-grid-219", "x": -194.51, "z": 19.37, "w": 3.16, "d": 3.07, "h": 7.0, "area": 682}, {"id": "bld-grid-220", "x": -183.93, "z": 19.78, "w": 3.74, "d": 3.0, "h": 7.0, "area": 657}, {"id": "bld-grid-221", "x": -46.24, "z": 21.49, "w": 5.14, "d": 4.02, "h": 7.0, "area": 714}, {"id": "bld-grid-222", "x": 60.06, "z": 20.43, "w": 3.16, "d": 3.0, "h": 4.5, "area": 54}, {"id": "bld-grid-223", "x": 60.06, "z": 21.02, "w": 3.16, "d": 3.0, "h": 4.5, "area": 99}, {"id": "bld-grid-224", "x": -113.92, "z": 23.5, "w": 5.84, "d": 4.02, "h": 7.0, "area": 1490}, {"id": "bld-grid-225", "x": 59.18, "z": 23.62, "w": 6.08, "d": 4.25, "h": 7.0, "area": 908}, {"id": "bld-grid-226", "x": -108.54, "z": 23.74, "w": 4.91, "d": 4.02, "h": 7.0, "area": 1331}, {"id": "bld-grid-227", "x": -43.79, "z": 23.21, "w": 3.0, "d": 3.0, "h": 4.5, "area": 235}, {"id": "bld-grid-228", "x": -84.46, "z": 24.45, "w": 10.99, "d": 4.02, "h": 9.5, "area": 2909}, {"id": "bld-grid-229", "x": 44.51, "z": 28.53, "w": 5.26, "d": 12.17, "h": 9.5, "area": 3645}, {"id": "bld-grid-230", "x": -194.45, "z": 24.09, "w": 3.51, "d": 3.0, "h": 7.0, "area": 619}, {"id": "bld-grid-231", "x": -183.99, "z": 24.45, "w": 3.16, "d": 3.0, "h": 4.5, "area": 596}, {"id": "bld-grid-232", "x": -69.39, "z": 24.98, "w": 11.69, "d": 3.9, "h": 9.5, "area": 2720}, {"id": "bld-grid-233", "x": -189.3, "z": 25.16, "w": 3.74, "d": 3.0, "h": 7.0, "area": 755}, {"id": "bld-grid-234", "x": 76.19, "z": 26.64, "w": 6.19, "d": 5.32, "h": 9.5, "area": 2285}, {"id": "bld-grid-235", "x": -179.02, "z": 25.39, "w": 3.0, "d": 3.0, "h": 4.5, "area": 478}, {"id": "bld-grid-236", "x": -43.2, "z": 25.99, "w": 3.27, "d": 3.07, "h": 4.5, "area": 346}, {"id": "bld-grid-237", "x": 102.95, "z": 33.79, "w": 3.0, "d": 15.13, "h": 4.5, "area": 128}, {"id": "bld-grid-238", "x": 31.48, "z": 29.71, "w": 3.97, "d": 5.55, "h": 7.0, "area": 1455}, {"id": "bld-grid-239", "x": -178.61, "z": 28.59, "w": 3.62, "d": 3.0, "h": 7.0, "area": 686}, {"id": "bld-grid-240", "x": -194.1, "z": 28.64, "w": 3.0, "d": 3.0, "h": 4.5, "area": 427}, {"id": "bld-grid-241", "x": 60.18, "z": 29.89, "w": 19.05, "d": 4.25, "h": 9.5, "area": 4642}, {"id": "bld-grid-242", "x": -184.04, "z": 29.18, "w": 3.51, "d": 3.0, "h": 7.0, "area": 611}, {"id": "bld-grid-243", "x": -12.7, "z": 32.13, "w": 10.52, "d": 7.8, "h": 9.5, "area": 5840}, {"id": "bld-grid-244", "x": 0.1, "z": 30.89, "w": 3.62, "d": 3.9, "h": 7.0, "area": 1013}, {"id": "bld-grid-245", "x": -184.1, "z": 30.83, "w": 3.39, "d": 3.0, "h": 4.5, "area": 74}, {"id": "bld-grid-246", "x": -193.45, "z": 31.6, "w": 3.0, "d": 3.0, "h": 4.5, "area": 96}, {"id": "bld-grid-247", "x": -193.63, "z": 33.61, "w": 3.0, "d": 3.19, "h": 7.0, "area": 621}, {"id": "bld-grid-248", "x": 60.7, "z": 33.25, "w": 11.22, "d": 3.0, "h": 9.5, "area": 2016}, {"id": "bld-grid-249", "x": 0.22, "z": 39.75, "w": 10.64, "d": 13.59, "h": 12.0, "area": 9382}, {"id": "bld-grid-250", "x": -189.77, "z": 34.44, "w": 3.74, "d": 3.0, "h": 7.0, "area": 657}, {"id": "bld-grid-251", "x": -184.34, "z": 34.73, "w": 3.62, "d": 3.0, "h": 7.0, "area": 701}, {"id": "bld-grid-252", "x": 81.04, "z": 35.14, "w": 15.66, "d": 3.66, "h": 9.5, "area": 3877}, {"id": "bld-grid-253", "x": -179.02, "z": 34.97, "w": 3.51, "d": 3.0, "h": 7.0, "area": 669}, {"id": "bld-grid-254", "x": -65.0, "z": 38.63, "w": 4.56, "d": 9.22, "h": 9.5, "area": 2797}, {"id": "bld-grid-255", "x": 29.96, "z": 35.62, "w": 3.0, "d": 3.0, "h": 4.5, "area": 475}, {"id": "bld-grid-256", "x": 33.29, "z": 35.62, "w": 3.0, "d": 3.0, "h": 4.5, "area": 253}, {"id": "bld-grid-257", "x": 26.87, "z": 35.74, "w": 3.0, "d": 3.0, "h": 4.5, "area": 289}, {"id": "bld-grid-258", "x": -198.83, "z": 36.74, "w": 3.0, "d": 3.78, "h": 4.5, "area": 32}, {"id": "bld-grid-259", "x": 60.7, "z": 35.38, "w": 3.27, "d": 3.0, "h": 4.5, "area": 28}, {"id": "bld-grid-260", "x": 73.5, "z": 36.44, "w": 3.0, "d": 3.0, "h": 4.5, "area": 32}, {"id": "bld-grid-261", "x": 56.55, "z": 36.8, "w": 3.16, "d": 3.0, "h": 4.5, "area": 27}, {"id": "bld-grid-262", "x": 29.9, "z": 38.69, "w": 8.06, "d": 3.0, "h": 4.5, "area": 311}, {"id": "bld-grid-263", "x": 20.67, "z": 39.75, "w": 3.0, "d": 3.0, "h": 4.5, "area": 212}, {"id": "bld-grid-264", "x": 29.9, "z": 39.52, "w": 8.06, "d": 3.0, "h": 4.5, "area": 288}, {"id": "bld-grid-265", "x": -187.84, "z": 45.49, "w": 4.56, "d": 9.93, "h": 9.5, "area": 3101}, {"id": "bld-grid-266", "x": -190.53, "z": 45.72, "w": 3.0, "d": 10.16, "h": 4.5, "area": 514}, {"id": "bld-grid-267", "x": -181.06, "z": 45.72, "w": 3.62, "d": 7.8, "h": 9.5, "area": 2046}, {"id": "bld-grid-268", "x": 142.46, "z": 42.71, "w": 6.66, "d": 3.0, "h": 4.5, "area": 57}, {"id": "bld-grid-269", "x": 105.82, "z": 46.61, "w": 3.0, "d": 6.5, "h": 7.0, "area": 1158}, {"id": "bld-grid-270", "x": -19.94, "z": 45.55, "w": 3.0, "d": 3.0, "h": 4.5, "area": 195}, {"id": "bld-grid-271", "x": -48.35, "z": 46.43, "w": 4.68, "d": 3.0, "h": 7.0, "area": 897}, {"id": "bld-grid-272", "x": 178.93, "z": 47.5, "w": 8.53, "d": 4.96, "h": 9.5, "area": 2729}, {"id": "bld-grid-273", "x": -53.26, "z": 46.55, "w": 3.74, "d": 3.0, "h": 7.0, "area": 768}, {"id": "bld-grid-274", "x": -64.13, "z": 46.61, "w": 4.21, "d": 3.0, "h": 7.0, "area": 800}, {"id": "bld-grid-275", "x": -58.52, "z": 46.61, "w": 3.74, "d": 3.0, "h": 7.0, "area": 736}, {"id": "bld-grid-276", "x": -80.37, "z": 47.44, "w": 3.97, "d": 4.14, "h": 7.0, "area": 933}, {"id": "bld-grid-277", "x": -74.94, "z": 46.73, "w": 3.86, "d": 3.0, "h": 7.0, "area": 747}, {"id": "bld-grid-278", "x": -69.62, "z": 46.67, "w": 3.74, "d": 3.0, "h": 7.0, "area": 694}, {"id": "bld-grid-279", "x": -113.39, "z": 46.96, "w": 3.62, "d": 3.0, "h": 7.0, "area": 719}, {"id": "bld-grid-280", "x": -107.84, "z": 46.9, "w": 3.97, "d": 3.0, "h": 7.0, "area": 795}, {"id": "bld-grid-281", "x": -97.03, "z": 46.85, "w": 4.09, "d": 3.0, "h": 7.0, "area": 805}, {"id": "bld-grid-282", "x": -85.81, "z": 46.85, "w": 3.86, "d": 3.0, "h": 7.0, "area": 759}, {"id": "bld-grid-283", "x": 134.51, "z": 47.14, "w": 3.0, "d": 3.31, "h": 4.5, "area": 283}, {"id": "bld-grid-284", "x": -91.42, "z": 46.9, "w": 3.86, "d": 3.0, "h": 7.0, "area": 726}, {"id": "bld-grid-285", "x": 66.9, "z": 46.67, "w": 3.0, "d": 3.0, "h": 4.5, "area": 210}, {"id": "bld-grid-286", "x": 73.62, "z": 47.14, "w": 3.0, "d": 3.0, "h": 4.5, "area": 157}, {"id": "bld-grid-287", "x": 39.72, "z": 49.62, "w": 20.45, "d": 6.38, "h": 12.0, "area": 8789}, {"id": "bld-grid-288", "x": 123.93, "z": 49.62, "w": 12.16, "d": 5.91, "h": 9.5, "area": 4376}, {"id": "bld-grid-289", "x": 77.42, "z": 48.62, "w": 5.61, "d": 3.43, "h": 7.0, "area": 1293}, {"id": "bld-grid-290", "x": 91.56, "z": 49.21, "w": 15.9, "d": 4.61, "h": 9.5, "area": 5299}, {"id": "bld-grid-291", "x": 165.6, "z": 49.27, "w": 3.0, "d": 3.0, "h": 4.5, "area": 168}, {"id": "bld-grid-292", "x": 66.84, "z": 48.8, "w": 3.0, "d": 3.0, "h": 4.5, "area": 111}, {"id": "bld-grid-293", "x": 196.34, "z": 50.63, "w": 3.0, "d": 4.61, "h": 4.5, "area": 39}, {"id": "bld-grid-294", "x": 146.02, "z": 50.57, "w": 14.26, "d": 3.78, "h": 9.5, "area": 3819}, {"id": "bld-grid-295", "x": 193.3, "z": 51.87, "w": 3.0, "d": 6.15, "h": 4.5, "area": 52}, {"id": "bld-grid-296", "x": 58.72, "z": 52.7, "w": 3.04, "d": 7.33, "h": 7.0, "area": 1257}, {"id": "bld-grid-297", "x": 69.23, "z": 50.98, "w": 4.68, "d": 3.0, "h": 7.0, "area": 776}, {"id": "bld-grid-298", "x": 73.5, "z": 51.45, "w": 3.39, "d": 3.0, "h": 4.5, "area": 426}, {"id": "bld-grid-299", "x": -47.0, "z": 53.46, "w": 3.39, "d": 3.9, "h": 7.0, "area": 751}, {"id": "bld-grid-300", "x": 100.91, "z": 53.94, "w": 10.29, "d": 4.85, "h": 9.5, "area": 2826}, {"id": "bld-grid-301", "x": -183.69, "z": 52.05, "w": 3.0, "d": 3.0, "h": 4.5, "area": 24}, {"id": "bld-grid-302", "x": -29.88, "z": 54.11, "w": 8.88, "d": 4.02, "h": 9.5, "area": 2028}, {"id": "bld-grid-303", "x": 25.58, "z": 54.05, "w": 5.49, "d": 3.9, "h": 7.0, "area": 1272}, {"id": "bld-grid-304", "x": -22.28, "z": 54.41, "w": 5.61, "d": 4.37, "h": 7.0, "area": 1656}, {"id": "bld-grid-305", "x": 178.11, "z": 54.17, "w": 5.49, "d": 3.9, "h": 7.0, "area": 1229}, {"id": "bld-grid-306", "x": -91.3, "z": 54.41, "w": 3.62, "d": 4.14, "h": 7.0, "area": 916}, {"id": "bld-grid-307", "x": 66.31, "z": 53.82, "w": 3.74, "d": 3.0, "h": 7.0, "area": 713}, {"id": "bld-grid-308", "x": -190.77, "z": 54.94, "w": 3.0, "d": 4.25, "h": 7.0, "area": 740}, {"id": "bld-grid-309", "x": -41.57, "z": 54.23, "w": 6.55, "d": 3.0, "h": 7.0, "area": 1139}, {"id": "bld-grid-310", "x": -181.53, "z": 54.65, "w": 11.57, "d": 3.19, "h": 9.5, "area": 2447}, {"id": "bld-grid-311", "x": -134.9, "z": 54.41, "w": 3.62, "d": 3.0, "h": 4.5, "area": 466}, {"id": "bld-grid-312", "x": 71.75, "z": 54.47, "w": 6.9, "d": 3.0, "h": 7.0, "area": 890}, {"id": "bld-grid-313", "x": -156.81, "z": 55.06, "w": 3.51, "d": 3.0, "h": 7.0, "area": 638}, {"id": "bld-grid-314", "x": -140.45, "z": 55.06, "w": 3.27, "d": 3.0, "h": 7.0, "area": 635}, {"id": "bld-grid-315", "x": -58.52, "z": 55.06, "w": 3.74, "d": 3.0, "h": 7.0, "area": 685}, {"id": "bld-grid-316", "x": -52.96, "z": 55.06, "w": 3.86, "d": 3.0, "h": 7.0, "area": 751}, {"id": "bld-grid-317", "x": -86.33, "z": 55.18, "w": 4.91, "d": 3.0, "h": 7.0, "area": 945}, {"id": "bld-grid-318", "x": -72.07, "z": 55.12, "w": 9.12, "d": 3.0, "h": 7.0, "area": 1737}, {"id": "bld-grid-319", "x": -63.83, "z": 55.12, "w": 3.62, "d": 3.0, "h": 7.0, "area": 679}, {"id": "bld-grid-320", "x": 21.49, "z": 54.94, "w": 3.0, "d": 3.0, "h": 4.5, "area": 276}, {"id": "bld-grid-321", "x": -80.31, "z": 55.3, "w": 3.62, "d": 3.0, "h": 7.0, "area": 622}, {"id": "bld-grid-322", "x": -118.77, "z": 55.89, "w": 3.62, "d": 3.55, "h": 7.0, "area": 871}, {"id": "bld-grid-323", "x": -102.29, "z": 55.47, "w": 6.9, "d": 3.0, "h": 7.0, "area": 1271}, {"id": "bld-grid-324", "x": -96.91, "z": 55.41, "w": 3.86, "d": 3.0, "h": 7.0, "area": 712}, {"id": "bld-grid-325", "x": -129.7, "z": 55.59, "w": 3.97, "d": 3.0, "h": 7.0, "area": 773}, {"id": "bld-grid-326", "x": -124.2, "z": 55.65, "w": 3.51, "d": 3.0, "h": 7.0, "area": 689}, {"id": "bld-grid-327", "x": -113.16, "z": 55.59, "w": 4.32, "d": 3.0, "h": 7.0, "area": 834}, {"id": "bld-grid-328", "x": -107.78, "z": 55.53, "w": 3.86, "d": 3.0, "h": 7.0, "area": 700}, {"id": "bld-grid-329", "x": -167.68, "z": 55.89, "w": 4.21, "d": 3.0, "h": 7.0, "area": 864}, {"id": "bld-grid-330", "x": -172.88, "z": 56.0, "w": 4.79, "d": 3.0, "h": 7.0, "area": 902}, {"id": "bld-grid-331", "x": -162.54, "z": 56.06, "w": 3.74, "d": 3.0, "h": 7.0, "area": 700}, {"id": "bld-grid-332", "x": 41.12, "z": 56.36, "w": 3.16, "d": 3.0, "h": 4.5, "area": 562}, {"id": "bld-grid-333", "x": 71.75, "z": 55.65, "w": 6.9, "d": 3.0, "h": 4.5, "area": 183}, {"id": "bld-grid-334", "x": 196.11, "z": 59.85, "w": 3.0, "d": 5.79, "h": 4.5, "area": 49}, {"id": "bld-grid-335", "x": 193.07, "z": 60.85, "w": 3.0, "d": 3.78, "h": 4.5, "area": 32}, {"id": "bld-grid-336", "x": 167.47, "z": 62.15, "w": 8.3, "d": 3.0, "h": 4.5, "area": 558}];
 
-  const bldMat = new THREE.MeshStandardMaterial({
-    color: 0xF1ECE1, // maps3d buildings.color (#F1ECE1)
+function buildBuildings() {
+  // 1. Build Campus Infrastructure aligned 1:1 to Drone Photograph (Roads, Canals, Lotus Pond, Trees, Highway)
+  const infra = createGistdaInfrastructure();
+  buildingsGroup.add(infra);
+
+  // 2. Build Ancillary Buildings & Footprints from Drone Mapping (336 Buildings)
+  const minorBldMat = new THREE.MeshStandardMaterial({
+    color: 0xF1ECE1, // Maps3D warm ivory
     roughness: 0.45,
     metalness: 0.08
   });
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x64748b, linewidth: 1.5 });
 
-  const roofMat = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0,
-    roughness: 0.5,
-    metalness: 0.1
+    DRONE_ALIGNED_BUILDINGS.forEach(b => {
+    // Exclude outside campus fence bounds
+    if (b.x < -160 || b.x > 188 || b.z < -52 || b.z > 54) return;
+
+    // Do NOT allow any building on the stadium or athletic field
+    if (b.x >= -165 && b.x <= -102 && b.z >= -22 && b.z <= 42) return;
+
+    // Do NOT allow any building on the central Thai house pond
+    if (Math.sqrt(b.x * b.x + (b.z - 8.0) * (b.z - 8.0)) < 16.0) return;
+
+    // Do NOT allow any building near major landmarks
+    const isNearLandmark = HOSPITAL_BUILDINGS.some(lm => {
+      const dx = lm.pos.x - b.x;
+      const dz = lm.pos.z - b.z;
+      const minDist = (lm.id === 'bld-1' || lm.id === 'bld-10' ? 24.0 : 16.0);
+      return Math.sqrt(dx * dx + dz * dz) < minDist;
+    });
+
+    if (!isNearLandmark) {
+      const bGroup = new THREE.Group();
+      bGroup.position.set(b.x, 0, b.z);
+      const towerGeo = new THREE.BoxGeometry(b.w, b.h, b.d);
+      const tower = new THREE.Mesh(towerGeo, minorBldMat);
+      tower.position.set(0, b.h / 2, 0);
+      tower.castShadow = true;
+      tower.receiveShadow = true;
+      bGroup.add(tower);
+
+      const edges = new THREE.EdgesGeometry(towerGeo);
+      const wire = new THREE.LineSegments(edges, edgeMat);
+      wire.position.copy(tower.position);
+      bGroup.add(wire);
+
+      buildingsGroup.add(bGroup);
+    }
   });
 
-  const edgeMat = new THREE.LineBasicMaterial({
-    color: 0x475569, // maps3d building edgeRendering (#475569)
-    linewidth: 2
-  });
-
-  const glassMat = new THREE.MeshStandardMaterial({
-    color: 0x98DCFF,
-    roughness: 0.1,
-    metalness: 0.8,
-    transparent: true,
-    opacity: 0.8,
-    emissive: new THREE.Color(0xffbf69),
-    emissiveIntensity: 0.08
-  });
-  emissiveMaterials.push(glassMat);
-
-  // 1. Build ALL 336 Buildings from Map Footprints
-  MAPS3D_ALL_BUILDINGS.forEach((bld, idx) => {
+  // 3. Build 3D Models for ALL Major Campus Landmarks with 1:1 Architectural Precision
+  HOSPITAL_BUILDINGS.forEach(bld => {
     const bGroup = new THREE.Group();
-    bGroup.position.set(bld.x, 0, bld.z);
+    bGroup.position.set(bld.pos.x, 0, bld.pos.z);
+    bGroup.rotation.y = bld.rotY || 0;
     bGroup.userData = bld;
 
-    const w = bld.w;
-    const d = bld.d;
-    const h = bld.h;
-    const podiumH = 0.5;
-
-    // Base Podium
-    const podium = new THREE.Mesh(new THREE.BoxGeometry(w + 0.6, podiumH, d + 0.6), bldMat);
-    podium.position.set(0, podiumH / 2, 0);
-    podium.receiveShadow = true;
-    bGroup.add(podium);
-
-    // Main Building Massing (Raised placement)
-    const towerGeo = new THREE.BoxGeometry(w, h, d);
-    const tower = new THREE.Mesh(towerGeo, bldMat);
-    tower.position.set(0, podiumH + h / 2, 0);
-    tower.castShadow = true;
-    tower.receiveShadow = true;
-    bGroup.add(tower);
-
-    // Edge Contour Lines (maps3d edge rendering)
-    const edges = new THREE.EdgesGeometry(towerGeo);
-    const wireframe = new THREE.LineSegments(edges, edgeMat);
-    wireframe.position.copy(tower.position);
-    bGroup.add(wireframe);
-
-    // Windows for larger buildings
-    if (w >= 10 && d >= 8) {
-      const numFloors = Math.max(1, Math.round(h / 3.2));
-      const flH = h / numFloors;
-      for (let f = 1; f <= numFloors; f++) {
-        const winY = podiumH + (f - 0.5) * flH;
-        const winN = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, flH * 0.42, 0.15), glassMat);
-        winN.position.set(0, winY, -d / 2 - 0.03);
-        bGroup.add(winN);
-
-        const winS = new THREE.Mesh(new THREE.BoxGeometry(w * 0.88, flH * 0.42, 0.15), glassMat);
-        winS.position.set(0, winY, d / 2 + 0.03);
-        bGroup.add(winS);
-      }
-
-      // Rooftop Parapet
-      const parapet = new THREE.Mesh(new THREE.BoxGeometry(w, 0.6, d), bldMat);
-      parapet.position.set(0, podiumH + h + 0.3, 0);
-      bGroup.add(parapet);
-
-      // Rooftop Penthouse
-      const pentW = Math.min(w * 0.35, 6.0);
-      const pentD = Math.min(d * 0.35, 5.0);
-      const pentH = 2.2;
-      const penthouse = new THREE.Mesh(new THREE.BoxGeometry(pentW, pentH, pentD), roofMat);
-      penthouse.position.set(w * 0.15, podiumH + h + pentH / 2 + 0.3, -d * 0.15);
-      bGroup.add(penthouse);
+    if (bld.id === 'bld-1') {
+      // Landmark 1: หอประชุม 80 ปี (1:1 Architectural Precision)
+      const mesh = createAuditorium80Mesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-10') {
+      // Landmark 10: อาคารเรียนรวมทิศใต้ 9 ชั้น (1:1 West Wing + Chillers + Parking)
+      const mesh = createBuilding10Mesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-2') {
+      // Landmark 2: อาคาร 100 ปี สมเด็จพระศรีนครินทร์ (SPB 100)
+      const mesh = createSPB100Mesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-8') {
+      // Landmark 8: พระอนุสาวรีย์สมเด็จเจ้าฟ้าวไลยอลงกรณ์ฯ
+      const mesh = createMonumentMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-36') {
+      // Landmark 36: เรือนเจ้าฟ้า (เรือนไทยวไลยอลงกรณ์)
+      const mesh = createThaiPavilionMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-57') {
+      // Landmark 57: สนามกีฬากลาง มรภ.วไลยอลงกรณ์ฯ (ลู่วิ่ง 400 ม. + อัฒจันทร์)
+      const mesh = createStadiumMesh();
+      bGroup.add(mesh);
+    } else if (bld.id === 'bld-5') {
+      // Landmark 5: ศูนย์ส่งเสริมสุขภาพ & สระว่ายน้ำ 50 ม.
+      const mesh = createHealthPoolMesh();
+      bGroup.add(mesh);
+    } else {
+      // GISTDA GeoTwin LOD1 Model for all other faculties, dorms, and campus facilities
+      const mesh = createGistdaLOD1Mesh(bld);
+      bGroup.add(mesh);
     }
 
     buildingsGroup.add(bGroup);
     buildingMeshes.set(bld.id, bGroup);
   });
-
-  // 2. Associate the 36 Landmarks with closest 3D buildings for pin interaction
-  HOSPITAL_BUILDINGS.forEach(lm => {
-    let closest = null;
-    let minDist = Infinity;
-    MAPS3D_ALL_BUILDINGS.forEach(b => {
-      const dx = b.x - lm.pos.x;
-      const dz = b.z - lm.pos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist < minDist) {
-        minDist = dist;
-        closest = b;
-      }
-    });
-    if (closest) {
-      const meshGroup = buildingMeshes.get(closest.id);
-      if (meshGroup) {
-        meshGroup.userData = { ...closest, ...lm };
-        buildingMeshes.set(lm.id, meshGroup);
-      }
-    }
-  });
 }
 
-// 5. Trees Layer (Procedural placement according to maps3d config: color #4a7c3a, scale 0.9, density 0.005)
-function buildMaps3DTrees() {
-  treesGroup.clear();
-
-  const treeMat = new THREE.MeshStandardMaterial({
-    color: 0x4a7c3a, // maps3d trees.color (#4a7c3a)
-    roughness: 0.9,
-    metalness: 0.0
-  });
-  const trunkMat = new THREE.MeshStandardMaterial({
-    color: 0x78350f,
-    roughness: 0.9,
-    metalness: 0.0
-  });
-
-  const treeGeo = new THREE.ConeGeometry(3.6, 7.5, 6);
-  const trunkGeo = new THREE.CylinderGeometry(0.5, 0.7, 2.5, 6);
-
-  // Distribute trees around open green zones with 4m clearance
-  const treeClusters = [
-    { cx: -20, cz: 40, rx: 60, rz: 40, count: 18 },
-    { cx: 200, cz: 50, rx: 80, rz: 35, count: 22 },
-    { cx: 450, cz: -50, rx: 70, rz: 30, count: 16 },
-    { cx: -350, cz: 30, rx: 80, rz: 50, count: 20 },
-    { cx: -580, cz: -30, rx: 90, rz: 40, count: 24 }
-  ];
-
-  treeClusters.forEach(c => {
-    for (let i = 0; i < c.count; i++) {
-      const angle = (i / c.count) * Math.PI * 2 + (i % 3) * 0.4;
-      const dist = (0.2 + (i % 5) * 0.18) * Math.min(c.rx, c.rz);
-      const tx = c.cx + Math.cos(angle) * dist;
-      const tz = c.cz + Math.sin(angle) * dist;
-
-      const tGroup = new THREE.Group();
-      tGroup.position.set(tx, 0, tz);
-      tGroup.scale.setScalar(0.9); // maps3d trees.scale = 0.9
-
-      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-      trunk.position.y = 1.25;
-      tGroup.add(trunk);
-
-      const crown = new THREE.Mesh(treeGeo, treeMat);
-      crown.position.y = 2.5 + 3.75;
-      crown.castShadow = true;
-      tGroup.add(crown);
-
-      treesGroup.add(tGroup);
-    }
-  });
-}
-
-// 6. 3D Floating Pin Number Badges
+// 3D Floating Pin Number Badges
 function create3DLabels() {
   const container = document.getElementById('labelsContainer');
   if (!container) return;
@@ -1268,32 +1946,39 @@ function create3DLabels() {
 
 function updateLabelPositions() {
   const container = document.getElementById('labelsContainer');
-  if (!container) return;
+  const svg = document.getElementById('labelLeaders');
+  if (!container || !svg) return;
 
+  if (!state.showLabels) {
+    container.style.display = 'none';
+    svg.style.display = 'none';
+    return;
+  }
+  container.style.display = '';
+  svg.style.display = '';
+
+  let svgPaths = '';
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const isPortrait = h > w;
-  const maxDist = isPortrait ? 1200 : 1500;
-
-  const camPos = camera.position;
+  const tempV = new THREE.Vector3();
   const camDir = new THREE.Vector3();
   camera.getWorldDirection(camDir);
+  const toAnchor = new THREE.Vector3();
+  const placedBoxes = [];
 
   labelElements.forEach(({ element, data }) => {
-    const anchorY = Math.max(16.0, data.dimensions.h * 1.5 + 5.0);
-    const tempV = new THREE.Vector3(data.pos.x, anchorY, data.pos.z);
+    const anchorY = (data.id === 'bld-1' ? 15.0 : data.id === 'bld-10' ? 31.0 : 1.2);
+    toAnchor.set(data.pos.x - camera.position.x, anchorY - camera.position.y, data.pos.z - camera.position.z);
 
-    const toAnchor = new THREE.Vector3(data.pos.x - camPos.x, anchorY - camPos.y, data.pos.z - camPos.z);
-    const dist = toAnchor.length();
-    const dot = toAnchor.dot(camDir);
-
-    if (dot <= 0 || dist > maxDist || !state.showLabels) {
+    if (toAnchor.dot(camDir) <= 0.2) {
       element.style.display = 'none';
       return;
     }
 
+    tempV.set(data.pos.x, anchorY, data.pos.z);
     tempV.project(camera);
-    if (tempV.z > 1.0) {
+
+    if (tempV.z < -1.0 || tempV.z > 1.0) {
       element.style.display = 'none';
       return;
     }
@@ -1301,23 +1986,284 @@ function updateLabelPositions() {
     const screenX = (tempV.x * 0.5 + 0.5) * w;
     const screenY = (-(tempV.y * 0.5) + 0.5) * h;
 
-    if (screenX < -20 || screenX > w + 20 || screenY < -20 || screenY > h + 20) {
+    if (screenX < -50 || screenX > w + 50 || screenY < -50 || screenY > h + 50) {
       element.style.display = 'none';
       return;
     }
 
+    let adjustedY = screenY - 26;
+    const boxW = 28;
+    const boxH = 26;
+    let collides = false;
+    for (const pb of placedBoxes) {
+      if (Math.abs(screenX - pb.x) < boxW && Math.abs(adjustedY - pb.y) < boxH) {
+        collides = true;
+        break;
+      }
+    }
+
+    if (collides && !element.classList.contains('selected')) {
+      element.style.display = 'none';
+      return;
+    }
+
+    placedBoxes.push({ x: screenX, y: adjustedY });
+
     element.style.display = 'flex';
-    element.style.left = `${screenX}px`;
-    element.style.top = `${screenY}px`;
+    element.style.left = screenX + 'px';
+    element.style.top = adjustedY + 'px';
+
+    svgPaths += '<line x1="' + screenX + '" y1="' + screenY + '" x2="' + screenX + '" y2="' + (adjustedY + 6) + '" stroke="rgba(2, 132, 199, 0.75)" stroke-width="1.2" stroke-dasharray="2,2"/>';
   });
+
+  svg.innerHTML = svgPaths;
 }
 
-// Sun & Light Settings (azimuth 134 deg, elevation 46 deg)
+// Building Selection & Detail Panel
+function selectBuilding(id, shouldFocus) {
+  if (!id || id === 'overview') {
+    resetView();
+    return;
+  }
+
+  const bld = BUILDINGS_MAP[id];
+  if (!bld) return;
+
+  state.selectedBuilding = bld;
+
+  labelElements.forEach(({ element }, k) => {
+    element.classList.toggle('selected', k === id);
+  });
+
+  buildingMeshes.forEach((mesh, k) => {
+    mesh.traverse(child => {
+      if (child.isMesh && child.material && child.material.emissive) {
+        child.userData.origEmissive = child.userData.origEmissive ?? child.material.emissive.getHex();
+        if (k === id) {
+          child.material.emissive.setHex(0x059669);
+          child.material.emissiveIntensity = 0.35;
+        } else {
+          child.material.emissive.setHex(child.userData.origEmissive || 0x000000);
+          child.material.emissiveIntensity = 0.0;
+        }
+      }
+    });
+  });
+
+  if (shouldFocus) {
+    focusBuilding(bld);
+  }
+
+  updateDetailPanel(bld);
+}
+
+function focusBuilding(bld) {
+  const targetX = bld.pos.x;
+  const targetY = (bld.dimensions.h || 10) * 0.45;
+  const targetZ = bld.pos.z;
+
+  const off = { x: 18, y: 32, z: 42 };
+  new TWEEN.Tween(controls.target)
+    .to({ x: targetX, y: targetY, z: targetZ }, 1000)
+    .easing(TWEEN.Easing.Cubic.Out)
+    .start();
+
+  new TWEEN.Tween(camera.position)
+    .to({ x: targetX + off.x, y: targetY + off.y, z: targetZ + off.z }, 1000)
+    .easing(TWEEN.Easing.Cubic.Out)
+    .start();
+}
+
+function updateDetailPanel(bld) {
+  const detail = document.getElementById('detail');
+  if (!detail) return;
+
+  const titleEl = document.getElementById('entityTitle');
+  if (titleEl) titleEl.textContent = bld.name;
+
+  const subEl = document.getElementById('entitySub');
+  if (subEl) subEl.textContent = bld.sub || (bld.category + ' · มรภ.วไลยอลงกรณ์ฯ');
+
+  const typeEl = document.getElementById('entityType');
+  if (typeEl) typeEl.textContent = bld.category;
+
+  const statusEl = document.getElementById('entityStatus');
+  if (statusEl) statusEl.textContent = bld.status;
+
+  const miniDiagram = document.getElementById('miniDiagram');
+  if (miniDiagram) {
+    if (bld.floors && bld.floors.length > 0) {
+      miniDiagram.innerHTML = bld.floors.map((f, idx) =>
+        '<div class="floor-block ' + (idx === 0 ? 'active' : '') + '" data-floor="' + f.num + '">' +
+          '<span>ชั้น ' + f.num + '</span><small>' + f.desc + '</small>' +
+        '</div>'
+      ).join('');
+    } else {
+      miniDiagram.innerHTML = '<div class="floor-block active"><span>ชั้น 1</span><small>พื้นที่บริการและการใช้งาน</small></div>';
+    }
+  }
+
+  const detailNote = document.getElementById('detailNote');
+  if (detailNote) detailNote.textContent = bld.sub || '';
+
+  const emptyMsg = detail.querySelector('.detail-empty');
+  if (emptyMsg) emptyMsg.style.display = 'none';
+
+  const scrollArea = detail.querySelector('.detail-scroll');
+  if (scrollArea) scrollArea.style.display = 'block';
+
+  detail.hidden = false;
+}
+
+function resetView() {
+  state.selectedBuilding = null;
+  labelElements.forEach(({ element }) => element.classList.remove('selected'));
+  buildingMeshes.forEach(mesh => {
+    mesh.traverse(child => {
+      if (child.isMesh && child.material && child.material.emissive) {
+        child.material.emissive.setHex(child.userData.origEmissive || 0x000000);
+        child.material.emissiveIntensity = 0.0;
+      }
+    });
+  });
+
+  const p = getOverviewPreset();
+  new TWEEN.Tween(controls.target).to(p.target, 1100).easing(TWEEN.Easing.Cubic.Out).start();
+  new TWEEN.Tween(camera.position).to(p.pos, 1100).easing(TWEEN.Easing.Cubic.Out).start();
+
+  const detail = document.getElementById('detail');
+  if (detail) detail.hidden = true;
+}
+
+// UI Controls & Event Listeners
+function setupUI() {
+  setInterval(() => {
+    const el = document.getElementById('clock');
+    if (el) {
+      const now = new Date();
+      el.textContent = now.toTimeString().split(' ')[0];
+    }
+  }, 1000);
+
+  document.getElementById('brandReset')?.addEventListener('click', resetView);
+  document.getElementById('reset')?.addEventListener('click', resetView);
+
+  const closeDetail = document.getElementById('closeDetail');
+  closeDetail?.addEventListener('click', () => {
+    const d = document.getElementById('detail');
+    if (d) d.hidden = true;
+  });
+
+  setupSearch();
+
+  const turntableBtn = document.getElementById('turntable');
+  turntableBtn?.addEventListener('click', () => {
+    state.isOrbiting = !state.isOrbiting;
+    controls.autoRotate = state.isOrbiting;
+    controls.autoRotateSpeed = 1.6;
+    turntableBtn.classList.toggle('active', state.isOrbiting);
+    turntableBtn.setAttribute('aria-pressed', state.isOrbiting ? 'true' : 'false');
+  });
+
+  const labelsBtn = document.getElementById('toggleLabels');
+  labelsBtn?.addEventListener('click', () => {
+    state.showLabels = !state.showLabels;
+    labelsBtn.classList.toggle('active', state.showLabels);
+    labelsBtn.setAttribute('aria-pressed', state.showLabels ? 'true' : 'false');
+    updateLabelPositions();
+  });
+
+  document.getElementById('tour')?.addEventListener('click', startCampusTour);
+
+  const toggleTableBtn = document.getElementById('toggleTable');
+  toggleTableBtn?.addEventListener('click', () => {
+    const tp = document.getElementById('tablePanel');
+    if (tp) {
+      tp.hidden = !tp.hidden;
+      if (!tp.hidden) showDirectoryTable();
+    }
+  });
+
+  document.getElementById('closeTable')?.addEventListener('click', () => {
+    const tp = document.getElementById('tablePanel');
+    if (tp) tp.hidden = true;
+  });
+
+  const lightToggle = document.getElementById('lightToggle');
+  const lightPanel = document.getElementById('lightPanel');
+  lightToggle?.addEventListener('click', () => {
+    lightPanel.hidden = !lightPanel.hidden;
+  });
+  document.getElementById('closeLight')?.addEventListener('click', () => {
+    lightPanel.hidden = true;
+  });
+
+  // Light presets
+  document.querySelectorAll('[data-light]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-light');
+      if (mode === 'morning') {
+        setSunLight(-120, 30, 1.2, 0.45);
+      } else if (mode === 'noon') {
+        setSunLight(-40, 75, 1.6, 0.6);
+      } else if (mode === 'evening') {
+        setSunLight(130, 20, 1.3, 0.4);
+      } else if (mode === 'night') {
+        setDayMode(false);
+      }
+    });
+  });
+
+  // Collapse / Expand Toolbar Button
+  const collapseToolbarBtn = document.getElementById('collapseToolbar');
+  const toolbar = document.querySelector('.toolbar');
+  collapseToolbarBtn?.addEventListener('click', () => {
+    if (!toolbar) return;
+    const isCollapsed = toolbar.classList.toggle('collapsed');
+    collapseToolbarBtn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    collapseToolbarBtn.innerHTML = isCollapsed ? '› เมนู' : '‹';
+    collapseToolbarBtn.title = isCollapsed ? 'ขยายแถบเมนูนำทาง' : 'ย่อแถบเมนูนำทาง';
+  });
+
+  // Toggle Walkways
+  const toggleWalkwaysBtn = document.getElementById('toggleWalkways');
+  toggleWalkwaysBtn?.addEventListener('click', () => {
+    state.showWalkways = state.showWalkways === undefined ? false : !state.showWalkways;
+    toggleWalkwaysBtn.classList.toggle('active', state.showWalkways);
+    toggleWalkwaysBtn.setAttribute('aria-pressed', state.showWalkways ? 'true' : 'false');
+  });
+
+  document.getElementById('fullscreenTop')?.addEventListener('click', toggleFullscreen);
+  document.getElementById('toggleUI')?.addEventListener('click', toggleFullscreen);
+
+  // Setup fullscreen change listeners to keep button labels and titles in sync
+  ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(ev => {
+    document.addEventListener(ev, updateFullscreenButtons);
+  });
+
+  // Keyboard shortcuts: F for Fullscreen/Minimize, H for Collapse Toolbar
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    } else if (e.key === 'h' || e.key === 'H') {
+      collapseToolbarBtn?.click();
+    } else if (e.key === 'Escape') {
+      if (document.body.classList.contains('fullscreen-mode')) {
+        document.body.classList.remove('fullscreen-mode');
+        updateFullscreenButtons();
+      }
+    }
+  });
+
+  setupMapModal();
+}
+
 function setSunLight(azDeg, elDeg, power, amb) {
-  state.dayMode = true;
+  setDayMode(true);
   const azRad = THREE.MathUtils.degToRad(azDeg);
   const elRad = THREE.MathUtils.degToRad(elDeg);
-  const dist = 1200;
+  const dist = 300;
   sunLight.position.set(
     dist * Math.cos(elRad) * Math.sin(azRad),
     dist * Math.sin(elRad),
@@ -1330,261 +2276,18 @@ function setSunLight(azDeg, elDeg, power, amb) {
 function setDayMode(isDay) {
   state.dayMode = isDay;
   if (isDay) {
-    scene.background.setHex(0xF5F0EF); // Maps3D groundColor
-    ambientLight.color.setHex(0xffffff);
-    ambientLight.intensity = 0.9;
-    sunLight.intensity = 1.3;
+    scene.background.setHex(0xdce7f2);
+    ambientLight.color.setHex(0xfff7ed);
+    ambientLight.intensity = 0.75;
+    sunLight.intensity = 1.4;
     emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.0; });
   } else {
-    scene.background.setHex(0x0f172a);
+    scene.background.setHex(0x0a111c);
     ambientLight.color.setHex(0x1e293b);
-    ambientLight.intensity = 0.4;
-    sunLight.intensity = 0.25;
+    ambientLight.intensity = 0.35;
+    sunLight.intensity = 0.2;
     emissiveMaterials.forEach(m => { m.emissiveIntensity = 0.85; });
   }
-}
-
-// UI Bindings & Map Modal
-function setupUI() {
-  document.getElementById('reset')?.addEventListener('click', () => {
-    focusOverview();
-  });
-
-  document.getElementById('brandReset')?.addEventListener('click', () => {
-    focusOverview();
-  });
-
-  document.getElementById('turntable')?.addEventListener('click', () => {
-    state.turntable = !state.turntable;
-    document.getElementById('turntable')?.classList.toggle('active', state.turntable);
-  });
-
-  document.getElementById('toggleLabels')?.addEventListener('click', () => {
-    state.showLabels = !state.showLabels;
-    document.getElementById('toggleLabels')?.classList.toggle('active', state.showLabels);
-    updateLabelPositions();
-  });
-
-  const collapseToolbarBtn = document.getElementById('collapseToolbar');
-  const toolbar = document.querySelector('.toolbar');
-  collapseToolbarBtn?.addEventListener('click', () => {
-    if (!toolbar) return;
-    const isCollapsed = toolbar.classList.toggle('collapsed');
-    collapseToolbarBtn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-    collapseToolbarBtn.innerHTML = isCollapsed ? '› เมนู' : '‹';
-    collapseToolbarBtn.title = isCollapsed ? 'ขยายแถบเมนูนำทาง' : 'ย่อแถบเมนูนำทาง';
-  });
-
-  document.getElementById('fullscreenTop')?.addEventListener('click', toggleFullscreen);
-  document.getElementById('toggleUI')?.addEventListener('click', toggleFullscreen);
-
-  // Light toggle
-  const lightToggle = document.getElementById('lightToggle');
-  const lightPanel = document.getElementById('lightPanel');
-  const closeLight = document.getElementById('closeLight');
-  lightToggle?.addEventListener('click', () => {
-    lightPanel.hidden = !lightPanel.hidden;
-  });
-  closeLight?.addEventListener('click', () => {
-    lightPanel.hidden = true;
-  });
-
-  document.querySelectorAll('.light-presets button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.light;
-      if (mode === 'morning') {
-        setSunLight(-120, 30, 1.2, 0.5);
-      } else if (mode === 'noon') {
-        setSunLight(-40, 75, 1.5, 0.7);
-      } else if (mode === 'evening') {
-        setSunLight(134, 46, 1.3, 0.9); // Maps3D default
-      } else if (mode === 'night') {
-        setDayMode(false);
-      }
-    });
-  });
-
-  setupMapModal();
-}
-
-function focusOverview() {
-  state.selectedId = null;
-  const isPortrait = window.innerHeight > window.innerWidth;
-  const targetPos = isPortrait ? { x: 120, y: 850, z: 680 } : { x: 120, y: 680, z: 520 };
-  const targetLook = { x: 80, y: 0, z: 30 };
-
-  if (window.TWEEN) {
-    new TWEEN.Tween(camera.position)
-      .to(targetPos, 1200)
-      .easing(TWEEN.Easing.Cubic.Out)
-      .start();
-    new TWEEN.Tween(controls.target)
-      .to(targetLook, 1200)
-      .easing(TWEEN.Easing.Cubic.Out)
-      .start();
-  } else {
-    camera.position.set(targetPos.x, targetPos.y, targetPos.z);
-    controls.target.set(targetLook.x, targetLook.y, targetLook.z);
-  }
-}
-
-function selectBuilding(bldId, zoomIn = true) {
-  const bld = BUILDINGS_MAP[bldId];
-  if (!bld) return;
-  state.selectedId = bldId;
-
-  if (zoomIn) {
-    const camTarget = { x: bld.pos.x, y: 0, z: bld.pos.z };
-    const camPos = {
-      x: bld.pos.x + 90,
-      y: 90,
-      z: bld.pos.z + 110
-    };
-
-    if (window.TWEEN) {
-      new TWEEN.Tween(camera.position)
-        .to(camPos, 1000)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .start();
-      new TWEEN.Tween(controls.target)
-        .to(camTarget, 1000)
-        .easing(TWEEN.Easing.Cubic.Out)
-        .start();
-    } else {
-      camera.position.set(camPos.x, camPos.y, camPos.z);
-      controls.target.set(camTarget.x, camTarget.y, camTarget.z);
-    }
-  }
-
-  showBuildingDetail(bld);
-}
-
-function showBuildingDetail(bld) {
-  const detail = document.getElementById('detail');
-  if (!detail) return;
-
-  document.getElementById('detailNum').textContent = bld.num;
-  document.getElementById('detailName').textContent = bld.name;
-  document.getElementById('detailCategory').textContent = bld.category;
-  document.getElementById('detailSub').textContent = bld.sub;
-  document.getElementById('detailStatus').textContent = bld.status;
-
-  const floorsList = document.getElementById('detailFloors');
-  if (floorsList && bld.floors) {
-    floorsList.innerHTML = '';
-    bld.floors.forEach(fl => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>ชั้น ${fl.num}:</strong> ${fl.desc}`;
-      floorsList.appendChild(li);
-    });
-  }
-
-  detail.hidden = false;
-  detail.classList.add('visible');
-}
-
-function setupInteractivity() {
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-
-  window.addEventListener('click', (e) => {
-    if (e.target.closest('.top') || e.target.closest('.toolbar') || e.target.closest('.detail') || e.target.closest('.popover')) return;
-
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(buildingsGroup.children, true);
-    if (intersects.length > 0) {
-      let obj = intersects[0].object;
-      while (obj && !obj.userData?.id && obj.parent) {
-        obj = obj.parent;
-      }
-      if (obj && obj.userData?.id) {
-        selectBuilding(obj.userData.id, true);
-      }
-    }
-  });
-
-  document.getElementById('closeDetail')?.addEventListener('click', () => {
-    const detail = document.getElementById('detail');
-    if (detail) {
-      detail.hidden = true;
-      detail.classList.remove('visible');
-    }
-  });
-}
-
-function setupSearch() {
-  const inp = document.getElementById('search');
-  if (!inp) return;
-
-  const res = document.createElement('div');
-  res.id = 'searchResults';
-  res.className = 'glass';
-  res.style.cssText = 'position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 340px; max-height: 280px; overflow-y: auto; border-radius: 10px; z-index: 100; display: none;';
-  document.body.appendChild(res);
-
-  inp.addEventListener('input', () => {
-    const q = inp.value.trim().toLowerCase();
-    if (!q) { res.style.display = 'none'; return; }
-
-    const matches = HOSPITAL_BUILDINGS.filter(b => 
-      b.name.toLowerCase().includes(q) || 
-      b.num.toLowerCase().includes(q) || 
-      b.sub.toLowerCase().includes(q) ||
-      b.category.toLowerCase().includes(q)
-    );
-
-    if (matches.length === 0) {
-      res.innerHTML = '<div style="padding: 12px; font-size: 13px; color: var(--muted);">ไม่พบอาคารที่ค้นหา</div>';
-      res.style.display = 'block';
-      return;
-    }
-
-    res.innerHTML = '';
-    matches.forEach(b => {
-      const row = document.createElement('div');
-      row.style.cssText = 'padding: 10px 14px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; font-size: 13px;';
-      row.innerHTML = `<strong>${b.num}. ${b.name}</strong><br><small style="color: var(--muted);">${b.category}</small>`;
-      row.addEventListener('mouseover', () => { row.style.background = 'var(--accent-soft)'; });
-      row.addEventListener('mouseout', () => { row.style.background = 'transparent'; });
-      row.addEventListener('click', () => {
-        selectBuilding(b.id, true);
-        res.style.display = 'none';
-        inp.value = '';
-      });
-      res.appendChild(row);
-    });
-    res.style.display = 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!inp.contains(e.target) && !res.contains(e.target)) {
-      res.style.display = 'none';
-    }
-  });
-}
-
-function setupMapModal() {
-  const mapBtn = document.getElementById('map');
-  const modal = document.getElementById('mapModal');
-  const closeBtn = document.getElementById('closeMapModal');
-  mapBtn?.addEventListener('click', () => { modal.hidden = false; });
-  closeBtn?.addEventListener('click', () => { modal.hidden = true; });
-  modal?.addEventListener('click', (e) => { if (e.target === modal) modal.hidden = true; });
-}
-
-function initClock() {
-  const el = document.getElementById('clock');
-  function update() {
-    const now = new Date();
-    if (el) {
-      el.textContent = now.toLocaleTimeString('th-TH', { hour12: false });
-    }
-  }
-  update();
-  setInterval(update, 1000);
 }
 
 function isFullscreenActive() {
@@ -1604,7 +2307,7 @@ function updateFullscreenButtons() {
   if (topText) topText.textContent = isFs ? 'ย่อจอ' : 'เต็มจอ';
   if (dockBtn) {
     dockBtn.textContent = isFs ? 'ย่อจอ' : 'เต็มจอ';
-    dockBtn.title = isFs ? 'ย่อหน้าต่างกลับสู่ขนาดปกติ' : 'เปิดโหมดเต็มจอ';
+    dockBtn.title = isFs ? 'ย่อหน้าต่างกลับสู่ขนาดปกติ (กดปุ่ม F หรือ Esc)' : 'เปิดโหมดเต็มจอ (กดปุ่ม F)';
     dockBtn.classList.toggle('active', isFs);
   }
 }
@@ -1616,6 +2319,7 @@ function toggleFullscreen() {
     const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (rfs) {
       rfs.call(el).catch(() => {
+        // Fallback for mobile devices / iOS Safari where requestFullscreen is not allowed
         document.body.classList.toggle('fullscreen-mode');
         updateFullscreenButtons();
       });
@@ -1625,7 +2329,7 @@ function toggleFullscreen() {
     }
   } else {
     const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-    if (efs && document.fullscreenElement) {
+    if (efs && (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)) {
       efs.call(document).catch(() => {});
     }
     document.body.classList.remove('fullscreen-mode');
@@ -1633,39 +2337,201 @@ function toggleFullscreen() {
   setTimeout(updateFullscreenButtons, 80);
 }
 
-function onWindowResize() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-  updateLabelPositions();
+function setupSearch() {
+  const inp = document.getElementById('search');
+  if (!inp) return;
+
+  const res = document.createElement('div');
+  res.id = 'searchResults';
+  res.className = 'glass';
+  res.style.cssText = 'position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 340px; max-height: 280px; overflow-y: auto; border-radius: 10px; z-index: 100; display: none;';
+  document.body.appendChild(res);
+
+  inp.addEventListener('input', () => {
+    const q = inp.value.trim().toLowerCase();
+    if (!q) { res.style.display = 'none'; return; }
+
+    const matches = HOSPITAL_BUILDINGS.filter(b =>
+      b.num.toLowerCase().includes(q) ||
+      b.name.toLowerCase().includes(q) ||
+      (b.sub && b.sub.toLowerCase().includes(q))
+    );
+
+    if (matches.length === 0) {
+      res.innerHTML = '<div style="padding: 10px; font-size: 12px; color: var(--muted);">ไม่พบอาคารที่ตรงกับ "' + q + '"</div>';
+      res.style.display = 'block';
+      return;
+    }
+
+    res.innerHTML = matches.slice(0, 10).map(b =>
+      '<div class="search-item" data-id="' + b.id + '" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 13px;">' +
+        '<strong>' + b.num + '</strong> · ' + b.name +
+        '<div style="font-size: 11px; color: var(--muted);">' + b.category + '</div>' +
+      '</div>'
+    ).join('');
+    res.style.display = 'block';
+
+    res.querySelectorAll('.search-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.getAttribute('data-id');
+        selectBuilding(id, true);
+        res.style.display = 'none';
+        inp.value = '';
+      });
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!inp.contains(e.target) && !res.contains(e.target)) {
+      res.style.display = 'none';
+    }
+  });
 }
 
-// Main Animation Loop
-function animate() {
-  requestAnimationFrame(animate);
+function setupMapModal() {
+  const modal = document.getElementById('modal');
+  const mapImg = document.getElementById('modalMapImg');
+  const modalTitle = document.getElementById('modalTitle');
+  const btnFloor = document.getElementById('btnModalFloor');
+  const btnMap2 = document.getElementById('btnModalMap2');
+  const btnMap1 = document.getElementById('btnModalMap1');
 
-  if (window.TWEEN) TWEEN.update();
-
-  if (state.turntable && controls) {
-    scene.rotation.y += 0.002;
-  } else if (scene.rotation.y !== 0) {
-    scene.rotation.y = 0;
+  function switchMap(type) {
+    if (!mapImg || !modalTitle) return;
+    if (type === 'floor') {
+      mapImg.src = 'Artboard-6.png';
+      modalTitle.textContent = '★ แผนผัง 3 มิติ 57 อาคาร · มรภ.วไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (Artboard-6.png)';
+      if (btnFloor) { btnFloor.style.background = 'var(--accent)'; btnFloor.style.color = '#ffffff'; }
+      if (btnMap2) { btnMap2.style.background = 'rgba(0,0,0,0.06)'; btnMap2.style.color = 'inherit'; }
+      if (btnMap1) { btnMap1.style.background = 'rgba(0,0,0,0.06)'; btnMap1.style.color = 'inherit'; }
+    } else if (type === 'maps2') {
+      mapImg.src = 'MapVRU-2016.jpg';
+      modalTitle.textContent = 'แผนผังอาคาร 2 มิติ · มรภ.วไลยอลงกรณ์ ในพระบรมราชูปถัมภ์ (MapVRU-2016.jpg)';
+      if (btnFloor) { btnFloor.style.background = 'rgba(0,0,0,0.06)'; btnFloor.style.color = 'inherit'; }
+      if (btnMap2) { btnMap2.style.background = 'var(--accent)'; btnMap2.style.color = '#ffffff'; }
+      if (btnMap1) { btnMap1.style.background = 'rgba(0,0,0,0.06)'; btnMap1.style.color = 'inherit'; }
+    } else {
+      mapImg.src = 'img/vru-drone-map-4k.jpg';
+      modalTitle.textContent = 'ภาพถ่ายโดรน / ดาวเทียม 4K ปัจจุบัน · มรภ.วไลยอลงกรณ์ฯ จ.ปทุมธานี';
+      if (btnFloor) { btnFloor.style.background = 'rgba(0,0,0,0.06)'; btnFloor.style.color = 'inherit'; }
+      if (btnMap2) { btnMap2.style.background = 'rgba(0,0,0,0.06)'; btnMap2.style.color = 'inherit'; }
+      if (btnMap1) { btnMap1.style.background = 'var(--accent)'; btnMap1.style.color = '#ffffff'; }
+    }
   }
 
-  controls.update();
-  renderer.render(scene, camera);
+  btnFloor?.addEventListener('click', () => switchMap('floor'));
+  btnMap2?.addEventListener('click', () => switchMap('maps2'));
+  btnMap1?.addEventListener('click', () => switchMap('maps'));
+  document.getElementById('map')?.addEventListener('click', () => { if (modal) modal.hidden = false; });
+  document.getElementById('closeModal')?.addEventListener('click', () => { if (modal) modal.hidden = true; });
+}
+
+function showDirectoryTable() {
+  const tp = document.getElementById('tablePanel');
+  const thead = document.getElementById('tableHead');
+  const tbody = document.getElementById('tableBody');
+  if (!tp || !tbody) return;
+
+  if (thead) {
+    thead.innerHTML = '<tr>' +
+      '<th style="padding: 8px 12px; text-align: left;">เลข</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">ชื่ออาคาร / หน่วยงาน</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">หมวดหมู่</th>' +
+      '<th style="padding: 8px 12px; text-align: left;">สถานะ</th>' +
+    '</tr>';
+  }
+
+  tbody.innerHTML = HOSPITAL_BUILDINGS.map(b =>
+    '<tr style="cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05);" data-id="' + b.id + '">' +
+      '<td style="padding: 8px 12px; font-weight: 700; color: var(--accent);">' + b.num + '</td>' +
+      '<td style="padding: 8px 12px; font-weight: 600;">' + b.name + '</td>' +
+      '<td style="padding: 8px 12px; color: var(--muted);">' + b.category + '</td>' +
+      '<td style="padding: 8px 12px;"><span class="badge" style="background: rgba(4,120,87,0.1); color: #047857; padding: 2px 8px; border-radius: 4px; font-size: 11px;">' + b.status + '</span></td>' +
+    '</tr>'
+  ).join('');
+
+  tbody.querySelectorAll('tr').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-id');
+      tp.hidden = true;
+      selectBuilding(id, true);
+    });
+  });
+
+  tp.hidden = false;
+}
+
+let tourIndex = 0;
+function startCampusTour() {
+  const tourStops = ['bld-8', 'bld-1', 'bld-2', 'bld-3', 'bld-31', 'bld-36', 'bld-43', 'bld-57'];
+  tourIndex = 0;
+
+  function nextStop() {
+    if (tourIndex >= tourStops.length) {
+      resetView();
+      return;
+    }
+    const bldId = tourStops[tourIndex++];
+    selectBuilding(bldId, true);
+    setTimeout(nextStop, 3500);
+  }
+
+  nextStop();
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
   updateLabelPositions();
 }
 
-// Boot
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', () => {
-    initScene();
-    animate();
-  });
-} else {
+function onCanvasClick(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(buildingsGroup.children, true);
+  if (intersects.length > 0) {
+    let top = intersects[0].object;
+    while (top.parent && top.parent !== buildingsGroup) {
+      top = top.parent;
+    }
+    if (top.userData && top.userData.id) {
+      selectBuilding(top.userData.id, true);
+    }
+  } else {
+    const hits = raycaster.intersectObjects(groundGroup.children, true);
+    if (hits.length > 0) {
+      resetView();
+    }
+  }
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  TWEEN.update();
+  controls.update();
+  updateLabelPositions();
+  renderer.render(scene, camera);
+}
+
+function boot() {
+  initProceduralTextures();
   initScene();
   animate();
+
+  const loading = document.getElementById('loading');
+  if (loading) {
+    setTimeout(() => {
+      loading.classList.add('hide');
+      setTimeout(() => { loading.style.display = 'none'; }, 400);
+    }, 500);
+  }
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
 }
