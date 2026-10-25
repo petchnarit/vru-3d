@@ -1689,37 +1689,122 @@ function createHealthPoolMesh() {
 }
 
 // --- GISTDA Infrastructure: Roads, Highway, Parking, Canals, Paddy, Housing ---
+const DRONE_ALIGNED_ROADS = [{"id": "217802050", "group": "local", "width": 1.68, "pts": [[189.74, -15.55], [175.33, -15.44], [151.99, -15.23], [149.79, -15.19], [113.58, -15.17], [111.22, -15.19], [107.91, -15.21], [101.44, -15.2], [87.1, -15.22], [21.66, -14.92]]}, {"id": "217802052", "group": "service", "width": 1.2, "pts": [[-42.62, 29.27], [-49.99, 32.12], [-49.53, 51.52], [-132.29, 53.79], [-177.5, 53.73], [-181.96, 54.05], [-181.83, 51.91], [-181.81, 50.35], [-181.61, 41.13], [-181.36, 32.81], [-180.92, 22.64], [-203.04, 22.22]]}, {"id": "217802054", "group": "local", "width": 1.68, "pts": [[-17.86, -23.78], [-17.77, -10.12], [-17.74, -5.03], [-17.7, 1.08], [-17.55, 26.03]]}, {"id": "217802055", "group": "service", "width": 1.2, "pts": [[-49.99, 32.12], [-62.52, 31.94], [-117.89, 30.13], [-130.94, 29.41]]}, {"id": "217802057", "group": "local", "width": 1.68, "pts": [[198.66, -62.7], [133.41, -60.7], [114.29, -60.46], [73.17, -59.98], [38.18, -59.55], [-5.56, -59.03], [-21.11, -59.93], [-86.89, -59.29], [-132.88, -58.95]]}, {"id": "217802058", "group": "local", "width": 1.68, "pts": [[108.25, 44.0], [108.31, 26.25], [108.14, 11.81], [108.0, 0.14], [107.91, -15.21]]}, {"id": "217802059", "group": "service", "width": 1.2, "pts": [[-181.36, 32.81], [-193.85, 32.49], [-198.66, 32.28], [-203.2, 32.08]]}, {"id": "217802060", "group": "service", "width": 1.2, "pts": [[-129.02, -17.78], [-129.76, -1.57], [-130.94, 29.41], [-132.29, 53.79]]}, {"id": "217802066", "group": "service", "width": 1.2, "pts": [[-181.61, 41.13], [-189.55, 40.71], [-194.12, 40.63], [-195.84, 40.74], [-196.57, 41.05], [-196.87, 41.66], [-196.8, 53.94]]}, {"id": "217802068", "group": "local", "width": 1.68, "pts": [[199.12, 9.52], [196.67, 9.83], [189.82, 10.71], [189.82, 14.03], [189.82, 18.45], [196.68, 17.57], [199.14, 17.25]]}, {"id": "217802073", "group": "local", "width": 1.68, "pts": [[189.82, 18.45], [189.48, 43.92], [165.98, 43.94], [153.17, 43.95], [142.37, 43.96], [116.46, 43.99], [113.63, 43.99], [108.25, 44.0], [74.42, 44.0], [65.58, 44.0], [49.16, 44.0], [21.31, 44.0], [21.17, 39.97], [20.71, 26.28], [21.66, -14.92]]}, {"id": "218121112", "group": "local", "width": 1.68, "pts": [[-182.65, -83.27], [-182.09, -66.82], [-182.33, -61.16], [-182.5, -59.58], [-182.55, -57.08], [-184.22, -56.99], [-199.11, -56.35]]}, {"id": "622540412", "group": "service", "width": 1.2, "pts": [[14.76, 26.24], [14.63, 42.06], [14.65, 44.11], [15.79, 44.09], [16.81, 44.07], [17.8, 44.07], [21.31, 44.0]]}, {"id": "622540413", "group": "service", "width": 1.2, "pts": [[8.41, 26.2], [9.29, 38.3], [9.5, 41.2], [9.77, 43.36], [10.14, 43.94], [10.93, 44.24], [12.07, 44.28], [14.65, 44.11]]}, {"id": "622540415", "group": "service", "width": 1.2, "pts": [[-37.11, 26.61], [-29.32, 33.19], [-14.71, 46.27], [-2.68, 57.16], [-1.47, 58.02], [-0.17, 58.68], [1.45, 58.62], [4.82, 58.43]]}, {"id": "622540416", "group": "local", "width": 1.68, "pts": [[-42.62, 29.27], [-23.74, 47.27]]}, {"id": "622540418", "group": "local", "width": 1.68, "pts": [[-37.11, 26.61], [-42.62, 29.27]]}, {"id": "622540419", "group": "local", "width": 1.68, "pts": [[20.71, 26.28], [14.76, 26.24], [8.41, 26.2], [-17.55, 26.03], [-32.18, 24.56], [-34.58, 25.56], [-37.11, 26.61]]}, {"id": "622540420", "group": "service", "width": 1.2, "pts": [[-90.84, -1.73], [-64.15, 30.0], [-62.52, 31.94]]}, {"id": "622540421", "group": "service", "width": 1.2, "pts": [[-180.61, 12.71], [-203.11, 12.1]]}, {"id": "622540422", "group": "service", "width": 1.2, "pts": [[-196.8, 53.94], [-203.23, 53.92]]}, {"id": "622540423", "group": "service", "width": 1.2, "pts": [[-181.96, 54.05], [-184.21, 54.09], [-196.8, 53.94]]}, {"id": "622540424", "group": "service", "width": 1.2, "pts": [[-202.28, -18.07], [-203.01, -17.68], [-203.17, -17.23], [-203.17, 2.43], [-203.11, 12.1], [-203.04, 22.22], [-203.2, 32.08], [-203.23, 53.92], [-203.21, 56.35]]}, {"id": "622540425", "group": "service", "width": 1.2, "pts": [[-179.69, -17.98], [-180.61, 12.71], [-180.63, 13.58], [-180.92, 22.64]]}, {"id": "622540426", "group": "local", "width": 1.68, "pts": [[-131.1, -52.75], [-129.59, -51.55], [-126.86, -49.47], [-122.91, -45.9], [-117.38, -40.43], [-110.94, -34.76], [-102.8, -27.28], [-99.26, -23.49], [-96.88, -20.12]]}, {"id": "622540432", "group": "service", "width": 1.2, "pts": [[-5.56, -59.03], [-5.81, -74.98], [-6.08, -75.71], [-6.56, -76.27], [-18.4, -77.63], [-20.28, -76.73], [-20.94, -75.42], [-21.03, -73.93], [-21.11, -59.93]]}, {"id": "622540433", "group": "local", "width": 1.68, "pts": [[-88.55, -23.08], [-93.65, -21.26]]}, {"id": "622540434", "group": "service", "width": 1.2, "pts": [[-96.88, -20.12], [-101.11, -19.6], [-103.19, -19.26], [-129.02, -17.78], [-158.6, -17.9], [-179.69, -17.98], [-202.28, -18.07]]}, {"id": "622552193", "group": "service", "width": 1.2, "pts": [[65.58, 44.0], [65.19, 51.8], [64.2, 53.13], [62.82, 54.32], [62.77, 58.9], [63.38, 59.58], [91.15, 58.6]]}, {"id": "622552195", "group": "service", "width": 1.2, "pts": [[16.81, 44.07], [15.9, 59.2], [16.47, 60.01], [25.79, 59.92]]}, {"id": "622552197", "group": "service", "width": 1.2, "pts": [[108.39, 53.13], [108.25, 44.0]]}, {"id": "622552199", "group": "service", "width": 1.2, "pts": [[113.63, 43.99], [113.49, 53.64], [114.42, 54.45]]}, {"id": "622552203", "group": "service", "width": 1.2, "pts": [[199.17, 50.3], [192.94, 51.21], [192.29, 53.47], [182.68, 53.47]]}, {"id": "622552205", "group": "service", "width": 1.2, "pts": [[165.94, 49.41], [143.39, 49.45], [142.72, 48.98], [142.48, 46.93], [142.37, 43.96]]}, {"id": "622552206", "group": "service", "width": 1.2, "pts": [[165.98, 43.94], [165.94, 49.41], [165.89, 56.34]]}, {"id": "622552208", "group": "service", "width": 1.2, "pts": [[191.78, -15.58], [191.55, -20.76], [191.44, -29.17]]}, {"id": "622552209", "group": "local", "width": 1.68, "pts": [[189.74, -15.55], [191.78, -15.58], [196.97, -16.0], [198.83, -16.15]]}, {"id": "622552210", "group": "service", "width": 1.2, "pts": [[171.17, -28.91], [170.91, -20.29]]}, {"id": "622552211", "group": "service", "width": 1.2, "pts": [[149.67, -20.15], [137.34, -20.37]]}, {"id": "622552212", "group": "service", "width": 1.2, "pts": [[149.79, -15.19], [149.67, -20.15], [149.63, -22.81], [149.56, -25.2], [149.12, -25.59], [137.5, -25.67]]}, {"id": "622552213", "group": "local", "width": 1.68, "pts": [[101.49, -28.93], [101.44, -15.2]]}, {"id": "622552214", "group": "local", "width": 1.68, "pts": [[-49.53, 51.52], [-26.69, 51.64], [-24.74, 51.16], [-23.69, 50.54], [-23.21, 49.61], [-23.19, 48.44], [-23.74, 47.27]]}, {"id": "622552215", "group": "paths", "width": 1.2, "pts": [[189.82, 14.03], [183.41, 14.2]]}, {"id": "622552216", "group": "service", "width": 1.2, "pts": [[152.47, 14.92], [140.79, 15.14]]}, {"id": "622552217", "group": "service", "width": 1.2, "pts": [[153.17, 43.95], [152.47, 14.92], [151.99, -15.23]]}, {"id": "622552218", "group": "service", "width": 1.2, "pts": [[127.48, -8.09], [127.87, 0.65]]}, {"id": "622552219", "group": "service", "width": 1.2, "pts": [[122.88, -7.98], [123.08, 7.69]]}, {"id": "622552220", "group": "service", "width": 1.2, "pts": [[117.8, -7.88], [117.9, 7.15], [118.59, 7.75], [123.08, 7.69], [125.08, 7.66]]}, {"id": "622552221", "group": "service", "width": 1.2, "pts": [[113.58, -15.17], [113.63, -9.43], [116.65, -7.85], [117.8, -7.88], [122.88, -7.98], [127.48, -8.09], [131.88, -8.19]]}, {"id": "622552222", "group": "service", "width": 1.2, "pts": [[123.83, 25.05], [123.71, 37.23]]}, {"id": "622552223", "group": "service", "width": 1.2, "pts": [[116.46, 43.99], [118.45, 37.4], [118.36, 25.27]]}, {"id": "622552224", "group": "service", "width": 1.2, "pts": [[118.45, 37.4], [123.71, 37.23]]}, {"id": "622552225", "group": "service", "width": 1.2, "pts": [[118.36, 25.27], [118.96, 24.45], [123.47, 24.33], [123.83, 25.05]]}, {"id": "622552226", "group": "service", "width": 1.2, "pts": [[108.14, 11.81], [88.73, 11.64]]}, {"id": "622552227", "group": "service", "width": 1.2, "pts": [[62.79, 15.49], [67.69, 13.39], [69.2, 12.96], [74.08, 5.82], [77.53, 3.13]]}, {"id": "622552228", "group": "service", "width": 1.2, "pts": [[56.39, 20.22], [62.99, 20.22]]}, {"id": "622552229", "group": "service", "width": 1.2, "pts": [[49.16, 44.0], [49.13, 39.23]]}, {"id": "622552230", "group": "service", "width": 1.2, "pts": [[87.01, -1.82], [77.53, 3.13], [72.69, 3.26], [67.61, 3.09], [64.46, 4.07], [63.16, 5.56], [62.6, 11.16], [62.79, 15.49], [62.99, 20.22], [63.25, 26.16]]}, {"id": "622552231", "group": "service", "width": 1.2, "pts": [[108.0, 0.14], [88.87, -0.2], [87.92, -0.67], [87.01, -1.82], [87.1, -15.22]]}, {"id": "622552232", "group": "service", "width": 1.2, "pts": [[108.31, 26.25], [90.93, 25.87]]}, {"id": "622552233", "group": "service", "width": 1.2, "pts": [[94.0, 40.56], [94.47, 29.24]]}, {"id": "622552234", "group": "service", "width": 1.2, "pts": [[74.38, 40.44], [93.48, 39.88], [94.0, 40.56], [94.17, 41.89]]}, {"id": "622552235", "group": "service", "width": 1.2, "pts": [[21.17, 39.97], [47.85, 39.88], [49.13, 39.23], [50.88, 38.34], [52.21, 37.66], [73.21, 37.57], [73.94, 38.13], [74.38, 40.44], [74.42, 44.0]]}, {"id": "622552236", "group": "paths", "width": 1.2, "pts": [[-13.32, -3.38], [-13.11, -6.29], [-13.23, -7.88], [-13.96, -10.54], [-15.02, -13.08], [-15.54, -14.82], [-15.71, -16.59], [-15.23, -18.47], [-14.75, -19.41], [-14.08, -20.09], [-13.08, -20.61], [-12.13, -20.89], [-11.19, -20.89], [-10.06, -20.59], [-8.54, -19.79], [-7.48, -18.53], [-7.23, -16.74], [-7.35, -14.37], [-7.87, -10.88], [-8.96, -5.27], [-9.58, -1.3]]}, {"id": "622552237", "group": "paths", "width": 1.2, "pts": [[-17.74, -5.03], [-15.15, -4.39], [-13.32, -3.38], [-9.58, -1.3], [-8.69, -0.8], [-6.31, 0.44], [-5.21, 0.95]]}, {"id": "622552238", "group": "service", "width": 1.2, "pts": [[-41.65, -25.33], [-41.78, -13.56], [-42.27, -12.24], [-44.2, -11.81], [-48.43, -12.09], [-48.84, -12.89], [-49.17, -25.37]]}, {"id": "622552239", "group": "local", "width": 1.68, "pts": [[-17.7, 1.08], [-32.77, -0.18]]}, {"id": "622552240", "group": "local", "width": 1.68, "pts": [[-17.77, -10.12], [-34.71, -11.54]]}, {"id": "622552241", "group": "service", "width": 1.2, "pts": [[-158.6, -17.9], [-159.62, 37.83]]}, {"id": "622552242", "group": "local", "width": 1.68, "pts": [[18.7, -23.19], [19.75, -25.63], [20.76, -26.65], [21.85, -27.21], [46.91, -27.46], [80.54, -29.0], [101.49, -28.93], [119.38, -28.87], [163.23, -28.79], [171.17, -28.91], [191.07, -29.22], [191.44, -29.17], [198.89, -30.46]]}, {"id": "622552243", "group": "local", "width": 1.68, "pts": [[111.36, -56.99], [65.1, -56.35], [27.54, -56.61], [16.9, -56.65], [-26.4, -57.54], [-73.04, -56.98], [-86.81, -56.61]]}, {"id": "622552244", "group": "paths", "width": 1.2, "pts": [[151.09, -35.92], [145.98, -35.97], [130.11, -36.39], [116.6, -35.63]]}, {"id": "622552245", "group": "local", "width": 1.68, "pts": [[198.66, -45.25], [196.95, -45.24], [195.24, -45.24], [193.68, -43.94], [193.11, -41.35], [192.26, -39.6], [189.85, -39.17], [188.23, -38.62], [185.6, -37.64], [183.93, -37.21], [182.98, -36.83], [151.09, -35.92]]}, {"id": "622564460", "group": "service", "width": 1.2, "pts": [[175.33, -15.44], [175.55, -19.86], [176.67, -20.46], [191.55, -20.76]]}, {"id": "622575380", "group": "paths", "width": 1.2, "pts": [[199.09, -1.17], [197.84, -1.74], [197.95, -6.11]]}, {"id": "623038390", "group": "bridge", "width": 2.52, "pts": [[-179.27, -49.22], [-178.87, -48.38], [-177.88, -46.09]]}, {"id": "623038391", "group": "paths", "width": 1.2, "pts": [[-182.55, -57.08], [-181.04, -53.72], [-179.27, -49.22]]}, {"id": "694361219", "group": "local", "width": 1.68, "pts": [[21.66, -14.92], [20.47, -20.56], [18.7, -23.19], [16.55, -24.37], [-17.86, -23.78], [-41.65, -25.33], [-49.17, -25.37], [-83.71, -24.8], [-87.28, -23.65], [-88.55, -23.08]]}, {"id": "694361220", "group": "local", "width": 1.68, "pts": [[189.82, 10.71], [189.74, -15.55]]}, {"id": "865247122", "group": "local", "width": 1.68, "pts": [[-73.04, -56.98], [-72.48, -39.06], [-72.35, -34.66], [-72.45, -33.63], [-73.33, -32.98], [-88.7, -32.6], [-91.21, -32.46], [-92.46, -32.16], [-93.27, -31.57], [-94.15, -30.55], [-87.28, -23.65]]}, {"id": "865247123", "group": "local", "width": 1.68, "pts": [[68.98, -39.09], [69.33, -35.84], [69.76, -35.28], [71.06, -34.51], [85.03, -34.9], [102.32, -34.94], [103.94, -35.41], [105.84, -37.08], [108.26, -43.15], [110.66, -53.92], [111.36, -56.99]]}, {"id": "865247124", "group": "local", "width": 1.68, "pts": [[16.55, -24.37], [16.82, -43.15], [16.9, -56.65]]}, {"id": "865248005", "group": "local", "width": 1.68, "pts": [[16.82, -43.15], [43.71, -43.15]]}, {"id": "898311787", "group": "local", "width": 1.68, "pts": [[-93.65, -21.26], [-94.15, -21.09], [-96.88, -20.12]]}, {"id": "898311788", "group": "service", "width": 1.2, "pts": [[-105.04, -36.88], [-100.05, -37.38], [-95.19, -37.69], [-79.81, -38.58], [-72.48, -39.06]]}, {"id": "898311789", "group": "local", "width": 1.68, "pts": [[-125.21, -55.81], [-120.45, -51.01], [-115.52, -46.02], [-105.04, -36.88], [-96.81, -32.19], [-94.15, -30.55]]}, {"id": "898311790", "group": "local", "width": 1.68, "pts": [[-133.45, -55.2], [-127.41, -55.75], [-125.21, -55.81], [-122.93, -55.88], [-114.96, -56.2], [-86.81, -56.61]]}, {"id": "898311791", "group": "local", "width": 1.68, "pts": [[-133.45, -55.2], [-136.27, -55.28], [-139.6, -55.58], [-148.09, -55.54], [-155.41, -55.54], [-159.4, -55.46], [-162.11, -55.24], [-165.9, -53.32], [-171.73, -48.49], [-177.28, -44.09], [-178.19, -42.42], [-179.36, -40.63], [-181.0, -39.26], [-191.05, -34.9]]}, {"id": "912841342", "group": "local", "width": 1.68, "pts": [[193.68, -43.94], [192.83, -47.44], [191.51, -51.46], [189.54, -56.74], [155.52, -56.37], [138.24, -56.18], [111.36, -56.99]]}, {"id": "930540606", "group": "service", "width": 1.2, "pts": [[-34.58, 25.56], [-35.41, 19.94], [-36.1, 12.66]]}, {"id": "930600845", "group": "service", "width": 1.2, "pts": [[111.22, -15.19], [111.25, -25.05], [111.27, -26.31], [111.41, -27.14], [111.69, -27.68], [111.99, -27.96], [112.68, -28.15]]}, {"id": "930602380", "group": "local", "width": 1.68, "pts": [[155.52, -56.37], [154.04, -52.85], [153.32, -49.86], [152.38, -47.38], [150.97, -45.24], [150.18, -43.53], [149.79, -40.97], [149.95, -39.17], [151.09, -35.92]]}, {"id": "948038381", "group": "arterial", "width": 4.2, "pts": [[199.24, 151.58], [199.23, 131.16], [199.24, 128.77], [199.26, 116.35], [199.28, 113.47], [199.32, 104.91], [199.26, 94.89], [199.27, 92.19], [199.17, 50.3], [199.14, 18.78], [199.14, 17.25], [199.12, 9.52], [199.11, 3.27], [199.1, 0.64], [199.09, -1.17], [198.83, -16.15], [198.89, -30.46], [198.66, -45.25], [198.66, -62.7], [198.52, -71.39], [198.33, -83.24], [198.31, -88.71], [198.27, -95.27], [198.13, -103.68], [197.74, -116.1], [197.45, -147.62], [197.01, -169.71], [197.03, -172.24], [197.0, -193.78], [197.06, -197.83], [197.32, -217.53], [197.31, -223.69], [197.38, -236.16], [197.35, -240.28], [197.27, -245.81], [197.26, -260.36], [197.17, -263.58], [197.04, -281.94], [196.96, -302.69], [196.9, -318.46], [196.87, -327.31], [196.78, -349.06], [196.74, -351.88]]}, {"id": "950398274", "group": "paths", "width": 1.2, "pts": [[-9.58, -1.3], [-8.89, 0.78], [-6.96, 6.06], [-6.65, 7.34], [-6.83, 9.11], [-7.21, 9.65], [-7.87, 10.65], [-8.79, 11.36], [-9.62, 11.85], [-11.0, 12.06], [-12.19, 11.85], [-13.23, 11.57], [-13.98, 10.89], [-14.9, 10.1], [-15.33, 9.07], [-15.4, 7.92], [-15.25, 5.95], [-14.73, 4.16], [-14.0, 0.12], [-13.62, -2.4], [-13.32, -3.38]]}, {"id": "1049832023", "group": "service", "width": 1.2, "pts": [[-88.11, -12.14], [-94.15, -21.09]]}, {"id": "1198891198", "group": "service", "width": 1.2, "pts": [[-117.89, 30.13], [-117.45, 2.01]]}, {"id": "1560094118", "group": "paths", "width": 1.2, "pts": [[-177.88, -46.09], [-177.28, -44.09]]}];
+const DRONE_ALIGNED_WATER = [{"id": "789326159", "name": "คลองเชียงรากน้อย", "pts": [[-166.05, -59.0], [-174.38, -50.7], [-186.06, -43.35], [-194.34, -39.87], [-200.36, -39.83]]}, {"id": "789326169", "name": "Canal", "pts": [[-5.25, 60.02], [-40.3, 26.98], [-52.99, 6.42], [-85.41, -16.21], [-99.56, -30.98], [-128.44, -54.22]]}];
+
 function createGistdaInfrastructure() {
   const infraGroup = new THREE.Group();
+  const roadsGroup = new THREE.Group();
+  roadsGroup.name = 'campusRoadsGroup';
+  infraGroup.add(roadsGroup);
 
-  // NOTE: All campus roads, highway lanes, parking lots, and agricultural paddy fields
-  // are already present in crystal-clear 4K resolution on the aerial drone orthophoto!
-  // We do NOT cover them with artificial gray/green polygons so the real drone photo is 100% visible!
+  // 1. Complete 97-Road 3D Campus Road Network (Calibrated 1:1 to Map & Drone Orthophoto)
+  const arterialMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.78,
+    metalness: 0.08,
+    transparent: true,
+    opacity: 0.72
+  });
+  const roadMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.82,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.65
+  });
+  const pathMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    roughness: 0.75,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.75
+  });
+  const laneLineMat = new THREE.MeshBasicMaterial({
+    color: 0xf8fafc,
+    transparent: true,
+    opacity: 0.75
+  });
+  const yellowLineMat = new THREE.MeshBasicMaterial({
+    color: 0xfbbf24,
+    transparent: true,
+    opacity: 0.85
+  });
 
-  // 1. North Drainage Canal (คลองเชียงรากน้อย - Translucent water reflection)
-  const canalW = 4.5;
-  const canalL = 340.0;
+  DRONE_ALIGNED_ROADS.forEach(r => {
+    const pts = r.pts;
+    if (!pts || pts.length < 2) return;
+    const isArterial = r.group === 'arterial';
+    const isPath = r.group === 'paths';
+    const w = isArterial ? Math.max(4.5, r.width) : (isPath ? 1.1 : Math.max(1.8, r.width * 0.85));
+    const h = isArterial ? 0.14 : (isPath ? 0.09 : 0.11);
+    const mat = isArterial ? arterialMat : (isPath ? pathMat : roadMat);
+
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x1, z1] = pts[i];
+      const [x2, z2] = pts[i + 1];
+      // Clip to ground plane bounds
+      if ((x1 < -208 && x2 < -208) || (x1 > 208 && x2 > 208) || (z1 < -60 && z2 < -60) || (z1 > 60 && z2 > 60)) continue;
+      const dx = x2 - x1;
+      const dz = z2 - z1;
+      const len = Math.hypot(dx, dz);
+      if (len < 0.2) continue;
+      const angle = Math.atan2(dx, dz);
+
+      const segGeo = new THREE.BoxGeometry(w, h, len + w * 0.35);
+      const seg = new THREE.Mesh(segGeo, mat);
+      seg.position.set((x1 + x2) / 2, h / 2, (z1 + z2) / 2);
+      seg.rotation.y = angle;
+      seg.receiveShadow = true;
+      roadsGroup.add(seg);
+
+      // Centerline markings for arterial and main campus roads
+      if (!isPath && len >= 3.5 && w >= 2.2) {
+        const lineGeo = new THREE.BoxGeometry(isArterial ? 0.18 : 0.1, 0.02, len * 0.75);
+        const line = new THREE.Mesh(lineGeo, isArterial ? yellowLineMat : laneLineMat);
+        line.position.set((x1 + x2) / 2, h + 0.015, (z1 + z2) / 2);
+        line.rotation.y = angle;
+        roadsGroup.add(line);
+      }
+    }
+  });
+
+  // 2. Diagonal Irrigation Canal & North Drainage Canal (คลองส่งน้ำและคลองเชียงรากน้อย)
   const canalWaterMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
-    roughness: 0.1,
+    roughness: 0.12,
     metalness: 0.85,
     transparent: true,
-    opacity: 0.45
+    opacity: 0.48
   });
-  const canalWater = new THREE.Mesh(new THREE.BoxGeometry(canalL, 0.1, canalW), canalWaterMat);
-  canalWater.position.set(15.0, 0.05, -49.5);
-  infraGroup.add(canalWater);
 
-  // 2. Natural Rectangular Pond at Central Campus (สระน้ำใหญ่เรือนเจ้าฟ้า - Subtle water shimmer)
+  DRONE_ALIGNED_WATER.forEach(w => {
+    const pts = w.pts;
+    if (!pts || pts.length < 2) return;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x1, z1] = pts[i];
+      const [x2, z2] = pts[i + 1];
+      const dx = x2 - x1;
+      const dz = z2 - z1;
+      const len = Math.hypot(dx, dz);
+      if (len < 0.3) continue;
+      const cSeg = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.08, len + 1.0), canalWaterMat);
+      cSeg.position.set((x1 + x2) / 2, 0.04, (z1 + z2) / 2);
+      cSeg.rotation.y = Math.atan2(dx, dz);
+      infraGroup.add(cSeg);
+    }
+  });
+
+  // 3. Natural Rectangular Pond at Central Campus (สระน้ำใหญ่เรือนเจ้าฟ้า - Subtle water shimmer)
   const pond = new THREE.Mesh(new THREE.BoxGeometry(16.6, 0.08, 46.2), canalWaterMat);
   pond.position.set(-15.3, 0.04, -1.8);
   infraGroup.add(pond);
 
-  // 3. Realistic Multi-Tiered 3D Trees placed on real greenery
+  // 4. Realistic Multi-Tiered 3D Trees placed on real greenery
   const foliageDarkMat = new THREE.MeshStandardMaterial({ color: 0x1b4d20, roughness: 0.85 });
   const foliageMidMat  = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.8 });
   const foliageLightMat = new THREE.MeshStandardMaterial({ color: 0x4caf50, roughness: 0.8 });
-  const flameFlowerMat = new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.7 }); // ต้นหางนกยูงฝรั่ง
+  const flameFlowerMat = new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.7 });
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 });
 
   const sphereGeo1 = new THREE.DodecahedronGeometry(1.8, 1);
@@ -1765,9 +1850,9 @@ function createGistdaInfrastructure() {
     addRealisticTree(x, -44.5, 0.85 + (Math.abs(x) % 3) * 0.12, x === 95);
   }
 
-  // Trees along Monument Plaza circle (X = 184.0, Z = 14.5)
+  // Trees along Monument Plaza circle (X = 175.3, Z = 14.8)
   for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
-    addRealisticTree(184.0 + Math.cos(a) * 9.5, 14.5 + Math.sin(a) * 9.5, 0.8);
+    addRealisticTree(175.3 + Math.cos(a) * 6.5, 14.8 + Math.sin(a) * 6.5, 0.75);
   }
 
   // Trees around Thai House island (-25.5, Z in [-15..15])
@@ -1777,7 +1862,7 @@ function createGistdaInfrastructure() {
 
   // Trees along Building 10 North Tree Buffer (Z = 46.2, X in [120..162])
   for (let x = 120; x <= 162; x += 10.5) {
-    addRealisticTree(x, 46.2, 0.85, x === 141); // Flame of the forest tree in front of Bld 10!
+    addRealisticTree(x, 46.2, 0.85, x === 141);
   }
 
   // Trees along southern forest boundary (Z = 55.5)
@@ -2242,12 +2327,14 @@ function setupUI() {
     collapseToolbarBtn.title = isCollapsed ? 'ขยายแถบเมนูนำทาง' : 'ย่อแถบเมนูนำทาง';
   });
 
-  // Toggle Walkways
+  // Toggle Walkways & Roads Network
   const toggleWalkwaysBtn = document.getElementById('toggleWalkways');
   toggleWalkwaysBtn?.addEventListener('click', () => {
     state.showWalkways = state.showWalkways === undefined ? false : !state.showWalkways;
     toggleWalkwaysBtn.classList.toggle('active', state.showWalkways);
     toggleWalkwaysBtn.setAttribute('aria-pressed', state.showWalkways ? 'true' : 'false');
+    const rg = buildingsGroup?.getObjectByName('campusRoadsGroup');
+    if (rg) rg.visible = state.showWalkways;
   });
 
   document.getElementById('fullscreenTop')?.addEventListener('click', toggleFullscreen);
